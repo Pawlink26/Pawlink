@@ -506,21 +506,6 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
     </div>
   );
 
-  function MessageBubble({ m, myId }) {
-    const isMe = m.fromId === myId;
-    return (
-      <div style={{ display:"flex", flexDirection:isMe?"row-reverse":"row", gap:9, alignItems:"flex-start" }}>
-        <div style={{ width:32, height:32, borderRadius:9, background:isMe?"var(--sage-light)":"var(--cream)", border:"1px solid var(--border)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:14, flexShrink:0 }}>🏠</div>
-        <div style={{ maxWidth:"74%" }}>
-          {!isMe && <div style={{ fontSize:11, color:"var(--slate-light)", marginBottom:3 }}>{m.from} · {m.time}</div>}
-          {isMe && <div style={{ fontSize:11, color:"var(--slate-light)", marginBottom:3, textAlign:"right" }}>{m.time}</div>}
-          <div style={{ background:isMe?"var(--sage)":"var(--warm-white)", color:isMe?"#fff":"var(--slate)", border:isMe?"none":"1px solid var(--border)", borderRadius:isMe?"14px 14px 4px 14px":"14px 14px 14px 4px", padding:"10px 14px", fontSize:14, lineHeight:1.55, boxShadow:isMe?"none":"var(--shadow-sm)" }}>
-            {m.text}
-          </div>
-        </div>
-      </div>
-    );
-  }
 }
 
 // ── MAIN APP ──────────────────────────────────────────────
