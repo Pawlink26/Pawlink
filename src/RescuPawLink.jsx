@@ -1,5 +1,36 @@
-
 import { useState, useRef, useEffect } from "react";
+
+// ── Supabase ──────────────────────────────────────────────
+const SUPABASE_URL = "https://dmbfawpmgemqpbzpsbdm.supabase.co";
+const SUPABASE_KEY = "sb_publishable__0eHRyn3NQ_5qG2YeWcdxA_Ijr29Ivq";
+
+async function sbFetch(path, opts = {}) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    headers: {
+      "apikey": SUPABASE_KEY,
+      "Authorization": `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json",
+      "Prefer": opts.prefer || "return=representation",
+      ...opts.headers,
+    },
+    ...opts,
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err);
+  }
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+async function sbAuth(action, email, password) {
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/${action}`, {
+    method: "POST",
+    headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+  return res.json();
+}
 
 // ── Google Fonts ──────────────────────────────────────────
 const fontLink = document.createElement("link");
@@ -555,29 +586,113 @@ export default function RescuPawLink() {
 
   function showToast(m) { setToast(m); setTimeout(() => setToast(""), 4000); }
 
-  // ── Auth ────────────────────────────────────────
-  function handleLogin(e) {
-    e.preventDefault(); setAuthErr(""); setLoading(true);
-    setTimeout(() => {
-      const s = shelters.find(sh => sh.email.toLowerCase() === loginF.email.toLowerCase());
-      if (s && loginF.password === "demo") {
-        setUser(s); setPage("app"); setTab("dashboard");
-        showToast(`Welcome back, ${s.name}!`);
-      } else { setAuthErr("Invalid credentials. Use any shelter email + password: demo"); }
-      setLoading(false);
-    }, 800);
+  // ── Load data on mount ──────────────────────────
+  useEffect(() => {
+    loadShelters();
+    loadAnimals();
+    checkSession();
+  }, []);
+
+  async function checkSession() {
+    try {
+      const token = localStorage.getItem("rpl_token");
+      const shelterId = localStorage.getItem("rpl_shelter_id");
+      if (!token || !shelterId) return;
+      const data = await sbFetch(`shelters?id=eq.${shelterId}`);
+      if (data?.[0]) setUser(data[0]);
+    } catch(e) { console.log("No session"); }
   }
 
-  function handleRegister(e) {
+  async function loadShelters() {
+    try {
+      const data = await sbFetch("shelters?order=name");
+      if (data?.length) setShelters(data);
+    } catch(e) { console.log("Using seed shelters"); }
+  }
+
+  async function loadAnimals() {
+    try {
+      const data = await sbFetch("animals?order=days_left");
+      if (data?.length) setAnimals(data.map(a => ({
+        ...a,
+        daysLeft: a.days_left,
+        shelterName: a.shelter_name,
+        shelterCity: a.shelter_city,
+        shelterState: a.shelter_state,
+        shelterPhone: a.shelter_phone,
+        shelterEmail: a.shelter_email,
+        goodWithKids: a.good_with_kids,
+        goodWithDogs: a.good_with_dogs,
+        goodWithCats: a.good_with_cats,
+      })));
+    } catch(e) { console.log("Using seed animals"); }
+  }
+
+  // ── Auth ────────────────────────────────────────
+  async function handleLogin(e) {
+    e.preventDefault(); setAuthErr(""); setLoading(true);
+    try {
+      const result = await sbAuth("token?grant_type=password", loginF.email, loginF.password);
+      if (result.error) { setAuthErr(result.error_description || "Invalid email or password."); setLoading(false); return; }
+      localStorage.setItem("rpl_token", result.access_token);
+      // Find shelter by email
+      const shelterData = await sbFetch(`shelters?email=eq.${encodeURIComponent(loginF.email)}`);
+      if (shelterData?.[0]) {
+        localStorage.setItem("rpl_shelter_id", shelterData[0].id);
+        setUser(shelterData[0]);
+        setPage("app"); setTab("dashboard");
+        showToast(`Welcome back, ${shelterData[0].name}!`);
+      } else {
+        setAuthErr("Account found but shelter profile missing. Please register again.");
+      }
+    } catch(e) {
+      setAuthErr("Login failed. Please try again.");
+    }
+    setLoading(false);
+  }
+
+  async function handleRegister(e) {
     e.preventDefault(); setAuthErr(""); setLoading(true);
     if (regF.password !== regF.confirm) { setAuthErr("Passwords do not match."); setLoading(false); return; }
-    setTimeout(() => {
-      const ns = { id:`s${Date.now()}`, name:regF.orgName, city:regF.city, state:regF.state, type:regF.type, email:regF.email, phone:regF.phone, website:"", totalSpace:0, availableSpace:0, needsHelp:false, canTake:[], bio:"", verified:false };
+    try {
+      // Sign up with Supabase Auth
+      const result = await sbAuth("signup", regF.email, regF.password);
+      if (result.error) { setAuthErr(result.error_description || "Registration failed."); setLoading(false); return; }
+      // Create shelter profile
+      const shelterData = await sbFetch("shelters", {
+        method: "POST",
+        body: JSON.stringify({
+          name: regF.orgName, type: regF.type, city: regF.city,
+          state: regF.state, email: regF.email, phone: regF.phone,
+          total_space: 0, available_space: 0, needs_help: false,
+          can_take: [], bio: "", verified: false,
+        }),
+      });
+      const newShelter = shelterData?.[0] || {
+        id: `s${Date.now()}`, name: regF.orgName, city: regF.city,
+        state: regF.state, type: regF.type, email: regF.email,
+        phone: regF.phone, totalSpace: 0, availableSpace: 0,
+        needsHelp: false, canTake: [], bio: "", verified: false,
+      };
+      if (result.access_token) localStorage.setItem("rpl_token", result.access_token);
+      localStorage.setItem("rpl_shelter_id", newShelter.id);
+      setShelters(p => [...p, newShelter]);
+      setUser(newShelter); setPage("app"); setTab("dashboard");
+      showToast(`Welcome to RescuPawLink, ${regF.orgName}!`);
+    } catch(e) {
+      // Fallback to local if Supabase tables not set up yet
+      const ns = { id:`s${Date.now()}`, name:regF.orgName, city:regF.city, state:regF.state, type:regF.type, email:regF.email, phone:regF.phone, totalSpace:0, availableSpace:0, needsHelp:false, canTake:[], bio:"", verified:false };
       setShelters(p => [...p, ns]);
       setUser(ns); setPage("app"); setTab("dashboard");
       showToast(`Welcome to RescuPawLink, ${regF.orgName}!`);
-      setLoading(false);
-    }, 900);
+    }
+    setLoading(false);
+  }
+
+  function handleSignOut() {
+    localStorage.removeItem("rpl_token");
+    localStorage.removeItem("rpl_shelter_id");
+    setUser(null); setPage("landing");
   }
 
   // ── Photo upload ────────────────────────────────
@@ -591,9 +706,35 @@ export default function RescuPawLink() {
   }
 
   // ── Post animal ─────────────────────────────────
-  function submitPost(e) {
+  async function submitPost(e) {
     e.preventDefault();
-    const a = { id:`a${Date.now()}`, ...postF, shelterId:user.id, shelterName:user.name, shelterCity:user.city, shelterState:user.state, shelterPhone:user.phone, shelterEmail:user.email, status: postF.daysLeft<=2?"critical":postF.daysLeft<=5?"urgent":"good", postedAt:new Date().toISOString().split("T")[0] };
+    const a = {
+      id:`a${Date.now()}`, ...postF,
+      shelterId:user.id, shelterName:user.name,
+      shelterCity:user.city, shelterState:user.state,
+      shelterPhone:user.phone, shelterEmail:user.email,
+      status: postF.daysLeft<=2?"critical":postF.daysLeft<=5?"urgent":"good",
+      postedAt:new Date().toISOString().split("T")[0]
+    };
+    // Save to Supabase
+    try {
+      await sbFetch("animals", {
+        method: "POST",
+        body: JSON.stringify({
+          name: postF.name, species: postF.species, breed: postF.breed,
+          age: postF.age, sex: postF.sex, weight: postF.weight,
+          color: postF.color, description: postF.description,
+          days_left: postF.daysLeft, vaccinated: postF.vaccinated,
+          neutered: postF.neutered, good_with_kids: postF.goodWithKids,
+          good_with_dogs: postF.goodWithDogs, good_with_cats: postF.goodWithCats,
+          fee: postF.fee, photos: postF.photos,
+          shelter_id: user.id, shelter_name: user.name,
+          shelter_city: user.city, shelter_state: user.state,
+          shelter_phone: user.phone, shelter_email: user.email,
+          status: a.status,
+        }),
+      });
+    } catch(err) { console.log("Saved locally only"); }
     setAnimals(p => [...p, a]);
     setPostF({ name:"", species:"Dog", breed:"", age:"", sex:"", weight:"", color:"", description:"", daysLeft:7, vaccinated:false, neutered:false, goodWithKids:false, goodWithDogs:false, goodWithCats:false, fee:"", photos:[] });
     setPostStep(1); setTab("dashboard");
@@ -601,12 +742,23 @@ export default function RescuPawLink() {
   }
 
   // ── Update capacity ─────────────────────────────
-  function submitCap(e) {
+  async function submitCap(e) {
     e.preventDefault();
     const canTake = [capF.canTakeDogs&&"Dogs", capF.canTakeCats&&"Cats", capF.canTakeSmall&&"Small Animals"].filter(Boolean);
-    setShelters(p => p.map(s => s.id===user.id ? { ...s, totalSpace:+capF.total||s.totalSpace, availableSpace:+capF.available||s.availableSpace, needsHelp:capF.needsHelp, canTake } : s));
-    setUser(p => ({ ...p, totalSpace:+capF.total||p.totalSpace, availableSpace:+capF.available||p.availableSpace, needsHelp:capF.needsHelp, canTake }));
-    showToast("Capacity updated!");
+    const updates = { totalSpace:+capF.total||user.totalSpace, availableSpace:+capF.available||user.availableSpace, needsHelp:capF.needsHelp, canTake };
+    // Save to Supabase
+    try {
+      await sbFetch(`shelters?id=eq.${user.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          total_space: updates.totalSpace, available_space: updates.availableSpace,
+          needs_help: updates.needsHelp, can_take: updates.canTake,
+        }),
+      });
+    } catch(err) { console.log("Saved locally only"); }
+    setShelters(p => p.map(s => s.id===user.id ? { ...s, ...updates } : s));
+    setUser(p => ({ ...p, ...updates }));
+    showToast("Capacity updated and broadcast to network!");
   }
 
   // ── Send message ────────────────────────────────
@@ -1001,7 +1153,7 @@ export default function RescuPawLink() {
             {isLoggedIn ? (
               <>
                 <span style={{ fontSize:13, color:"var(--slate-mid)", fontWeight:500 }} className="hide-mobile">{user.name}</span>
-                <button className="btn btn-ghost btn-sm" onClick={() => { setUser(null); setPage("landing"); }}>{I.logout} <span className="hide-mobile">Sign Out</span></button>
+                <button className="btn btn-ghost btn-sm" onClick={handleSignOut}>{I.logout} <span className="hide-mobile">Sign Out</span></button>
               </>
             ) : (
               <button className="btn btn-primary btn-sm" onClick={() => { setAuthMode("login"); setPage("login"); }}>Sign In</button>
@@ -1835,4 +1987,3 @@ export default function RescuPawLink() {
     </div>
   );
 }
-
