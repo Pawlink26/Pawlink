@@ -175,7 +175,7 @@ const css = `
   .tab.active { background: #fff; color: var(--slate); font-weight: 600; box-shadow: var(--shadow-sm); }
 
   .modal-backdrop { position: fixed; inset: 0; background: rgba(55,65,81,0.5); backdrop-filter: blur(6px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.2s ease; }
-  .modal { background: var(--warm-white); border-radius: 20px; box-shadow: var(--shadow-lg); max-height: 92vh; overflow-y: auto; animation: fadeUp 0.25s ease; }
+  .modal { background: var(--warm-white); border-radius: 20px; box-shadow: var(--shadow-lg); max-height: 95vh; overflow-y: auto; animation: fadeUp 0.25s ease; }
 
   .upload-zone { border: 2px dashed var(--border); border-radius: var(--radius-sm); padding: 28px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--cream); }
   .upload-zone:hover { border-color: var(--sage); background: var(--sage-light); }
@@ -203,22 +203,118 @@ const css = `
 
   .trait-pill { font-size: 12px; padding: 4px 11px; border-radius: 7px; font-weight: 600; }
 
+
   ::-webkit-scrollbar { width: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--sand); border-radius: 3px; }
+
+  /* ── iOS & Android fixes ── */
+
+  /* Prevent iOS font size bump on orientation change */
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+  /* Smooth scrolling everywhere */
+  * { -webkit-overflow-scrolling: touch; }
+
+  /* Remove iOS tap highlight */
+  * { -webkit-tap-highlight-color: transparent; }
+
+  /* Prevent double-tap zoom on buttons */
+  button, a { touch-action: manipulation; }
+
+  /* Fix iOS input styling */
+  input, select, textarea {
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 10px;
+  }
+
+  /* Fix iOS button appearance */
+  button { -webkit-appearance: none; }
+
+  /* Safe area insets for iPhone notch/Dynamic Island */
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 16px); }
+  nav { padding-top: env(safe-area-inset-top, 0); }
+
+  /* Prevent overscroll bounce showing white on iOS */
+  body { overscroll-behavior: none; }
 
   @media (max-width: 768px) {
     .hide-mobile { display: none !important; }
     .animal-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
     .nav-link span { display: none; }
+    .nav-link { padding: 8px 10px; }
+    .stat-card { padding: 14px; }
+    .section-header { flex-direction: column; align-items: flex-start; }
+    /* Larger touch targets for mobile */
+    button { min-height: 44px; }
+    .input, .select, .textarea { font-size: 16px !important; } /* Prevent iOS zoom on focus */
   }
+
   @media (max-width: 480px) {
     .animal-grid { grid-template-columns: 1fr; }
+    /* Bottom sheet modal on mobile — feels native on iOS & Android */
+    .modal {
+      border-radius: 20px 20px 0 0;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      max-height: 92vh;
+      margin: 0;
+      padding-bottom: env(safe-area-inset-bottom, 16px);
+    }
+    .modal-backdrop { align-items: flex-end; padding: 0; }
+    .tab-bar { gap: 2px; }
+    .tab { font-size: 11px; padding: 8px 6px; }
+    .toast {
+      left: 16px; right: 16px; top: 16px;
+      max-width: 100%;
+      padding-top: calc(env(safe-area-inset-top, 0px) + 12px);
+    }
+    .filter-chip { padding: 8px 14px; font-size: 13px; min-height: 44px; }
+    /* Better card tap area on mobile */
+    .card-hover:hover { transform: none; } /* Disable hover lift on touch */
+    /* Larger form inputs on mobile */
+    .label { font-size: 13px; }
+    /* Fix nav on mobile */
+    .nav-link { padding: 10px 8px; min-height: 44px; }
+  }
+
+  /* Android Chrome specific */
+  @media (max-width: 480px) and (hover: none) {
+    .card-hover:active { transform: scale(0.98); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    button:active { opacity: 0.85; }
   }
 `;
 const styleEl = document.createElement("style");
 styleEl.textContent = css;
 document.head.appendChild(styleEl);
+
+// ── Viewport meta for mobile ──────────────────────────────
+const existingMeta = document.querySelector('meta[name="viewport"]');
+if (!existingMeta) {
+  const meta = document.createElement("meta");
+  meta.name = "viewport";
+  meta.content = "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1";
+  document.head.appendChild(meta);
+} else {
+  existingMeta.content = "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1";
+}
+
+// ── Apple mobile web app meta ─────────────────────────────
+const appleMeta = document.createElement("meta");
+appleMeta.name = "apple-mobile-web-app-capable";
+appleMeta.content = "yes";
+document.head.appendChild(appleMeta);
+
+const appleStatus = document.createElement("meta");
+appleStatus.name = "apple-mobile-web-app-status-bar-style";
+appleStatus.content = "default";
+document.head.appendChild(appleStatus);
+
+const themeColor = document.createElement("meta");
+themeColor.name = "theme-color";
+themeColor.content = "#5a8a60";
+document.head.appendChild(themeColor);
 
 // ── Constants ──────────────────────────────────────────────
 const US_STATES = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"];
@@ -447,7 +543,7 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
         </div>
       )}
 
-      <div style={{ display:"grid", gridTemplateColumns:"260px 1fr", gap:18, height:600 }}>
+      <div style={{ display:"grid", gridTemplateColumns:"minmax(0,260px) 1fr", gap:18, height:"clamp(480px,70vh,600px)" }}>
 
         {/* ── LEFT SIDEBAR ── */}
         <div className="card" style={{ display:"flex", flexDirection:"column", overflow:"hidden" }}>
@@ -890,7 +986,11 @@ export default function RescuPawLink() {
     return true;
   });
 
-  const capPct   = s => s.totalSpace > 0 ? Math.round((s.availableSpace / s.totalSpace) * 100) : 0;
+  const capPct   = s => {
+    const total = s.totalSpace || s.total_space || 0;
+    const avail = s.availableSpace || s.available_space || 0;
+    return total > 0 ? Math.round((avail / total) * 100) : 0;
+  };
   const capColor = s => { const p = capPct(s); return p < 10 ? "#dc2626" : p < 30 ? "#d97706" : "#16a34a"; };
 
   const stateBadgeColor = status => status === "critical" ? "badge-critical" : status === "urgent" ? "badge-urgent" : "badge-good";
@@ -921,7 +1021,7 @@ export default function RescuPawLink() {
 
       {/* ─── NAV ─────────────────────────────────── */}
       <nav style={{ background:"#fff", borderBottom:"1px solid #f0ede8", position:"sticky", top:0, zIndex:100 }}>
-        <div style={{ maxWidth:1140, margin:"0 auto", padding:"0 40px", height:68, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+        <div style={{ maxWidth:1140, margin:"0 auto", padding:"0 clamp(16px,4vw,40px)", height:68, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
 
           {/* Wordmark */}
           <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", padding:0 }}>
@@ -962,9 +1062,9 @@ export default function RescuPawLink() {
       </nav>
 
       {/* ─── HERO — full bleed photo ─────────────── */}
-      <div style={{ position:"relative", height:"88vh", minHeight:560, overflow:"hidden", width:"100vw", marginLeft:"calc(-50vw + 50%)" }}>
+      <div style={{ position:"relative", height:"clamp(500px,88vh,900px)", minHeight:480, overflow:"hidden", width:"100vw", marginLeft:"calc(-50vw + 50%)" }}>
 
-        {/* Your photo — full bleed, animals on left side */}
+        {/* Your photo — full bleed */}
         <img
           src="https://i.imgur.com/VxvRJfd.png"
           alt="Dog and cat"
@@ -972,15 +1072,15 @@ export default function RescuPawLink() {
           style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center center", display:"block" }}
         />
 
-        {/* Left-to-right gradient — text on left, animals fully visible on right */}
-        <div style={{ position:"absolute", inset:0, background:"linear-gradient(to right, rgba(255,253,249,0.97) 0%, rgba(255,253,249,0.90) 28%, rgba(255,253,249,0.4) 52%, rgba(255,253,249,0) 70%)" }}/>
+        {/* Gradient — stronger on mobile so text is always readable */}
+        <div style={{ position:"absolute", inset:0, background:"linear-gradient(to right, rgba(255,253,249,0.98) 0%, rgba(255,253,249,0.95) 35%, rgba(255,253,249,0.6) 55%, rgba(255,253,249,0.1) 75%, rgba(255,253,249,0) 90%)" }}/>
 
         {/* Bottom fade into white */}
         <div style={{ position:"absolute", bottom:0, left:0, right:0, height:80, background:"linear-gradient(to top, #fff, transparent)" }}/>
 
         {/* Text — LEFT side, animals visible on right */}
         <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center" }}>
-          <div style={{ width:"100%", padding:"0 48px" }}>
+          <div style={{ width:"100%", padding:"0 clamp(16px,4vw,48px)" }}>
             <div style={{ maxWidth:500 }}>
 
               {/* Badge */}
@@ -1041,7 +1141,7 @@ export default function RescuPawLink() {
       </div>
 
       {/* ─── FEATURED ANIMALS ────────────────────── */}
-      <div style={{ padding:"80px 40px", background:"#fafaf8" }}>
+      <div style={{ padding:"clamp(40px,8vw,80px) clamp(16px,4vw,40px)", background:"#fafaf8" }}>
         <div style={{ maxWidth:1140, margin:"0 auto" }}>
 
           <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:44, flexWrap:"wrap", gap:12 }}>
@@ -1100,7 +1200,7 @@ export default function RescuPawLink() {
       </div>
 
       {/* ─── FOR SHELTERS ────────────────────────── */}
-      <div style={{ padding:"80px 40px", background:"var(--cream)" }}>
+      <div style={{ padding:"clamp(40px,8vw,80px) clamp(16px,4vw,40px)", background:"var(--cream)" }}>
         <div style={{ maxWidth:1140, margin:"0 auto" }}>
 
           {/* Header centered */}
@@ -1144,7 +1244,7 @@ export default function RescuPawLink() {
               </div>
               <div style={{ display:"flex", gap:16 }}>
                 <div style={{ textAlign:"center" }}>
-                  <div style={{ fontSize:20, fontWeight:800, color:"var(--sage)" }}>{shelters.reduce((s,sh)=>s+sh.availableSpace,0)}</div>
+                  <div style={{ fontSize:20, fontWeight:800, color:"var(--sage)" }}>{shelters.reduce((s,sh)=>s+(sh.availableSpace||sh.available_space||0),0)}</div>
                   <div style={{ fontSize:11, color:"#aaa" }}>Open Spaces</div>
                 </div>
                 <div style={{ textAlign:"center" }}>
@@ -1197,8 +1297,188 @@ export default function RescuPawLink() {
         </div>
       </div>
 
+      {/* ─── ADOPT & FOSTER PROMO ────────────────── */}
+      <div style={{ padding:"clamp(40px,8vw,80px) clamp(16px,4vw,40px)" }}>
+        <div style={{ maxWidth:1140, margin:"0 auto" }}>
+
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:48, alignItems:"center" }}>
+
+            {/* Left — adopt CTA */}
+            <div>
+              <div style={{ fontSize:11, fontWeight:800, color:"var(--sage)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:12 }}>Find Your New Best Friend</div>
+              <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(28px,4vw,46px)", fontWeight:900, color:"#1a1a1a", lineHeight:1.1, marginBottom:18, letterSpacing:"-1.5px" }}>
+                Give an Animal<br/>a Forever Home
+              </h2>
+              <p style={{ fontSize:16, color:"#555", lineHeight:1.75, marginBottom:28 }}>
+                Every animal on RescuPawLink is real, listed by a verified shelter, and needs you. Browse by location, species, or urgency — and apply directly to the shelter in seconds.
+              </p>
+              <div style={{ display:"flex", flexDirection:"column", gap:12, marginBottom:32 }}>
+                {[
+                  ["🏠", "Adopt", "Give an animal a permanent home. Apply directly — the shelter gets your info instantly."],
+                  ["💚", "Foster", "Not ready to commit? Foster an animal temporarily and save a life while they find their forever home."],
+                  ["📣", "Share", "Even sharing a listing helps. Every share puts an animal in front of more potential adopters."],
+                ].map(([icon, title, desc]) => (
+                  <div key={title} style={{ display:"flex", gap:14, alignItems:"flex-start", padding:"16px 18px", background:"var(--cream)", borderRadius:14, border:"1px solid var(--border)" }}>
+                    <span style={{ fontSize:24, flexShrink:0 }}>{icon}</span>
+                    <div>
+                      <div style={{ fontSize:15, fontWeight:700, color:"#1a1a1a", marginBottom:3 }}>{title}</div>
+                      <div style={{ fontSize:13, color:"#777", lineHeight:1.55 }}>{desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button onClick={()=>{ setPage("app"); setTab("adopt"); }}
+                style={{ padding:"15px 32px", border:"none", background:"var(--sage)", color:"#fff", fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:9, transition:"all 0.2s", boxShadow:"0 4px 20px rgba(90,138,96,0.3)" }}
+                onMouseEnter={e=>{ e.currentTarget.style.background="var(--sage-dark)"; e.currentTarget.style.transform="translateY(-2px)"; }}
+                onMouseLeave={e=>{ e.currentTarget.style.background="var(--sage)"; e.currentTarget.style.transform="translateY(0)"; }}>
+                Browse Animals Now →
+              </button>
+            </div>
+
+            {/* Right — featured urgent animals preview */}
+            <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+              <div style={{ fontSize:13, fontWeight:700, color:"#aaa", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:4 }}>Animals waiting right now</div>
+              {featuredAnimals.map((a,i) => (
+                <div key={a.id} onClick={()=>{ setPage("app"); setTab("adopt"); setSelectedAnimal(a); }}
+                  style={{ display:"flex", gap:14, alignItems:"center", background:"#fff", border:"1px solid #e8e2da", borderRadius:14, padding:"14px 16px", cursor:"pointer", transition:"all 0.18s" }}
+                  onMouseEnter={e=>{ e.currentTarget.style.boxShadow="0 4px 20px rgba(0,0,0,0.08)"; e.currentTarget.style.transform="translateX(4px)"; }}
+                  onMouseLeave={e=>{ e.currentTarget.style.boxShadow="none"; e.currentTarget.style.transform="translateX(0)"; }}>
+                  {/* Photo */}
+                  <div style={{ width:60, height:60, borderRadius:12, overflow:"hidden", background:a.status==="critical"?"#fee2e2":"#fef3c7", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                    {a.photos?.[0]
+                      ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                      : <span style={{ fontSize:30 }}>{a.species==="Dog"?"🐕":"🐈"}</span>
+                    }
+                  </div>
+                  {/* Info */}
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:3 }}>
+                      <span style={{ fontSize:15, fontWeight:700, color:"#1a1a1a" }}>{a.name}</span>
+                      <span style={{ fontSize:10, background:a.status==="critical"?"#fee2e2":"#fef3c7", color:a.status==="critical"?"#dc2626":"#d97706", padding:"2px 8px", borderRadius:10, fontWeight:700, textTransform:"uppercase" }}>
+                        {a.daysLeft}d left
+                      </span>
+                    </div>
+                    <div style={{ fontSize:13, color:"#aaa" }}>{a.breed} · {a.shelterName}</div>
+                    <div style={{ fontSize:12, color:"#bbb", marginTop:2 }}>📍 {a.shelterCity}, {a.shelterState}</div>
+                  </div>
+                  {/* Arrow */}
+                  <div style={{ color:"var(--sage)", fontSize:18, flexShrink:0 }}>›</div>
+                </div>
+              ))}
+              <button onClick={()=>{ setPage("app"); setTab("adopt"); }}
+                style={{ padding:"12px", border:"1.5px solid var(--sage)", background:"var(--sage-light)", color:"var(--sage-dark)", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:12, transition:"all 0.15s" }}
+                onMouseEnter={e=>e.currentTarget.style.background="var(--sage-mid)"}
+                onMouseLeave={e=>e.currentTarget.style.background="var(--sage-light)"}>
+                View All Animals →
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {/* ─── ADOPTABLE DOGS ──────────────────────── */}
+      <div style={{ padding:"clamp(40px,8vw,80px) clamp(16px,4vw,40px)", background:"#fff" }}>
+        <div style={{ maxWidth:1140, margin:"0 auto" }}>
+          <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:36, flexWrap:"wrap", gap:12 }}>
+            <div>
+              <div style={{ fontSize:11, fontWeight:800, color:"var(--sage)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:10 }}>Available Now</div>
+              <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(26px,4vw,40px)", fontWeight:900, color:"#1a1a1a", letterSpacing:"-1px", lineHeight:1.1 }}>
+                🐕 Dogs Looking for Homes
+              </h2>
+            </div>
+            <button onClick={()=>{ setPage("app"); setTab("adopt"); setFSpecies("Dog"); }}
+              style={{ padding:"11px 22px", border:"1.5px solid #1a1a1a", background:"transparent", color:"#1a1a1a", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:8, transition:"all 0.18s", whiteSpace:"nowrap" }}
+              onMouseEnter={e=>{ e.currentTarget.style.background="#1a1a1a"; e.currentTarget.style.color="#fff"; }}
+              onMouseLeave={e=>{ e.currentTarget.style.background="transparent"; e.currentTarget.style.color="#1a1a1a"; }}>
+              See All Dogs →
+            </button>
+          </div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))", gap:20 }}>
+            {animals.filter(a=>a.species==="Dog").slice(0,4).map((a,i)=>(
+              <div key={a.id} className="fade-up" style={{ animationDelay:`${i*0.07}s`, background:"#fff", borderRadius:16, overflow:"hidden", border:"1px solid #e8e2da", cursor:"pointer", transition:"all 0.22s" }}
+                onClick={()=>{ setPage("app"); setTab("adopt"); setSelectedAnimal(a); }}
+                onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 12px 36px rgba(0,0,0,0.09)"; }}
+                onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="none"; }}>
+                <div style={{ height:180, background:a.photos?.[0]?"transparent":"linear-gradient(135deg,#fef3c7,#fef9ef)", overflow:"hidden", position:"relative" }}>
+                  {a.photos?.[0]
+                    ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                    : <div style={{ height:"100%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:72 }}>🐕</div>
+                  }
+                  <div style={{ position:"absolute", top:10, left:10 }}>
+                    <span style={{ background:a.status==="critical"?"#dc2626":"#d97706", color:"#fff", fontSize:10, fontWeight:800, padding:"3px 9px", borderRadius:20, textTransform:"uppercase" }}>
+                      {a.daysLeft}d left
+                    </span>
+                  </div>
+                </div>
+                <div style={{ padding:"14px 16px" }}>
+                  <div style={{ fontSize:16, fontWeight:700, color:"#1a1a1a", marginBottom:3 }}>{a.name}</div>
+                  <div style={{ fontSize:13, color:"#aaa", marginBottom:8 }}>{a.breed} · {a.age}</div>
+                  <div style={{ fontSize:12, color:"#bbb", marginBottom:10 }}>📍 {a.shelterName} · {a.shelterCity}, {a.shelterState}</div>
+                  <button style={{ width:"100%", padding:"9px", border:"none", background:"var(--sage-light)", color:"var(--sage-dark)", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:8, transition:"background 0.15s" }}
+                    onMouseEnter={e=>e.currentTarget.style.background="var(--sage-mid)"}
+                    onMouseLeave={e=>e.currentTarget.style.background="var(--sage-light)"}>
+                    Apply to Adopt
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ─── ADOPTABLE CATS ──────────────────────── */}
+      <div style={{ padding:"0 clamp(16px,4vw,40px) clamp(40px,8vw,80px)", background:"#fff" }}>
+        <div style={{ maxWidth:1140, margin:"0 auto" }}>
+          <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:36, flexWrap:"wrap", gap:12 }}>
+            <div>
+              <div style={{ fontSize:11, fontWeight:800, color:"var(--sage)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:10 }}>Available Now</div>
+              <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(26px,4vw,40px)", fontWeight:900, color:"#1a1a1a", letterSpacing:"-1px", lineHeight:1.1 }}>
+                🐈 Cats Looking for Homes
+              </h2>
+            </div>
+            <button onClick={()=>{ setPage("app"); setTab("adopt"); setFSpecies("Cat"); }}
+              style={{ padding:"11px 22px", border:"1.5px solid #1a1a1a", background:"transparent", color:"#1a1a1a", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:8, transition:"all 0.18s", whiteSpace:"nowrap" }}
+              onMouseEnter={e=>{ e.currentTarget.style.background="#1a1a1a"; e.currentTarget.style.color="#fff"; }}
+              onMouseLeave={e=>{ e.currentTarget.style.background="transparent"; e.currentTarget.style.color="#1a1a1a"; }}>
+              See All Cats →
+            </button>
+          </div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))", gap:20 }}>
+            {animals.filter(a=>a.species==="Cat").slice(0,4).map((a,i)=>(
+              <div key={a.id} className="fade-up" style={{ animationDelay:`${i*0.07}s`, background:"#fff", borderRadius:16, overflow:"hidden", border:"1px solid #e8e2da", cursor:"pointer", transition:"all 0.22s" }}
+                onClick={()=>{ setPage("app"); setTab("adopt"); setSelectedAnimal(a); }}
+                onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 12px 36px rgba(0,0,0,0.09)"; }}
+                onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="none"; }}>
+                <div style={{ height:180, background:a.photos?.[0]?"transparent":"linear-gradient(135deg,#f0fdf4,#dcfce7)", overflow:"hidden", position:"relative" }}>
+                  {a.photos?.[0]
+                    ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                    : <div style={{ height:"100%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:72 }}>🐈</div>
+                  }
+                  <div style={{ position:"absolute", top:10, left:10 }}>
+                    <span style={{ background:a.status==="critical"?"#dc2626":"#d97706", color:"#fff", fontSize:10, fontWeight:800, padding:"3px 9px", borderRadius:20, textTransform:"uppercase" }}>
+                      {a.daysLeft}d left
+                    </span>
+                  </div>
+                </div>
+                <div style={{ padding:"14px 16px" }}>
+                  <div style={{ fontSize:16, fontWeight:700, color:"#1a1a1a", marginBottom:3 }}>{a.name}</div>
+                  <div style={{ fontSize:13, color:"#aaa", marginBottom:8 }}>{a.breed} · {a.age}</div>
+                  <div style={{ fontSize:12, color:"#bbb", marginBottom:10 }}>📍 {a.shelterName} · {a.shelterCity}, {a.shelterState}</div>
+                  <button style={{ width:"100%", padding:"9px", border:"none", background:"var(--sage-light)", color:"var(--sage-dark)", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:8, transition:"background 0.15s" }}
+                    onMouseEnter={e=>e.currentTarget.style.background="var(--sage-mid)"}
+                    onMouseLeave={e=>e.currentTarget.style.background="var(--sage-light)"}>
+                    Apply to Adopt
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* ─── SUCCESS STORIES ─────────────────────── */}
-      <div style={{ padding:"80px 40px", background:"#fafaf8" }}>
+      <div style={{ padding:"clamp(40px,8vw,80px) clamp(16px,4vw,40px)", background:"#fafaf8" }}>
         <div style={{ maxWidth:1140, margin:"0 auto" }}>
           <div style={{ textAlign:"center", marginBottom:52 }}>
             <div style={{ fontSize:11, fontWeight:800, color:"var(--sage)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:10 }}>Real Impact</div>
@@ -1220,7 +1500,7 @@ export default function RescuPawLink() {
       </div>
 
       {/* ─── HOW IT WORKS ────────────────────────── */}
-      <div style={{ padding:"80px 40px" }}>
+      <div style={{ padding:"clamp(40px,8vw,80px) clamp(16px,4vw,40px)" }}>
         <div style={{ maxWidth:860, margin:"0 auto", textAlign:"center" }}>
           <div style={{ fontSize:11, fontWeight:800, color:"var(--sage)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:10 }}>Simple by Design</div>
           <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(28px,4vw,44px)", fontWeight:800, color:"#1a1a1a", marginBottom:12, letterSpacing:"-1px" }}>How It Works</h2>
@@ -1246,7 +1526,7 @@ export default function RescuPawLink() {
       </div>
 
       {/* ─── FINAL CTA ───────────────────────────── */}
-      <div style={{ margin:"0 40px 80px", borderRadius:20, background:"linear-gradient(135deg, var(--sage-dark) 0%, var(--sage) 100%)", padding:"72px 56px", textAlign:"center", maxWidth:1060, marginLeft:"auto", marginRight:"auto" }}>
+      <div style={{ margin:"0 40px 80px", borderRadius:20, background:"linear-gradient(135deg, var(--sage-dark) 0%, var(--sage) 100%)", padding:"clamp(36px,6vw,72px) clamp(20px,5vw,56px)", textAlign:"center", maxWidth:1060, marginLeft:"auto", marginRight:"auto" }}>
         <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(28px,4vw,48px)", fontWeight:900, color:"#fff", marginBottom:14, lineHeight:1.1, letterSpacing:"-1px" }}>
           Together, we save more lives.
         </h2>
@@ -1270,7 +1550,7 @@ export default function RescuPawLink() {
       </div>
 
       {/* ─── FOOTER ──────────────────────────────── */}
-      <footer style={{ borderTop:"1px solid #f0ede8", padding:"44px 40px" }}>
+      <footer style={{ borderTop:"1px solid #f0ede8", padding:"clamp(24px,4vw,44px) clamp(16px,4vw,40px)" }}>
         <div style={{ maxWidth:1140, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:20 }}>
           <div>
             <div style={{ fontFamily:"'Inter',sans-serif", fontSize:17, fontWeight:800, color:"#1a1a1a", letterSpacing:"-0.3px", marginBottom:5 }}>
@@ -1293,7 +1573,8 @@ export default function RescuPawLink() {
               </button>
             ))}
           </div>
-          <div style={{ fontSize:12, color:"#ccc" }}>© 2025 RescuPawLink · Every animal deserves a second chance</div>
+          <div style={{ fontSize:12, color:"#ccc" }}>© 2026 RescuPawLink Network · Every animal deserves a second chance · All rights reserved</div>
+          <div style={{ fontSize:11, color:"#ddd", marginTop:6 }}>RescuPawLink is not responsible for the actions of individual shelters or rescues. All adoption inquiries are handled directly between users and organizations. By using this site you agree to our Terms of Use and Privacy Policy.</div>
         </div>
       </footer>
 
@@ -1368,7 +1649,7 @@ export default function RescuPawLink() {
 
       {/* Header */}
       <header style={{ background:"var(--warm-white)", borderBottom:"1px solid var(--border)", position:"sticky", top:0, zIndex:100, boxShadow:"var(--shadow-sm)" }}>
-        <div style={{ maxWidth:1160, margin:"0 auto", padding:"0 24px", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", gap:12 }}>
+        <div style={{ maxWidth:1160, margin:"0 auto", padding:"0 clamp(12px,3vw,24px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", gap:8 }}>
           <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", flexShrink:0 }}>
             <div style={{ fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"var(--slate)", letterSpacing:"-0.5px" }}>
               <span style={{ color:"var(--sage)" }}>Rescu</span>PawLink
@@ -1574,8 +1855,8 @@ export default function RescuPawLink() {
                 {[
                   { label:"Shelters Online", value:shelters.length, color:"var(--sage)", icon:"🏠" },
                   { label:"Need Help Now",   value:shelters.filter(s=>s.needsHelp).length, color:"#dc2626", icon:"⚠️" },
-                  { label:"Have Open Space", value:shelters.filter(s=>s.availableSpace>0).length, color:"#16a34a", icon:"✅" },
-                  { label:"Total Open Spots", value:shelters.reduce((sum,s)=>sum+s.availableSpace,0), color:"#2563eb", icon:"📊" },
+                  { label:"Have Open Space", value:shelters.filter(s=>(s.availableSpace||s.available_space||0)>0).length, color:"#16a34a", icon:"✅" },
+                  { label:"Total Open Spots", value:shelters.reduce((sum,s)=>sum+(s.availableSpace||s.available_space||0),0), color:"#2563eb", icon:"📊" },
                 ].map(st=>(
                   <div key={st.label} className="card" style={{ padding:"14px 18px", display:"flex", alignItems:"center", gap:12 }}>
                     <span style={{ fontSize:22 }}>{st.icon}</span>
@@ -1746,7 +2027,7 @@ export default function RescuPawLink() {
               {/* Step 1 */}
               {postStep === 1 && (
                 <div className="card fade-in" style={{ padding:28 }}>
-                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:15, marginBottom:15 }}>
+                  <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))", gap:15, marginBottom:15 }}>
                     <div><label className="label">Name *</label><input className="input" required placeholder="e.g. Buddy" value={postF.name} onChange={e=>setPostF(p=>({...p,name:e.target.value}))} /></div>
                     <div><label className="label">Species *</label>
                       <select className="select" value={postF.species} onChange={e=>setPostF(p=>({...p,species:e.target.value}))}>
@@ -2032,7 +2313,7 @@ export default function RescuPawLink() {
                 )}
               </div>
               <form onSubmit={submitCap}>
-                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:18 }}>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))", gap:14, marginBottom:18 }}>
                   <div><label className="label">Total Capacity</label><input className="input" type="number" min={0} placeholder={userShelter?.totalSpace||"e.g. 100"} value={capF.total} onChange={e=>setCapF(p=>({...p,total:e.target.value}))} /></div>
                   <div><label className="label">Available Right Now</label><input className="input" type="number" min={0} placeholder={userShelter?.availableSpace||"e.g. 30"} value={capF.available} onChange={e=>setCapF(p=>({...p,available:e.target.value}))} /></div>
                 </div>
@@ -2127,8 +2408,8 @@ export default function RescuPawLink() {
         <div className="modal-backdrop" onClick={()=>setSelectedAnimal(null)}>
           <div className="modal" style={{ width:"100%", maxWidth:620 }} onClick={e=>e.stopPropagation()}>
             {/* Photo hero */}
-            <div style={{ height:260, background:selectedAnimal.photos?.[0]?"transparent":`linear-gradient(135deg,${selectedAnimal.status==="critical"?"#fef2f2,#fee2e2":"#fffbeb,#fef3c7"})`, overflow:"hidden", borderRadius:"20px 20px 0 0", position:"relative" }}>
-              {selectedAnimal.photos?.[0] ? <img src={selectedAnimal.photos[0]} alt={selectedAnimal.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> : <div style={{ height:"100%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:100 }}>{selectedAnimal.species==="Dog"?"🐕":selectedAnimal.species==="Cat"?"🐈":"🐾"}</div>}
+            <div style={{ height:340, background:selectedAnimal.photos?.[0]?"transparent":`linear-gradient(135deg,${selectedAnimal.status==="critical"?"#fef2f2,#fee2e2":"#fffbeb,#fef3c7"})`, overflow:"hidden", borderRadius:"20px 20px 0 0", position:"relative" }}>
+              {selectedAnimal.photos?.[0] ? <img src={selectedAnimal.photos[0]} alt={selectedAnimal.name} style={{ width:"100%", height:"100%", objectFit:"contain", objectPosition:"center", background:"#f5f5f3" }}/> : <div style={{ height:"100%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:100 }}>{selectedAnimal.species==="Dog"?"🐕":selectedAnimal.species==="Cat"?"🐈":"🐾"}</div>}
               <button onClick={()=>setSelectedAnimal(null)} style={{ position:"absolute", top:14, right:14, background:"rgba(0,0,0,0.45)", border:"none", borderRadius:"50%", width:34, height:34, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", color:"#fff" }}>{I.x}</button>
               <div style={{ position:"absolute", top:14, left:14 }}><span className={`badge ${stateBadgeColor(selectedAnimal.status)}`}>{selectedAnimal.status==="critical"?"⚠ Critical":"⏱ Urgent"}</span></div>
               <div style={{ position:"absolute", bottom:14, right:14, background:"rgba(0,0,0,0.52)", color:"#fff", borderRadius:9, padding:"5px 13px", fontSize:13, fontWeight:700 }}>⏱ {selectedAnimal.daysLeft} day{selectedAnimal.daysLeft!==1?"s":""} left</div>
@@ -2175,7 +2456,7 @@ export default function RescuPawLink() {
                 {selectedAnimal.id_num && <div style={{ fontSize:12, color:"var(--slate-light)", marginTop:8 }}>Animal ID: {selectedAnimal.id_num}</div>}
               </div>
 
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:10 }}>
                 <button className="btn btn-primary btn-md" style={{ padding:13 }} onClick={()=>{setApplyTarget(selectedAnimal);setApplyF(p=>({...p,type:"adopt"}));}}>🏠 Apply to Adopt</button>
                 <button className="btn btn-secondary btn-md" style={{ padding:13 }} onClick={()=>{setApplyTarget(selectedAnimal);setApplyF(p=>({...p,type:"foster"}));}}>💚 Offer to Foster</button>
               </div>
