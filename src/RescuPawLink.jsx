@@ -1019,40 +1019,44 @@ export default function RescuPawLink() {
 
       {/* ─── NAV ─────────────────────────────────── */}
       <nav style={{ background:"#fff", borderBottom:"1px solid #f0ede8", position:"sticky", top:0, zIndex:100 }}>
-        <div style={{ maxWidth:1140, margin:"0 auto", padding:"0 clamp(16px,4vw,40px)", height:68, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+        <div style={{ maxWidth:1140, margin:"0 auto", padding:"0 clamp(16px,4vw,40px)", height:60, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
 
           {/* Wordmark */}
-          <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", padding:0 }}>
-            <div style={{ fontFamily:"'Inter',sans-serif", fontSize:20, fontWeight:800, letterSpacing:"-0.5px" }}>
+          <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0 }}>
+            <div style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(16px,4vw,20px)", fontWeight:800, letterSpacing:"-0.5px" }}>
               <span style={{ color:"var(--sage)" }}>Rescu</span>
               <span style={{ color:"#1a1a1a" }}>PawLink</span>
             </div>
           </button>
 
-          {/* Nav links */}
+          {/* Nav links — hidden on mobile */}
           <div style={{ display:"flex", alignItems:"center", gap:4 }}>
-            {[
-              ["Find Animals",    ()=>{ setPage("app"); setTab("adopt"); }],
-              ["Shelter Network", ()=>{ setPage("app"); setTab("network"); }],
-            ].map(([label, fn]) => (
-              <button key={label} onClick={fn}
-                style={{ padding:"8px 16px", border:"none", background:"transparent", color:"#666", fontSize:14, fontWeight:500, cursor:"pointer", fontFamily:"inherit", borderRadius:8, transition:"color 0.15s" }}
-                onMouseEnter={e=>e.currentTarget.style.color="#1a1a1a"}
-                onMouseLeave={e=>e.currentTarget.style.color="#666"}>
-                {label}
-              </button>
-            ))}
-            <div style={{ width:1, height:18, background:"#e5e7eb", margin:"0 8px" }}/>
+            <button onClick={()=>{ setPage("app"); setTab("adopt"); }}
+              className="hide-mobile"
+              style={{ padding:"8px 14px", border:"none", background:"transparent", color:"#666", fontSize:13, fontWeight:500, cursor:"pointer", fontFamily:"inherit", borderRadius:8 }}
+              onMouseEnter={e=>e.currentTarget.style.color="#1a1a1a"}
+              onMouseLeave={e=>e.currentTarget.style.color="#666"}>
+              Find Animals
+            </button>
+            <button onClick={()=>{ setPage("app"); setTab("network"); }}
+              className="hide-mobile"
+              style={{ padding:"8px 14px", border:"none", background:"transparent", color:"#666", fontSize:13, fontWeight:500, cursor:"pointer", fontFamily:"inherit", borderRadius:8 }}
+              onMouseEnter={e=>e.currentTarget.style.color="#1a1a1a"}
+              onMouseLeave={e=>e.currentTarget.style.color="#666"}>
+              Shelter Network
+            </button>
+            <div className="hide-mobile" style={{ width:1, height:18, background:"#e5e7eb", margin:"0 6px" }}/>
             <button onClick={()=>{ setAuthMode("login"); setPage("login"); }}
-              style={{ padding:"8px 16px", border:"none", background:"transparent", color:"#666", fontSize:14, fontWeight:500, cursor:"pointer", fontFamily:"inherit", borderRadius:8 }}
+              className="hide-mobile"
+              style={{ padding:"8px 14px", border:"none", background:"transparent", color:"#666", fontSize:13, fontWeight:500, cursor:"pointer", fontFamily:"inherit", borderRadius:8 }}
               onMouseEnter={e=>e.currentTarget.style.color="#1a1a1a"}
               onMouseLeave={e=>e.currentTarget.style.color="#666"}>
               Sign In
             </button>
             <button onClick={()=>{ setAuthMode("register"); setPage("login"); }}
-              style={{ padding:"10px 22px", border:"none", background:"var(--sage)", color:"#fff", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:8, marginLeft:4, transition:"all 0.18s" }}
-              onMouseEnter={e=>{ e.currentTarget.style.background="var(--sage-dark)"; e.currentTarget.style.transform="translateY(-1px)"; }}
-              onMouseLeave={e=>{ e.currentTarget.style.background="var(--sage)"; e.currentTarget.style.transform="translateY(0)"; }}>
+              style={{ padding:"9px clamp(12px,3vw,20px)", border:"none", background:"var(--sage)", color:"#fff", fontSize:"clamp(12px,3vw,14px)", fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:8, marginLeft:4, transition:"all 0.18s", whiteSpace:"nowrap" }}
+              onMouseEnter={e=>{ e.currentTarget.style.background="var(--sage-dark)"; }}
+              onMouseLeave={e=>{ e.currentTarget.style.background="var(--sage)"; }}>
               Register Free
             </button>
           </div>
@@ -1070,8 +1074,8 @@ export default function RescuPawLink() {
           style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"60% center", display:"block" }}
         />
 
-        {/* Gradient — minimal fade on left for text, animals fully visible */}
-        <div style={{ position:"absolute", inset:0, background:"linear-gradient(to right, rgba(255,253,249,0.95) 0%, rgba(255,253,249,0.88) 18%, rgba(255,253,249,0.35) 34%, rgba(255,253,249,0) 48%)" }}/>
+        {/* Gradient — stronger on mobile so text is always readable */}
+        <div style={{ position:"absolute", inset:0, background:"linear-gradient(to right, rgba(255,253,249,0.98) 0%, rgba(255,253,249,0.95) 30%, rgba(255,253,249,0.7) 50%, rgba(255,253,249,0.2) 68%, rgba(255,253,249,0) 82%)" }}/>
 
         {/* Bottom fade into white */}
         <div style={{ position:"absolute", bottom:0, left:0, right:0, height:80, background:"linear-gradient(to top, #fff, transparent)" }}/>
@@ -1082,39 +1086,39 @@ export default function RescuPawLink() {
             <div style={{ maxWidth:500 }}>
 
               {/* Headline */}
-              <h1 className="fade-up" style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(42px,5.5vw,74px)", fontWeight:900, lineHeight:1.0, color:"#1a1a1a", marginBottom:20, letterSpacing:"-2.5px" }}>
+              <h1 className="fade-up" style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(30px,5.5vw,74px)", fontWeight:900, lineHeight:1.0, color:"#1a1a1a", marginBottom:"clamp(12px,3vw,20px)", letterSpacing:"clamp(-1px,-0.3vw,-2.5px)" }}>
                 CONNECTING<br/>
                 SHELTERS.<br/>
                 <span style={{ color:"var(--sage)" }}>SAVING LIVES.</span>
               </h1>
 
-              {/* Subtext */}
-              <p className="fade-up-2" style={{ fontSize:17, color:"#555", lineHeight:1.75, marginBottom:32, maxWidth:420 }}>
+              {/* Subtext — hidden on small mobile to reduce clutter */}
+              <p className="fade-up-2" style={{ fontSize:"clamp(13px,2vw,17px)", color:"#555", lineHeight:1.65, marginBottom:"clamp(20px,3vw,32px)", maxWidth:420 }}>
                 Share capacity, coordinate transfers, and get animals placed — before time runs out. Free for every shelter and rescue.
               </p>
 
               {/* CTAs */}
-              <div className="fade-up-3" style={{ display:"flex", gap:12, flexWrap:"wrap", marginBottom:44 }}>
+              <div className="fade-up-3" style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:"clamp(20px,4vw,44px)" }}>
                 <button onClick={()=>{ setPage("app"); setTab("adopt"); }}
-                  style={{ padding:"15px 30px", borderRadius:9, border:"none", background:"var(--sage)", color:"#fff", fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all 0.2s", boxShadow:"0 4px 20px rgba(107,143,113,0.35)" }}
-                  onMouseEnter={e=>{ e.currentTarget.style.background="var(--sage-dark)"; e.currentTarget.style.transform="translateY(-2px)"; }}
-                  onMouseLeave={e=>{ e.currentTarget.style.background="var(--sage)"; e.currentTarget.style.transform="translateY(0)"; }}>
+                  style={{ padding:"clamp(11px,2vw,15px) clamp(18px,3vw,30px)", borderRadius:9, border:"none", background:"var(--sage)", color:"#fff", fontSize:"clamp(13px,2vw,15px)", fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all 0.2s", boxShadow:"0 4px 20px rgba(107,143,113,0.35)" }}
+                  onMouseEnter={e=>{ e.currentTarget.style.background="var(--sage-dark)"; }}
+                  onMouseLeave={e=>{ e.currentTarget.style.background="var(--sage)"; }}>
                   Find Animals Near You
                 </button>
                 <button onClick={()=>{ setAuthMode("register"); setPage("login"); }}
-                  style={{ padding:"15px 30px", borderRadius:9, border:"1.5px solid #ccc", background:"rgba(255,255,255,0.85)", color:"#1a1a1a", fontSize:15, fontWeight:600, cursor:"pointer", fontFamily:"inherit", transition:"all 0.2s", backdropFilter:"blur(4px)" }}
-                  onMouseEnter={e=>{ e.currentTarget.style.borderColor="#1a1a1a"; e.currentTarget.style.transform="translateY(-2px)"; }}
-                  onMouseLeave={e=>{ e.currentTarget.style.borderColor="#ccc"; e.currentTarget.style.transform="translateY(0)"; }}>
-                  Register Your Shelter →
+                  style={{ padding:"clamp(11px,2vw,15px) clamp(18px,3vw,30px)", borderRadius:9, border:"1.5px solid #ccc", background:"rgba(255,255,255,0.85)", color:"#1a1a1a", fontSize:"clamp(13px,2vw,15px)", fontWeight:600, cursor:"pointer", fontFamily:"inherit", transition:"all 0.2s", backdropFilter:"blur(4px)" }}
+                  onMouseEnter={e=>{ e.currentTarget.style.borderColor="#1a1a1a"; }}
+                  onMouseLeave={e=>{ e.currentTarget.style.borderColor="#ccc"; }}>
+                  Register →
                 </button>
               </div>
 
               {/* Stats */}
-              <div className="fade-up-3" style={{ display:"flex", gap:28, paddingTop:24, borderTop:"1px solid rgba(0,0,0,0.1)" }}>
-                {[["12,400+","Animals Connected"],["400+","Partner Shelters"],["38","States Covered"]].map(([n,l])=>(
+              <div className="fade-up-3" style={{ display:"flex", gap:"clamp(16px,4vw,28px)", paddingTop:"clamp(14px,2vw,24px)", borderTop:"1px solid rgba(0,0,0,0.1)" }}>
+                {[["12,400+","Animals"],["400+","Shelters"],["38","States"]].map(([n,l])=>(
                   <div key={l}>
-                    <div style={{ fontFamily:"'Inter',sans-serif", fontSize:22, fontWeight:800, color:"#1a1a1a", lineHeight:1 }}>{n}</div>
-                    <div style={{ fontSize:11, color:"#888", marginTop:4, letterSpacing:"0.02em" }}>{l}</div>
+                    <div style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(16px,3vw,22px)", fontWeight:800, color:"#1a1a1a", lineHeight:1 }}>{n}</div>
+                    <div style={{ fontSize:"clamp(10px,1.5vw,11px)", color:"#888", marginTop:3 }}>{l}</div>
                   </div>
                 ))}
               </div>
@@ -1123,8 +1127,8 @@ export default function RescuPawLink() {
           </div>
         </div>
 
-        {/* Live alert pill — bottom right */}
-        <div style={{ position:"absolute", bottom:28, right:36, background:"rgba(255,255,255,0.95)", backdropFilter:"blur(12px)", borderRadius:12, padding:"11px 18px", boxShadow:"0 4px 20px rgba(0,0,0,0.1)", border:"1px solid #f0ede8", display:"flex", alignItems:"center", gap:9 }}>
+        {/* Live alert pill — bottom right, hidden on mobile */}
+        <div className="hide-mobile" style={{ position:"absolute", bottom:28, right:36, background:"rgba(255,255,255,0.95)", backdropFilter:"blur(12px)", borderRadius:12, padding:"11px 18px", boxShadow:"0 4px 20px rgba(0,0,0,0.1)", border:"1px solid #f0ede8", display:"flex", alignItems:"center", gap:9 }}>
           <div style={{ width:8, height:8, borderRadius:"50%", background:"#dc2626", flexShrink:0, animation:"pulse 1.5s ease-in-out infinite" }}/>
           <div>
             <div style={{ fontSize:13, fontWeight:700, color:"#1a1a1a" }}>{animals.filter(a=>a.status==="critical").length || 6} animals critical right now</div>
@@ -2505,7 +2509,7 @@ export default function RescuPawLink() {
 
             {/* What happens next */}
             <div style={{ background:"var(--cream)", borderRadius:10, padding:"12px 16px", marginBottom:18, fontSize:13, color:"var(--muted)", lineHeight:1.6 }}>
-              📬 Your inquiry will be emailed directly to <strong>{applyTarget.shelterName}</strong> at <strong>{applyTarget.shelterEmail}</strong>. They'll contact you within 24–48 hours.
+              📬 Your inquiry will be sent directly to <strong>{applyTarget.shelterName}</strong>. They'll contact you as soon as they can.
             </div>
 
             <div style={{ display:"flex", gap:10 }}>
@@ -2559,7 +2563,7 @@ export default function RescuPawLink() {
               ))}
             </div>
             <div style={{ background:"var(--cream)", borderRadius:10, padding:"12px 16px", marginBottom:18, fontSize:13, color:"var(--muted)", lineHeight:1.6 }}>
-              📬 Your request will be emailed to <strong>{claimTarget.name}</strong> at <strong>{claimTarget.email}</strong>. They'll respond within 24 hours.
+              📬 Your request will be sent directly to <strong>{claimTarget.name}</strong>. They'll respond as soon as they can.
             </div>
             <div style={{ display:"flex", gap:10 }}>
               <button className="btn btn-primary btn-md" style={{ flex:1, padding:13 }} onClick={async ()=>{
