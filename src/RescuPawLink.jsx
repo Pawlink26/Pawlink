@@ -1067,11 +1067,11 @@ export default function RescuPawLink() {
           src="https://i.imgur.com/VxvRJfd.png"
           alt="Dog and cat"
           onError={e=>{ e.target.style.display="none"; }}
-          style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"45% center", display:"block" }}
+          style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"60% center", display:"block" }}
         />
 
-        {/* Gradient — only fades far left edge for text readability, animals fully visible */}
-        <div style={{ position:"absolute", inset:0, background:"linear-gradient(to right, rgba(255,253,249,0.97) 0%, rgba(255,253,249,0.92) 20%, rgba(255,253,249,0.5) 38%, rgba(255,253,249,0) 52%)" }}/>
+        {/* Gradient — minimal fade on left for text, animals fully visible */}
+        <div style={{ position:"absolute", inset:0, background:"linear-gradient(to right, rgba(255,253,249,0.95) 0%, rgba(255,253,249,0.88) 18%, rgba(255,253,249,0.35) 34%, rgba(255,253,249,0) 48%)" }}/>
 
         {/* Bottom fade into white */}
         <div style={{ position:"absolute", bottom:0, left:0, right:0, height:80, background:"linear-gradient(to top, #fff, transparent)" }}/>
@@ -1081,13 +1081,8 @@ export default function RescuPawLink() {
           <div style={{ width:"100%", padding:"0 clamp(16px,4vw,48px)" }}>
             <div style={{ maxWidth:500 }}>
 
-              {/* Badge */}
-              <div className="fade-up" style={{ display:"inline-flex", alignItems:"center", gap:7, background:"var(--sage-light)", border:"1px solid #c7dfc9", borderRadius:20, padding:"6px 16px", fontSize:11, fontWeight:700, color:"var(--sage-dark)", marginBottom:28, letterSpacing:"0.08em", textTransform:"uppercase" }}>
-                Free · Shelter-to-Shelter Network
-              </div>
-
               {/* Headline */}
-              <h1 className="fade-up-1" style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(42px,5.5vw,74px)", fontWeight:900, lineHeight:1.0, color:"#1a1a1a", marginBottom:20, letterSpacing:"-2.5px" }}>
+              <h1 className="fade-up" style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(42px,5.5vw,74px)", fontWeight:900, lineHeight:1.0, color:"#1a1a1a", marginBottom:20, letterSpacing:"-2.5px" }}>
                 CONNECTING<br/>
                 SHELTERS.<br/>
                 <span style={{ color:"var(--sage)" }}>SAVING LIVES.</span>
@@ -1413,7 +1408,8 @@ export default function RescuPawLink() {
                   <div style={{ fontSize:16, fontWeight:700, color:"#1a1a1a", marginBottom:3 }}>{a.name}</div>
                   <div style={{ fontSize:13, color:"#aaa", marginBottom:8 }}>{a.breed} · {a.age}</div>
                   <div style={{ fontSize:12, color:"#bbb", marginBottom:10 }}>📍 {a.shelterName} · {a.shelterCity}, {a.shelterState}</div>
-                  <button style={{ width:"100%", padding:"9px", border:"none", background:"var(--sage-light)", color:"var(--sage-dark)", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:8, transition:"background 0.15s" }}
+                  <button onClick={e=>{ e.stopPropagation(); setPage("app"); setTab("adopt"); setSelectedAnimal(a); setApplyTarget(a); setApplyF(p=>({...p,type:"adopt"})); }}
+                    style={{ width:"100%", padding:"9px", border:"none", background:"var(--sage-light)", color:"var(--sage-dark)", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:8, transition:"background 0.15s" }}
                     onMouseEnter={e=>e.currentTarget.style.background="var(--sage-mid)"}
                     onMouseLeave={e=>e.currentTarget.style.background="var(--sage-light)"}>
                     Apply to Adopt
@@ -1463,7 +1459,8 @@ export default function RescuPawLink() {
                   <div style={{ fontSize:16, fontWeight:700, color:"#1a1a1a", marginBottom:3 }}>{a.name}</div>
                   <div style={{ fontSize:13, color:"#aaa", marginBottom:8 }}>{a.breed} · {a.age}</div>
                   <div style={{ fontSize:12, color:"#bbb", marginBottom:10 }}>📍 {a.shelterName} · {a.shelterCity}, {a.shelterState}</div>
-                  <button style={{ width:"100%", padding:"9px", border:"none", background:"var(--sage-light)", color:"var(--sage-dark)", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:8, transition:"background 0.15s" }}
+                  <button onClick={e=>{ e.stopPropagation(); setPage("app"); setTab("adopt"); setSelectedAnimal(a); setApplyTarget(a); setApplyF(p=>({...p,type:"adopt"})); }}
+                    style={{ width:"100%", padding:"9px", border:"none", background:"var(--sage-light)", color:"var(--sage-dark)", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:8, transition:"background 0.15s" }}
                     onMouseEnter={e=>e.currentTarget.style.background="var(--sage-mid)"}
                     onMouseLeave={e=>e.currentTarget.style.background="var(--sage-light)"}>
                     Apply to Adopt
