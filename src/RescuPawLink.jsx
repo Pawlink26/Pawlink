@@ -909,26 +909,26 @@ export default function RescuPawLink() {
       </nav>
 
       {/* ─── HERO — full bleed photo ─────────────── */}
-      <div style={{ position:"relative", height:"88vh", minHeight:560, overflow:"hidden" }}>
+      <div style={{ position:"relative", height:"88vh", minHeight:560, overflow:"hidden", width:"100vw", marginLeft:"calc(-50vw + 50%)" }}>
 
-        {/* Your photo — full bleed */}
+        {/* Your photo — full bleed, animals on left side */}
         <img
           src="https://i.imgur.com/VxvRJfd.png"
           alt="Dog and cat"
           onError={e=>{ e.target.style.display="none"; }}
-          style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center center", display:"block" }}
+          style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"left center", display:"block" }}
         />
 
-        {/* Left-to-right gradient so text is readable over photo */}
-        <div style={{ position:"absolute", inset:0, background:"linear-gradient(to right, rgba(255,253,249,0.96) 0%, rgba(255,253,249,0.85) 35%, rgba(255,253,249,0.3) 60%, rgba(255,253,249,0) 80%)" }}/>
+        {/* Right-to-left gradient — animals show on left, text readable on right */}
+        <div style={{ position:"absolute", inset:0, background:"linear-gradient(to left, rgba(255,253,249,0.97) 0%, rgba(255,253,249,0.92) 30%, rgba(255,253,249,0.5) 55%, rgba(255,253,249,0) 75%)" }}/>
 
         {/* Bottom fade into white */}
         <div style={{ position:"absolute", bottom:0, left:0, right:0, height:80, background:"linear-gradient(to top, #fff, transparent)" }}/>
 
-        {/* Text — left side */}
+        {/* Text — RIGHT side */}
         <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center" }}>
-          <div style={{ maxWidth:1140, margin:"0 auto", padding:"0 40px", width:"100%" }}>
-            <div style={{ maxWidth:540 }}>
+          <div style={{ width:"100%", padding:"0 40px" }}>
+            <div style={{ maxWidth:520, marginLeft:"auto" }}>
 
               {/* Badge */}
               <div className="fade-up" style={{ display:"inline-flex", alignItems:"center", gap:7, background:"var(--sage-light)", border:"1px solid #c7dfc9", borderRadius:20, padding:"6px 16px", fontSize:11, fontWeight:700, color:"var(--sage-dark)", marginBottom:28, letterSpacing:"0.08em", textTransform:"uppercase" }}>
@@ -1036,7 +1036,7 @@ export default function RescuPawLink() {
                   <div style={{ fontSize:13, color:"#aaa", marginBottom:10 }}>{a.breed}</div>
                   <p style={{ fontSize:14, color:"#444", lineHeight:1.6, marginBottom:14, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{a.description}</p>
                   <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", paddingTop:12, borderTop:"1px solid #f5f5f3" }}>
-                    <span style={{ fontSize:12, color:"#aaa" }}>📍 {a.shelterCity}, {a.shelterState}</span>
+                    <span style={{ fontSize:12, color:"#aaa" }}>📍 {a.shelterName} · {a.shelterCity}, {a.shelterState}</span>
                     <span style={{ fontSize:13, fontWeight:700, color:"var(--sage)" }}>Learn More →</span>
                   </div>
                 </div>
@@ -1074,9 +1074,9 @@ export default function RescuPawLink() {
                 ))}
               </div>
               <button onClick={()=>{ setAuthMode("register"); setPage("login"); }}
-                style={{ padding:"15px 30px", border:"none", background:"#1a1a1a", color:"#fff", fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:9, transition:"all 0.2s" }}
-                onMouseEnter={e=>{ e.currentTarget.style.background="var(--sage)"; e.currentTarget.style.transform="translateY(-2px)"; }}
-                onMouseLeave={e=>{ e.currentTarget.style.background="#1a1a1a"; e.currentTarget.style.transform="translateY(0)"; }}>
+                style={{ padding:"15px 30px", border:"none", background:"var(--sage)", color:"#fff", fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:9, transition:"all 0.2s" }}
+                onMouseEnter={e=>{ e.currentTarget.style.background="var(--sage-dark)"; e.currentTarget.style.transform="translateY(-2px)"; }}
+                onMouseLeave={e=>{ e.currentTarget.style.background="var(--sage)"; e.currentTarget.style.transform="translateY(0)"; }}>
                 Register Free — 2 Minutes
               </button>
             </div>
@@ -1215,7 +1215,7 @@ export default function RescuPawLink() {
               </button>
             ))}
           </div>
-          <div style={{ fontSize:12, color:"#ccc" }}>© 2025 RescuPawLink · Built to save lives</div>
+          <div style={{ fontSize:12, color:"#ccc" }}>© 2025 RescuPawLink · Every animal deserves a second chance</div>
         </div>
       </footer>
 
@@ -1443,7 +1443,10 @@ export default function RescuPawLink() {
                       <div style={{ fontSize:13, color:"var(--slate-mid)", marginBottom:9 }}>{a.breed}</div>
                       <p style={{ fontSize:13, color:"var(--slate)", lineHeight:1.55, marginBottom:13, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{a.description}</p>
                       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:6 }}>
-                        <span style={{ fontSize:12, color:"var(--slate-light)", display:"flex", alignItems:"center", gap:4 }}>{I.pin} {a.shelterCity}, {a.shelterState}</span>
+                        <div>
+                          <div style={{ fontSize:13, fontWeight:600, color:"var(--text)", marginBottom:2 }}>{a.shelterName}</div>
+                          <span style={{ fontSize:12, color:"var(--slate-light)", display:"flex", alignItems:"center", gap:4 }}>{I.pin} {a.shelterCity}, {a.shelterState}</span>
+                        </div>
                         <div style={{ display:"flex", gap:5 }}>
                           {a.vaccinated && <span className="trait-pill" style={{ background:"var(--sage-light)", color:"var(--sage-dark)" }}>Vacc'd</span>}
                           {a.neutered   && <span className="trait-pill" style={{ background:"#eff6ff", color:"#2563eb" }}>Altered</span>}
@@ -1782,30 +1785,30 @@ export default function RescuPawLink() {
 
             {/* ── Welcome / Onboarding banner for new shelters ── */}
             {(!userShelter?.totalSpace || userShelter.totalSpace === 0) && (
-              <div style={{ background:"linear-gradient(135deg,#2d4a32,#1a2e1d)", borderRadius:18, padding:"28px 32px", marginBottom:28, color:"#fff", position:"relative", overflow:"hidden" }}>
+              <div style={{ background:"var(--sage-light)", border:"1px solid var(--sage-mid)", borderRadius:18, padding:"28px 32px", marginBottom:28, color:"var(--text)", position:"relative", overflow:"hidden" }}>
                 <div style={{ position:"absolute", right:-20, top:-20, fontSize:120, opacity:0.06 }}>🐾</div>
-                <div style={{ fontSize:12, fontWeight:700, color:"rgba(255,255,255,0.5)", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:8 }}>Welcome to RescuPawLink</div>
-                <h2 style={{ fontSize:24, color:"#fff", marginBottom:8 }}>You're in! Let's set up your shelter profile.</h2>
-                <p style={{ color:"rgba(255,255,255,0.75)", fontSize:14, lineHeight:1.6, marginBottom:20, maxWidth:520 }}>
+                <div style={{ fontSize:12, fontWeight:700, color:"var(--sage-dark)", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:8 }}>Welcome to RescuPawLink</div>
+                <h2 style={{ fontSize:24, color:"var(--text)", marginBottom:8 }}>You're in! Let's set up your shelter profile.</h2>
+                <p style={{ color:"var(--muted)", fontSize:14, lineHeight:1.6, marginBottom:20, maxWidth:520 }}>
                   Three quick steps and you'll be fully connected to the network — visible to other shelters and ready to save animals together.
                 </p>
                 <div style={{ display:"flex", gap:12, flexWrap:"wrap", marginBottom:20 }}>
                   {[
-                    { n:"1", label:"Set your capacity", done: false },
-                    { n:"2", label:"Post an at-risk animal", done: false },
-                    { n:"3", label:"Connect with a partner shelter", done: false },
+                    { n:"1", label:"Set your capacity" },
+                    { n:"2", label:"Post an at-risk animal" },
+                    { n:"3", label:"Connect with a partner shelter" },
                   ].map(step => (
-                    <div key={step.n} style={{ display:"flex", alignItems:"center", gap:8, background:"rgba(255,255,255,0.1)", border:"1px solid rgba(255,255,255,0.18)", borderRadius:10, padding:"8px 14px" }}>
-                      <div style={{ width:22, height:22, borderRadius:"50%", background:"rgba(255,255,255,0.2)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:"#fff" }}>{step.n}</div>
-                      <span style={{ fontSize:13, color:"rgba(255,255,255,0.85)" }}>{step.label}</span>
+                    <div key={step.n} style={{ display:"flex", alignItems:"center", gap:8, background:"#fff", border:"1px solid var(--sage-mid)", borderRadius:10, padding:"8px 14px" }}>
+                      <div style={{ width:22, height:22, borderRadius:"50%", background:"var(--sage)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:"#fff" }}>{step.n}</div>
+                      <span style={{ fontSize:13, color:"var(--text)" }}>{step.label}</span>
                     </div>
                   ))}
                 </div>
                 <div style={{ display:"flex", gap:10 }}>
-                  <button className="btn btn-md" style={{ background:"#fff", color:"var(--sage-dark)", fontWeight:700 }} onClick={()=>document.getElementById("capacity-form")?.scrollIntoView({behavior:"smooth"})}>
+                  <button className="btn btn-md" style={{ background:"var(--sage)", color:"#fff", fontWeight:700 }} onClick={()=>document.getElementById("capacity-form")?.scrollIntoView({behavior:"smooth"})}>
                     Start: Set Capacity ↓
                   </button>
-                  <button className="btn btn-md" style={{ background:"transparent", color:"#fff", border:"1px solid rgba(255,255,255,0.4)" }} onClick={()=>setTab("network")}>
+                  <button className="btn btn-md" style={{ background:"#fff", color:"var(--sage)", border:"1px solid var(--sage-mid)" }} onClick={()=>setTab("network")}>
                     Browse Network
                   </button>
                 </div>
