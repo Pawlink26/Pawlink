@@ -289,32 +289,30 @@ const styleEl = document.createElement("style");
 styleEl.textContent = css;
 document.head.appendChild(styleEl);
 
-// ── Viewport meta for mobile ──────────────────────────────
-const existingMeta = document.querySelector('meta[name="viewport"]');
-if (!existingMeta) {
-  const meta = document.createElement("meta");
-  meta.name = "viewport";
-  meta.content = "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1";
-  document.head.appendChild(meta);
-} else {
-  existingMeta.content = "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1";
-}
-
-// ── Apple mobile web app meta ─────────────────────────────
-const appleMeta = document.createElement("meta");
-appleMeta.name = "apple-mobile-web-app-capable";
-appleMeta.content = "yes";
-document.head.appendChild(appleMeta);
-
-const appleStatus = document.createElement("meta");
-appleStatus.name = "apple-mobile-web-app-status-bar-style";
-appleStatus.content = "default";
-document.head.appendChild(appleStatus);
-
-const themeColor = document.createElement("meta");
-themeColor.name = "theme-color";
-themeColor.content = "#5a8a60";
-document.head.appendChild(themeColor);
+// ── Mobile meta tags ─────────────────────────────────────
+try {
+  const existingMeta = document.querySelector('meta[name="viewport"]');
+  if (existingMeta) {
+    existingMeta.content = "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1";
+  } else {
+    const meta = document.createElement("meta");
+    meta.name = "viewport";
+    meta.content = "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1";
+    document.head.appendChild(meta);
+  }
+  [
+    ["apple-mobile-web-app-capable", "yes"],
+    ["apple-mobile-web-app-status-bar-style", "default"],
+    ["mobile-web-app-capable", "yes"],
+    ["theme-color", "#5a8a60"],
+  ].forEach(([name, content]) => {
+    if (!document.querySelector(`meta[name="${name}"]`)) {
+      const m = document.createElement("meta");
+      m.name = name; m.content = content;
+      document.head.appendChild(m);
+    }
+  });
+} catch(e) { /* sandbox may block some meta operations */ }
 
 // ── Constants ──────────────────────────────────────────────
 const US_STATES = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"];
@@ -1069,11 +1067,11 @@ export default function RescuPawLink() {
           src="https://i.imgur.com/VxvRJfd.png"
           alt="Dog and cat"
           onError={e=>{ e.target.style.display="none"; }}
-          style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center center", display:"block" }}
+          style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"35% center", display:"block" }}
         />
 
-        {/* Gradient — stronger on mobile so text is always readable */}
-        <div style={{ position:"absolute", inset:0, background:"linear-gradient(to right, rgba(255,253,249,0.98) 0%, rgba(255,253,249,0.95) 35%, rgba(255,253,249,0.6) 55%, rgba(255,253,249,0.1) 75%, rgba(255,253,249,0) 90%)" }}/>
+        {/* Gradient — only fades far left edge for text readability, animals fully visible */}
+        <div style={{ position:"absolute", inset:0, background:"linear-gradient(to right, rgba(255,253,249,0.97) 0%, rgba(255,253,249,0.92) 20%, rgba(255,253,249,0.5) 38%, rgba(255,253,249,0) 52%)" }}/>
 
         {/* Bottom fade into white */}
         <div style={{ position:"absolute", bottom:0, left:0, right:0, height:80, background:"linear-gradient(to top, #fff, transparent)" }}/>
