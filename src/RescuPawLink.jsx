@@ -34,10 +34,10 @@ async function sbAuth(action, email, password) {
 
 // ── EmailJS — Email Notifications ────────────────────────
 // Add your EmailJS credentials from emailjs.com
-const EMAILJS_SERVICE_ID        = "service_rescupawlink";
-const EMAILJS_TEMPLATE_ADOPTION = "template_adoption";
-const EMAILJS_TEMPLATE_TRANSFER = "template_transfer";
-const EMAILJS_PUBLIC_KEY        = "YOUR_PUBLIC_KEY";
+const EMAILJS_SERVICE_ID        = "service_6zwgcgx";
+const EMAILJS_TEMPLATE_ADOPTION = "template_sdfv6ge";
+const EMAILJS_TEMPLATE_TRANSFER = "template_sdfv6ge";
+const EMAILJS_PUBLIC_KEY        = "vdpgNU2DNkp_WyTg8";
 
 async function sendEmail(templateId, params) {
   try {
