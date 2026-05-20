@@ -1067,7 +1067,7 @@ export default function RescuPawLink() {
           src="https://i.imgur.com/VxvRJfd.png"
           alt="Dog and cat"
           onError={e=>{ e.target.style.display="none"; }}
-          style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"35% center", display:"block" }}
+          style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"45% center", display:"block" }}
         />
 
         {/* Gradient — only fades far left edge for text readability, animals fully visible */}
