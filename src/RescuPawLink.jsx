@@ -32,6 +32,59 @@ async function sbAuth(action, email, password) {
   return res.json();
 }
 
+// ── EmailJS — Email Notifications ────────────────────────
+// Add your EmailJS credentials from emailjs.com
+const EMAILJS_SERVICE_ID        = "service_rescupawlink";
+const EMAILJS_TEMPLATE_ADOPTION = "template_adoption";
+const EMAILJS_TEMPLATE_TRANSFER = "template_transfer";
+const EMAILJS_PUBLIC_KEY        = "YOUR_PUBLIC_KEY";
+
+async function sendEmail(templateId, params) {
+  try {
+    const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        service_id:      EMAILJS_SERVICE_ID,
+        template_id:     templateId,
+        user_id:         EMAILJS_PUBLIC_KEY,
+        template_params: params,
+      }),
+    });
+    return res.status === 200;
+  } catch(e) { console.log("Email error:", e); return false; }
+}
+
+async function sendAdoptionEmail(data) {
+  return sendEmail(EMAILJS_TEMPLATE_ADOPTION, {
+    to_email:        data.shelterEmail,
+    to_name:         data.shelterName,
+    from_name:       data.applicantName,
+    from_email:      data.applicantEmail,
+    applicant_phone: data.applicantPhone || "Not provided",
+    inquiry_type:    data.type === "adopt" ? "Adoption Request" : "Foster Offer",
+    animal_name:     data.animalName,
+    animal_breed:    data.animalBreed,
+    animal_species:  data.animalSpecies,
+    shelter_name:    data.shelterName,
+    message:         data.message || "No message provided",
+    reply_to:        data.applicantEmail,
+  });
+}
+
+async function sendTransferEmail(data) {
+  return sendEmail(EMAILJS_TEMPLATE_TRANSFER, {
+    to_email:        data.toEmail,
+    to_name:         data.toShelterName,
+    from_name:       data.fromShelterName,
+    from_email:      data.fromEmail,
+    animal_count:    data.count,
+    animal_species:  data.species,
+    notes:           data.notes || "No additional notes",
+    reply_to:        data.fromEmail,
+  });
+}
+
 // ── Google Fonts ──────────────────────────────────────────
 const fontLink = document.createElement("link");
 fontLink.rel = "stylesheet";
@@ -873,7 +926,7 @@ export default function RescuPawLink() {
           {/* Wordmark */}
           <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", padding:0 }}>
             <div style={{ fontFamily:"'Inter',sans-serif", fontSize:20, fontWeight:800, letterSpacing:"-0.5px" }}>
-              <span style={{ color:"var(--sage)" }}>Rescue</span>
+              <span style={{ color:"var(--sage)" }}>Rescu</span>
               <span style={{ color:"#1a1a1a" }}>PawLink</span>
             </div>
           </button>
@@ -916,19 +969,19 @@ export default function RescuPawLink() {
           src="https://i.imgur.com/VxvRJfd.png"
           alt="Dog and cat"
           onError={e=>{ e.target.style.display="none"; }}
-          style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"left center", display:"block" }}
+          style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center center", display:"block" }}
         />
 
-        {/* Right-to-left gradient — animals show on left, text readable on right */}
-        <div style={{ position:"absolute", inset:0, background:"linear-gradient(to left, rgba(255,253,249,0.97) 0%, rgba(255,253,249,0.92) 30%, rgba(255,253,249,0.5) 55%, rgba(255,253,249,0) 75%)" }}/>
+        {/* Left-to-right gradient — text on left, animals fully visible on right */}
+        <div style={{ position:"absolute", inset:0, background:"linear-gradient(to right, rgba(255,253,249,0.97) 0%, rgba(255,253,249,0.90) 28%, rgba(255,253,249,0.4) 52%, rgba(255,253,249,0) 70%)" }}/>
 
         {/* Bottom fade into white */}
         <div style={{ position:"absolute", bottom:0, left:0, right:0, height:80, background:"linear-gradient(to top, #fff, transparent)" }}/>
 
-        {/* Text — RIGHT side */}
+        {/* Text — LEFT side, animals visible on right */}
         <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center" }}>
-          <div style={{ width:"100%", padding:"0 40px" }}>
-            <div style={{ maxWidth:520, marginLeft:"auto" }}>
+          <div style={{ width:"100%", padding:"0 48px" }}>
+            <div style={{ maxWidth:500 }}>
 
               {/* Badge */}
               <div className="fade-up" style={{ display:"inline-flex", alignItems:"center", gap:7, background:"var(--sage-light)", border:"1px solid #c7dfc9", borderRadius:20, padding:"6px 16px", fontSize:11, fontWeight:700, color:"var(--sage-dark)", marginBottom:28, letterSpacing:"0.08em", textTransform:"uppercase" }}>
@@ -1047,75 +1100,100 @@ export default function RescuPawLink() {
       </div>
 
       {/* ─── FOR SHELTERS ────────────────────────── */}
-      <div style={{ padding:"80px 40px" }}>
+      <div style={{ padding:"80px 40px", background:"var(--cream)" }}>
         <div style={{ maxWidth:1140, margin:"0 auto" }}>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:72, alignItems:"center" }}>
 
-            {/* Left — copy */}
-            <div>
-              <div style={{ fontSize:11, fontWeight:800, color:"var(--sage)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:12 }}>For Shelters & Rescues</div>
-              <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(28px,4vw,44px)", fontWeight:800, color:"#1a1a1a", lineHeight:1.1, marginBottom:20, letterSpacing:"-1px" }}>
-                Your Network Is<br/>Stronger Together
-              </h2>
-              <p style={{ fontSize:16, color:"#555", lineHeight:1.75, marginBottom:32 }}>
-                When one shelter is full, another has space. RescuPawLink makes that connection instant — no phone tag, no guessing.
-              </p>
-              <div style={{ display:"flex", flexDirection:"column", gap:14, marginBottom:36 }}>
-                {BENEFITS.map(b => (
-                  <div key={b.title} style={{ display:"flex", gap:14, alignItems:"flex-start" }}>
-                    <div style={{ width:38, height:38, borderRadius:9, background:"var(--sage-light)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, color:"var(--sage)" }}>
-                      {b.icon}
-                    </div>
-                    <div>
-                      <div style={{ fontSize:14, fontWeight:700, color:"#1a1a1a", marginBottom:2 }}>{b.title}</div>
-                      <div style={{ fontSize:13, color:"#777", lineHeight:1.55 }}>{b.desc}</div>
-                    </div>
-                  </div>
-                ))}
+          {/* Header centered */}
+          <div style={{ textAlign:"center", marginBottom:56 }}>
+            <div style={{ fontSize:11, fontWeight:800, color:"var(--sage)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:12 }}>For Shelters & Rescues</div>
+            <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(28px,4vw,48px)", fontWeight:900, color:"#1a1a1a", lineHeight:1.1, marginBottom:16, letterSpacing:"-1.5px" }}>
+              Your Network Is<br/>Stronger Together
+            </h2>
+            <p style={{ fontSize:17, color:"#555", lineHeight:1.75, maxWidth:520, margin:"0 auto 32px" }}>
+              When one shelter is full, another has space. RescuPawLink makes that connection instant — no phone tag, no guessing.
+            </p>
+            <button onClick={()=>{ setAuthMode("register"); setPage("login"); }}
+              style={{ padding:"15px 32px", border:"none", background:"var(--sage)", color:"#fff", fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:9, transition:"all 0.2s", boxShadow:"0 4px 20px rgba(90,138,96,0.3)" }}
+              onMouseEnter={e=>{ e.currentTarget.style.background="var(--sage-dark)"; e.currentTarget.style.transform="translateY(-2px)"; }}
+              onMouseLeave={e=>{ e.currentTarget.style.background="var(--sage)"; e.currentTarget.style.transform="translateY(0)"; }}>
+              Register Free — 2 Minutes
+            </button>
+          </div>
+
+          {/* 6 benefit tiles in 3-col grid */}
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))", gap:20, marginBottom:48 }}>
+            {BENEFITS.map((b,i) => (
+              <div key={b.title} className="fade-up" style={{ animationDelay:`${i*0.06}s`, background:"#fff", border:"1px solid #e8e2da", borderRadius:16, padding:"28px 24px", transition:"all 0.2s" }}
+                onMouseEnter={e=>{ e.currentTarget.style.boxShadow="0 8px 32px rgba(0,0,0,0.08)"; e.currentTarget.style.transform="translateY(-3px)"; }}
+                onMouseLeave={e=>{ e.currentTarget.style.boxShadow="none"; e.currentTarget.style.transform="translateY(0)"; }}>
+                <div style={{ width:44, height:44, borderRadius:12, background:"var(--sage-light)", display:"flex", alignItems:"center", justifyContent:"center", color:"var(--sage)", marginBottom:16 }}>
+                  {b.icon}
+                </div>
+                <div style={{ fontSize:16, fontWeight:700, color:"#1a1a1a", marginBottom:8 }}>{b.title}</div>
+                <div style={{ fontSize:14, color:"#777", lineHeight:1.65 }}>{b.desc}</div>
               </div>
-              <button onClick={()=>{ setAuthMode("register"); setPage("login"); }}
-                style={{ padding:"15px 30px", border:"none", background:"var(--sage)", color:"#fff", fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:9, transition:"all 0.2s" }}
-                onMouseEnter={e=>{ e.currentTarget.style.background="var(--sage-dark)"; e.currentTarget.style.transform="translateY(-2px)"; }}
-                onMouseLeave={e=>{ e.currentTarget.style.background="var(--sage)"; e.currentTarget.style.transform="translateY(0)"; }}>
-                Register Free — 2 Minutes
-              </button>
-            </div>
+            ))}
+          </div>
 
-            {/* Right — live shelter cards */}
-            <div style={{ display:"grid", gap:12 }}>
-              {shelters.filter(s=>s.totalSpace>0).slice(0,3).map(s => {
-                const pct = Math.round((s.availableSpace/s.totalSpace)*100);
-                const col = pct<10?"#dc2626":pct<30?"#d97706":"#16a34a";
-                return (
-                  <div key={s.id} style={{ background:"#fff", border:"1px solid #f0ede8", borderRadius:14, padding:"18px 20px", boxShadow:"0 2px 10px rgba(0,0,0,0.04)" }}>
-                    <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:10 }}>
-                      <div>
-                        <div style={{ fontSize:14, fontWeight:700, color:"#1a1a1a" }}>{s.name}</div>
-                        <div style={{ fontSize:12, color:"#aaa", marginTop:2 }}>📍 {s.city}, {s.state}</div>
-                      </div>
-                      <span style={{ fontSize:10, background:s.needsHelp?"#fee2e2":"#dcfce7", color:s.needsHelp?"#dc2626":"#16a34a", padding:"4px 10px", borderRadius:20, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.04em" }}>
-                        {s.needsHelp?"Needs Help":"Has Space"}
-                      </span>
+          {/* Live network snapshot — always shows all shelters */}
+          <div style={{ background:"#fff", border:"1px solid #e8e2da", borderRadius:20, overflow:"hidden" }}>
+            <div style={{ padding:"20px 24px", borderBottom:"1px solid #f0ede8", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+              <div>
+                <div style={{ fontSize:15, fontWeight:700, color:"#1a1a1a" }}>Live Network Snapshot</div>
+                <div style={{ fontSize:13, color:"#aaa", marginTop:2 }}>{shelters.length} shelters connected · updated in real time</div>
+              </div>
+              <div style={{ display:"flex", gap:16 }}>
+                <div style={{ textAlign:"center" }}>
+                  <div style={{ fontSize:20, fontWeight:800, color:"var(--sage)" }}>{shelters.reduce((s,sh)=>s+sh.availableSpace,0)}</div>
+                  <div style={{ fontSize:11, color:"#aaa" }}>Open Spaces</div>
+                </div>
+                <div style={{ textAlign:"center" }}>
+                  <div style={{ fontSize:20, fontWeight:800, color:"#dc2626" }}>{shelters.filter(s=>s.needsHelp).length}</div>
+                  <div style={{ fontSize:11, color:"#aaa" }}>Need Help</div>
+                </div>
+              </div>
+            </div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))" }}>
+              {shelters.map((s,i) => (
+                <div key={s.id} style={{ padding:"18px 24px", borderRight:i%2===0?"1px solid #f0ede8":"none", borderBottom:"1px solid #f0ede8" }}>
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:10 }}>
+                    <div>
+                      <div style={{ fontSize:14, fontWeight:700, color:"#1a1a1a", marginBottom:2 }}>{s.name}</div>
+                      <div style={{ fontSize:12, color:"#aaa" }}>📍 {s.city}, {s.state}</div>
                     </div>
-                    <div style={{ display:"flex", justifyContent:"space-between", fontSize:12, marginBottom:5, color:"#aaa" }}>
-                      <span>Available space</span>
-                      <span style={{ fontWeight:700, color:col }}>{s.availableSpace} / {s.totalSpace}</span>
-                    </div>
-                    <div style={{ height:5, background:"#f0ede8", borderRadius:3, overflow:"hidden" }}>
-                      <div style={{ width:`${pct}%`, height:"100%", background:col, borderRadius:3, transition:"width 0.5s" }}/>
-                    </div>
+                    <span style={{ fontSize:10, background:s.needsHelp?"#fee2e2":"var(--sage-light)", color:s.needsHelp?"#dc2626":"var(--sage-dark)", padding:"4px 10px", borderRadius:20, fontWeight:700, flexShrink:0, marginLeft:8 }}>
+                      {s.needsHelp?"Needs Help":"Active"}
+                    </span>
                   </div>
-                );
-              })}
+                  {s.totalSpace > 0 ? (
+                    <>
+                      <div style={{ display:"flex", justifyContent:"space-between", fontSize:12, color:"#aaa", marginBottom:5 }}>
+                        <span>Capacity</span>
+                        <span style={{ fontWeight:700, color: Math.round(s.availableSpace/s.totalSpace*100)<10?"#dc2626":Math.round(s.availableSpace/s.totalSpace*100)<30?"#d97706":"#16a34a" }}>
+                          {s.availableSpace}/{s.totalSpace}
+                        </span>
+                      </div>
+                      <div style={{ height:4, background:"#f0ede8", borderRadius:2, overflow:"hidden" }}>
+                        <div style={{ width:`${Math.round(s.availableSpace/s.totalSpace*100)}%`, height:"100%", background: Math.round(s.availableSpace/s.totalSpace*100)<10?"#dc2626":Math.round(s.availableSpace/s.totalSpace*100)<30?"#d97706":"#16a34a", borderRadius:2 }}/>
+                      </div>
+                    </>
+                  ) : (
+                    <div style={{ fontSize:12, color:"#ccc", fontStyle:"italic" }}>Capacity not set yet</div>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div style={{ padding:"16px 24px", background:"#fafaf8", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+              <div style={{ fontSize:13, color:"#aaa" }}>Register to see full contact details, message shelters, and request transfers</div>
               <button onClick={()=>{ setPage("app"); setTab("network"); }}
-                style={{ padding:"13px", border:"1.5px dashed #ccc", background:"transparent", color:"#888", fontSize:14, fontWeight:500, cursor:"pointer", fontFamily:"inherit", borderRadius:14, transition:"all 0.18s" }}
-                onMouseEnter={e=>{ e.currentTarget.style.borderColor="var(--sage)"; e.currentTarget.style.color="var(--sage)"; }}
-                onMouseLeave={e=>{ e.currentTarget.style.borderColor="#ccc"; e.currentTarget.style.color="#888"; }}>
+                style={{ padding:"9px 18px", border:"1px solid var(--border)", background:"#fff", color:"var(--sage)", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:8, transition:"all 0.15s", whiteSpace:"nowrap" }}
+                onMouseEnter={e=>{ e.currentTarget.style.background="var(--sage-light)"; }}
+                onMouseLeave={e=>{ e.currentTarget.style.background="#fff"; }}>
                 View Full Network →
               </button>
             </div>
-
           </div>
+
         </div>
       </div>
 
@@ -1196,7 +1274,7 @@ export default function RescuPawLink() {
         <div style={{ maxWidth:1140, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:20 }}>
           <div>
             <div style={{ fontFamily:"'Inter',sans-serif", fontSize:17, fontWeight:800, color:"#1a1a1a", letterSpacing:"-0.3px", marginBottom:5 }}>
-              <span style={{ color:"var(--sage)" }}>Rescue</span>PawLink
+              <span style={{ color:"var(--sage)" }}>Rescu</span>PawLink
             </div>
             <div style={{ fontSize:12, color:"#aaa" }}>Free for shelters and rescues · forever</div>
           </div>
@@ -1230,7 +1308,7 @@ export default function RescuPawLink() {
         <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", color:"var(--slate-mid)", cursor:"pointer", fontSize:13, marginBottom:22, display:"flex", alignItems:"center", gap:5 }}>← Back</button>
         <div style={{ marginBottom:28 }}>
           <div style={{ fontFamily:"'Inter',sans-serif", fontSize:22, fontWeight:800, color:"var(--slate)", letterSpacing:"-0.5px" }}>
-            <span style={{ color:"var(--sage)" }}>Rescue</span>PawLink
+            <span style={{ color:"var(--sage)" }}>Rescu</span>PawLink
           </div>
         </div>
 
@@ -1293,7 +1371,7 @@ export default function RescuPawLink() {
         <div style={{ maxWidth:1160, margin:"0 auto", padding:"0 24px", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", gap:12 }}>
           <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", flexShrink:0 }}>
             <div style={{ fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"var(--slate)", letterSpacing:"-0.5px" }}>
-              <span style={{ color:"var(--sage)" }}>Rescue</span>PawLink
+              <span style={{ color:"var(--sage)" }}>Rescu</span>PawLink
             </div>
           </button>
 
@@ -2114,18 +2192,71 @@ export default function RescuPawLink() {
       {/* ══ ADOPT/FOSTER APPLICATION MODAL ════════════════ */}
       {applyTarget && (
         <div className="modal-backdrop" onClick={()=>setApplyTarget(null)}>
-          <div className="modal" style={{ width:"100%", maxWidth:480, padding:"32px 36px" }} onClick={e=>e.stopPropagation()}>
+          <div className="modal" style={{ width:"100%", maxWidth:500, padding:"32px 36px" }} onClick={e=>e.stopPropagation()}>
             <button onClick={()=>setApplyTarget(null)} style={{ float:"right", background:"none", border:"none", cursor:"pointer", color:"var(--slate-mid)" }}>{I.x}</button>
-            <h2 style={{ fontSize:22, marginBottom:4 }}>{applyF.type==="adopt"?"Adoption":"Foster"} Application</h2>
-            <p style={{ color:"var(--slate-mid)", fontSize:14, marginBottom:22 }}>For <strong>{applyTarget.name}</strong> at {applyTarget.shelterName}</p>
+
+            {/* Header */}
+            <div style={{ marginBottom:22 }}>
+              <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:applyF.type==="adopt"?"var(--sage-light)":"#fdf4ff", border:`1px solid ${applyF.type==="adopt"?"var(--sage-mid)":"#e9d5ff"}`, borderRadius:20, padding:"4px 12px", fontSize:11, fontWeight:700, color:applyF.type==="adopt"?"var(--sage-dark)":"#7e22ce", marginBottom:10, textTransform:"uppercase", letterSpacing:"0.05em" }}>
+                {applyF.type==="adopt"?"🏠 Adoption Application":"💚 Foster Application"}
+              </div>
+              <h2 style={{ fontSize:22, fontWeight:800, marginBottom:4 }}>{applyTarget.name}</h2>
+              <p style={{ color:"var(--muted)", fontSize:14 }}>{applyTarget.breed} · {applyTarget.age} · <strong>{applyTarget.shelterName}</strong> — {applyTarget.shelterCity}, {applyTarget.shelterState}</p>
+            </div>
+
+            {/* Toggle adopt/foster */}
+            <div style={{ display:"flex", gap:8, marginBottom:20 }}>
+              {["adopt","foster"].map(t=>(
+                <button key={t} onClick={()=>setApplyF(p=>({...p,type:t}))}
+                  style={{ flex:1, padding:"9px", border:`1.5px solid ${applyF.type===t?"var(--sage)":"var(--border)"}`, borderRadius:9, background:applyF.type===t?"var(--sage-light)":"#fff", color:applyF.type===t?"var(--sage-dark)":"var(--muted)", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }}>
+                  {t==="adopt"?"🏠 Adopt":"💚 Foster"}
+                </button>
+              ))}
+            </div>
+
             <div style={{ display:"grid", gap:13, marginBottom:18 }}>
               <div><label className="label">Your Name *</label><input className="input" required placeholder="Full name" value={applyF.name} onChange={e=>setApplyF(p=>({...p,name:e.target.value}))} /></div>
-              <div><label className="label">Email *</label><input className="input" type="email" required placeholder="you@email.com" value={applyF.email} onChange={e=>setApplyF(p=>({...p,email:e.target.value}))} /></div>
-              <div><label className="label">Phone</label><input className="input" type="tel" placeholder="(555) 000-0000" value={applyF.phone} onChange={e=>setApplyF(p=>({...p,phone:e.target.value}))} /></div>
-              <div><label className="label">Tell them about yourself</label><textarea className="textarea" rows={4} placeholder={`Why do you want to ${applyF.type} ${applyTarget.name}? Tell the shelter about your home, experience, and lifestyle...`} value={applyF.message} onChange={e=>setApplyF(p=>({...p,message:e.target.value}))} /></div>
+              <div><label className="label">Your Email *</label><input className="input" type="email" required placeholder="you@email.com" value={applyF.email} onChange={e=>setApplyF(p=>({...p,email:e.target.value}))} /></div>
+              <div><label className="label">Phone Number</label><input className="input" type="tel" placeholder="(555) 000-0000" value={applyF.phone} onChange={e=>setApplyF(p=>({...p,phone:e.target.value}))} /></div>
+              <div>
+                <label className="label">Tell the shelter about yourself *</label>
+                <textarea className="textarea" rows={4}
+                  placeholder={`Tell ${applyTarget.shelterName} about your home, lifestyle, and why ${applyTarget.name} would be a great fit...`}
+                  value={applyF.message} onChange={e=>setApplyF(p=>({...p,message:e.target.value}))}
+                  style={{ fontFamily:"inherit" }}/>
+              </div>
             </div>
+
+            {/* What happens next */}
+            <div style={{ background:"var(--cream)", borderRadius:10, padding:"12px 16px", marginBottom:18, fontSize:13, color:"var(--muted)", lineHeight:1.6 }}>
+              📬 Your inquiry will be emailed directly to <strong>{applyTarget.shelterName}</strong> at <strong>{applyTarget.shelterEmail}</strong>. They'll contact you within 24–48 hours.
+            </div>
+
             <div style={{ display:"flex", gap:10 }}>
-              <button className="btn btn-primary btn-md" style={{ flex:1, padding:13 }} onClick={()=>{setApplyTarget(null);setSelectedAnimal(null);showToast(`Application sent to ${applyTarget.shelterName}! They'll be in touch soon.`);}}>Submit Application</button>
+              <button className="btn btn-primary btn-md" style={{ flex:1, padding:13 }}
+                disabled={!applyF.name || !applyF.email || !applyF.message}
+                onClick={async ()=>{
+                  const ok = await sendAdoptionEmail({
+                    applicantName:  applyF.name,
+                    applicantEmail: applyF.email,
+                    applicantPhone: applyF.phone,
+                    message:        applyF.message,
+                    type:           applyF.type,
+                    animalName:     applyTarget.name,
+                    animalBreed:    applyTarget.breed,
+                    animalSpecies:  applyTarget.species,
+                    shelterName:    applyTarget.shelterName,
+                    shelterEmail:   applyTarget.shelterEmail,
+                  });
+                  setApplyTarget(null); setSelectedAnimal(null);
+                  setApplyF({ name:"", email:"", phone:"", message:"", type:"adopt" });
+                  showToast(ok
+                    ? `✓ Application sent to ${applyTarget.shelterName}! They'll be in touch soon.`
+                    : `Application received! Contact ${applyTarget.shelterName} directly at ${applyTarget.shelterEmail}`
+                  );
+                }}>
+                Submit Application
+              </button>
               <button className="btn btn-ghost btn-md" onClick={()=>setApplyTarget(null)}>Cancel</button>
             </div>
           </div>
@@ -2135,17 +2266,44 @@ export default function RescuPawLink() {
       {/* ══ CLAIM SPACE MODAL ══════════════════════════════ */}
       {claimTarget && (
         <div className="modal-backdrop" onClick={()=>setClaimTarget(null)}>
-          <div className="modal" style={{ width:"100%", maxWidth:460, padding:"32px 36px" }} onClick={e=>e.stopPropagation()}>
+          <div className="modal" style={{ width:"100%", maxWidth:480, padding:"32px 36px" }} onClick={e=>e.stopPropagation()}>
             <button onClick={()=>setClaimTarget(null)} style={{ float:"right", background:"none", border:"none", cursor:"pointer", color:"var(--slate-mid)" }}>{I.x}</button>
-            <h2 style={{ fontSize:22, marginBottom:4 }}>Request Transfer Space</h2>
-            <p style={{ color:"var(--slate-mid)", fontSize:14, marginBottom:22 }}>At <strong>{claimTarget.name}</strong> · <span style={{ color:"var(--sage-dark)", fontWeight:600 }}>{claimTarget.availableSpace} spaces available</span></p>
+            <h2 style={{ fontSize:22, fontWeight:800, marginBottom:4 }}>Request Transfer Space</h2>
+            <p style={{ color:"var(--muted)", fontSize:14, marginBottom:22 }}>
+              At <strong>{claimTarget.name}</strong> · <span style={{ color:"var(--sage-dark)", fontWeight:700 }}>{claimTarget.availableSpace} spaces available</span>
+            </p>
             <div style={{ display:"grid", gap:13, marginBottom:18 }}>
-              {[["Your Organization","Your shelter name"],["Contact Email","coordinator@yourshelter.org"],["# of Animals","How many?"],["Species & Details","e.g. 2 dogs (small breeds), 1 cat — all vaccinated"]].map(([l,pl])=>(
-                <div key={l}><label className="label">{l}</label><input className="input" placeholder={pl} /></div>
+              {[
+                { label:"Your Organization", placeholder:"Your shelter name",             key:"org" },
+                { label:"Contact Email",     placeholder:"coordinator@yourshelter.org",   key:"email" },
+                { label:"# of Animals",      placeholder:"How many?",                     key:"count" },
+                { label:"Species & Details", placeholder:"e.g. 2 small dogs, 1 cat — all vaccinated", key:"notes" },
+              ].map(f=>(
+                <div key={f.key}><label className="label">{f.label}</label><input className="input" placeholder={f.placeholder} id={`transfer-${f.key}`}/></div>
               ))}
             </div>
+            <div style={{ background:"var(--cream)", borderRadius:10, padding:"12px 16px", marginBottom:18, fontSize:13, color:"var(--muted)", lineHeight:1.6 }}>
+              📬 Your request will be emailed to <strong>{claimTarget.name}</strong> at <strong>{claimTarget.email}</strong>. They'll respond within 24 hours.
+            </div>
             <div style={{ display:"flex", gap:10 }}>
-              <button className="btn btn-primary btn-md" style={{ flex:1, padding:13 }} onClick={()=>{setClaimTarget(null);showToast(`Transfer request sent to ${claimTarget.name}!`);}}>Send Request</button>
+              <button className="btn btn-primary btn-md" style={{ flex:1, padding:13 }} onClick={async ()=>{
+                const org   = document.getElementById("transfer-org")?.value;
+                const email = document.getElementById("transfer-email")?.value;
+                const count = document.getElementById("transfer-count")?.value;
+                const notes = document.getElementById("transfer-notes")?.value;
+                const ok = await sendTransferEmail({
+                  fromShelterName: org || user?.name || "A partner shelter",
+                  fromEmail:       email || user?.email || "",
+                  toShelterName:   claimTarget.name,
+                  toEmail:         claimTarget.email,
+                  count, species: notes,
+                });
+                setClaimTarget(null);
+                showToast(ok
+                  ? `✓ Transfer request sent to ${claimTarget.name}!`
+                  : `Request logged! Contact ${claimTarget.name} directly at ${claimTarget.email}`
+                );
+              }}>Send Request</button>
               <button className="btn btn-ghost btn-md" onClick={()=>setClaimTarget(null)}>Cancel</button>
             </div>
           </div>
