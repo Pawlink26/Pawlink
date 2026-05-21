@@ -207,7 +207,7 @@ const css = `
   .stat-card { background:var(--warm-white); border-radius:var(--radius); border:1px solid var(--border); padding:22px 24px; display:flex; gap:16px; align-items:center; box-shadow:var(--shadow-sm); transition:transform 0.25s var(--ease), box-shadow 0.25s var(--ease); }
   .stat-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
   .stat-icon { width:48px; height:48px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
-  .animal-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:22px; }
+  .animal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
   .shelter-list { display:grid; gap:14px; }
   .trait-pill { font-size:11px; padding:4px 10px; border-radius:6px; font-weight:600; font-family:'DM Sans',sans-serif; }
 
@@ -228,10 +228,18 @@ const css = `
     .section-header { flex-direction: column; align-items: flex-start; }
     button { min-height: 44px; }
     .input, .select, .textarea { font-size: 16px !important; }
+    .grid-4 { grid-template-columns: repeat(2,1fr) !important; }
+    .grid-3 { grid-template-columns: repeat(1,1fr) !important; }
+    .grid-6 { grid-template-columns: repeat(3,1fr) !important; }
   }
 
   @media (max-width: 480px) {
-    .animal-grid { grid-template-columns: 1fr; }
+    .animal-grid { grid-template-columns: 1fr !important; }
+    .rpl-grid-4 { grid-template-columns: 1fr !important; }
+    .rpl-grid-6 { grid-template-columns: repeat(2,1fr) !important; }
+    .rpl-grid-benefits { grid-template-columns: 1fr !important; }
+    .rpl-grid-how { grid-template-columns: 1fr !important; }
+    .rpl-grid-dogs { grid-template-columns: 1fr !important; }
     .modal { border-radius:24px 24px 0 0; position:fixed; bottom:0; left:0; right:0; max-height:92vh; margin:0; padding-bottom:env(safe-area-inset-bottom,16px); }
     .modal-backdrop { align-items:flex-end; padding:0; }
     .tab { font-size:11px; padding:8px 6px; }
@@ -1079,7 +1087,7 @@ export default function RescuPawLink() {
 
       {/* ── 4 FEATURE TILES with descriptions ── */}
       <div style={{ maxWidth:1400, margin:"0 auto", padding:"20px clamp(16px,4vw,48px)" }}>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:12 }}>
+        <div className="rpl-grid-4" style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14 }}>
           {[
             {
               icon:<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
@@ -1126,7 +1134,7 @@ export default function RescuPawLink() {
 
       {/* ── URGENCY STRIP ── */}
       <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 clamp(16px,4vw,48px) 20px" }}>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))", gap:14 }}>
+        <div className="rpl-grid-3" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16 }}>
           <div style={{ background:"var(--sage)", borderRadius:14, padding:"20px 22px", cursor:"pointer" }} onClick={()=>{setPage("app");setTab("network");}}>
             <h3 style={{ fontSize:17, fontWeight:800, color:"#fff", marginBottom:6 }}>Shelter Network</h3>
             <p style={{ fontSize:12, color:"rgba(255,255,255,0.75)", lineHeight:1.6, marginBottom:10 }}>Connect with partner shelters nationwide. Share capacity and coordinate transfers.</p>
@@ -1159,7 +1167,7 @@ export default function RescuPawLink() {
           <h2 style={{ fontSize:18, fontWeight:800, color:"var(--slate)" }}>Adoptable Pets</h2>
           <button onClick={()=>{setPage("app");setTab("adopt");}} style={{ fontSize:13, fontWeight:700, color:"var(--sage)", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit" }}>See All →</button>
         </div>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))", gap:12 }}>
+        <div className="rpl-grid-6" style={{ display:"grid", gridTemplateColumns:"repeat(6,1fr)", gap:14 }}>
           {animals.slice(0,6).map((a,i)=>(
             <div key={a.id} style={{ background:"#fff", borderRadius:12, overflow:"hidden", cursor:"pointer", border:"1px solid #e8e0d4", transition:"all 0.18s" }}
               onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
@@ -1200,7 +1208,7 @@ export default function RescuPawLink() {
           </div>
           <button className="btn btn-secondary btn-md" style={{ borderColor:"#e0e0de" }} onClick={()=>{setPage("app");setTab("adopt");}}>See All →</button>
         </div>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:18 }}>
+        <div className="rpl-grid-stories" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:20 }}>
           {featuredAnimals.map((a,i)=>(
             <div key={a.id} className="fade-up" style={{ animationDelay:`${i*0.08}s`, background:"#ffffff", borderRadius:16, overflow:"hidden", cursor:"pointer", border:"1px solid #e8e8e6", transition:"all 0.2s" }}
               onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
@@ -1231,61 +1239,6 @@ export default function RescuPawLink() {
         </div>
       </div>
 
-      {/* ── DOGS ── */}
-      <div style={{ background:"#f2f2f0", padding:"clamp(32px,5vw,52px) clamp(16px,4vw,48px)" }}>
-        <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 clamp(16px,4vw,48px)" }}>
-          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20, flexWrap:"wrap", gap:12 }}>
-            <h2 style={{ fontSize:22, fontWeight:800 }}>🐕 Dogs Looking for Homes</h2>
-            <button className="btn btn-secondary btn-md" style={{ borderColor:"#e0e0de" }} onClick={()=>{setPage("app");setTab("adopt");setFSpecies("Dog");}}>See All Dogs →</button>
-          </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))", gap:14 }}>
-            {animals.filter(a=>a.species==="Dog").slice(0,4).map((a,i)=>(
-              <div key={a.id} className="fade-up" style={{ animationDelay:`${i*0.07}s`, background:"#ffffff", borderRadius:14, overflow:"hidden", cursor:"pointer", border:"1px solid #e8e8e6", transition:"all 0.18s" }}
-                onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
-                onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-3px)"; e.currentTarget.style.boxShadow="0 8px 24px rgba(0,0,0,0.1)"; }}
-                onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="none"; }}>
-                <div style={{ height:148, background:"linear-gradient(135deg,#fffbeb,#fef3c7)", display:"flex", alignItems:"center", justifyContent:"center", position:"relative" }}>
-                  {a.photos?.[0]?<img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>:<div style={{ color:"var(--amber)" }}><svg viewBox="0 0 100 100" width="72" height="72" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z"/></svg></div>}
-                  <div style={{ position:"absolute", top:7, left:7 }}><span style={{ background:a.status==="critical"?"var(--coral)":"var(--amber)", color:"#fff", fontSize:9, fontWeight:800, padding:"2px 8px", borderRadius:20, textTransform:"uppercase" }}>{a.daysLeft}d left</span></div>
-                </div>
-                <div style={{ padding:"11px 13px" }}>
-                  <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>{a.name}</div>
-                  <div style={{ fontSize:11, color:"var(--slate-mid)", marginBottom:8 }}>{a.breed} · {a.age}</div>
-                  <button className="btn btn-primary btn-sm" style={{ width:"100%" }} onClick={e=>{e.stopPropagation();setPage("app");setTab("adopt");setSelectedAnimal(a);setApplyTarget(a);}}>Apply to Adopt</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── CATS ── */}
-      <div style={{ background:"#ffffff", padding:"clamp(32px,5vw,52px) clamp(16px,4vw,48px)" }}>
-        <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 clamp(16px,4vw,48px)" }}>
-          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20, flexWrap:"wrap", gap:12 }}>
-            <h2 style={{ fontSize:22, fontWeight:800 }}>🐈 Cats Looking for Homes</h2>
-            <button className="btn btn-secondary btn-md" style={{ borderColor:"#e0e0de" }} onClick={()=>{setPage("app");setTab("adopt");setFSpecies("Cat");}}>See All Cats →</button>
-          </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))", gap:14 }}>
-            {animals.filter(a=>a.species==="Cat").slice(0,4).map((a,i)=>(
-              <div key={a.id} className="fade-up" style={{ animationDelay:`${i*0.07}s`, background:"#ffffff", borderRadius:14, overflow:"hidden", cursor:"pointer", border:"1px solid #e8e8e6", transition:"all 0.18s" }}
-                onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
-                onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-3px)"; e.currentTarget.style.boxShadow="0 8px 24px rgba(0,0,0,0.1)"; }}
-                onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="none"; }}>
-                <div style={{ height:148, background:"linear-gradient(135deg,#f0fdf4,#dcfce7)", display:"flex", alignItems:"center", justifyContent:"center", position:"relative" }}>
-                  {a.photos?.[0]?<img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>:<div style={{ color:"var(--sage)" }}><svg viewBox="0 0 100 100" width="72" height="72" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51"/></svg></div>}
-                  <div style={{ position:"absolute", top:7, left:7 }}><span style={{ background:a.status==="critical"?"var(--coral)":"var(--amber)", color:"#fff", fontSize:9, fontWeight:800, padding:"2px 8px", borderRadius:20, textTransform:"uppercase" }}>{a.daysLeft}d left</span></div>
-                </div>
-                <div style={{ padding:"11px 13px" }}>
-                  <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>{a.name}</div>
-                  <div style={{ fontSize:11, color:"var(--slate-mid)", marginBottom:8 }}>{a.breed} · {a.age}</div>
-                  <button className="btn btn-primary btn-sm" style={{ width:"100%" }} onClick={e=>{e.stopPropagation();setPage("app");setTab("adopt");setSelectedAnimal(a);setApplyTarget(a);}}>Apply to Adopt</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
 
       {/* ── FOR SHELTERS ── */}
       <div style={{ background:"#f4f4f2", padding:"clamp(36px,6vw,64px) clamp(16px,4vw,48px)" }}>
@@ -1295,7 +1248,7 @@ export default function RescuPawLink() {
             <h2 style={{ fontSize:28, color:"var(--slate)", marginBottom:10 }}>Your Network Is Stronger Together</h2>
             <p style={{ color:"var(--slate-mid)", fontSize:15, maxWidth:480, margin:"0 auto", lineHeight:1.65 }}>When one shelter is full, another has space. RescuPawLink makes that connection instant.</p>
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))", gap:14, marginBottom:36 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16, marginBottom:36 }}>
             {[
               { icon:"📊", title:"Live Capacity Board", desc:"See who has space right now — updated in real time." },
               { icon:"💬", title:"Direct Coordinator Chat", desc:"Message other shelter staff instantly." },
@@ -1325,7 +1278,7 @@ export default function RescuPawLink() {
             <div style={{ fontSize:11, fontWeight:700, color:"var(--sage)", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:6 }}>Real Impact</div>
             <h2 style={{ fontSize:26, fontWeight:800 }}>Lives Saved Through the Network</h2>
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))", gap:16 }}>
+          <div className="rpl-grid-stories" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:20 }}>
             {[
               { name:"Max & Daisy", outcome:"Transferred from Dallas to Houston — both adopted within 48 hours", shelters:"Dallas Animal Services → Houston SPCA", emoji:"🐕🐕", date:"May 2025" },
               { name:"The Tuxedo Trio", outcome:"3 bonded cats moved to Denver when LA hit capacity. All 3 found one home.", shelters:"LA Animal Services → Denver Dumb Friends League", emoji:"🐈🐈🐈", date:"April 2025" },
@@ -1348,7 +1301,7 @@ export default function RescuPawLink() {
         <div style={{ maxWidth:900, margin:"0 auto", textAlign:"center" }}>
           <h2 style={{ fontSize:26, fontWeight:800, marginBottom:6 }}>How It Works</h2>
           <p style={{ color:"var(--slate-mid)", marginBottom:36, fontSize:14 }}>For shelters, rescues, adopters, and fosters</p>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))", gap:24 }}>
+          <div className="rpl-grid-how" style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:28 }}>
             {[
               { icon:"🏠", step:"01", title:"Register Free", desc:"Create your account in minutes. No fees, no commitment." },
               { icon:"📊", step:"02", title:"Share Capacity", desc:"Update your space live. Flag when you're over capacity." },
@@ -2440,4 +2393,3 @@ export default function RescuPawLink() {
     </div>
   );
 }
-
