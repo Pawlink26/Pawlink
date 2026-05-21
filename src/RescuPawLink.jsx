@@ -100,394 +100,124 @@ const css = `
     --sage-dark:   #4a6b50;
     --sage-light:  #eef4ef;
     --sage-mid:    #c7dfc9;
-    --cream:       #faf8f4;
+    --cream:       #f5f0e8;
     --warm-white:  #ffffff;
-    --sand:        #f0ebe2;
-    --border:      #e8e2d8;
+    --sand:        #ede8df;
+    --border:      #e2dbd0;
     --coral:       #c85a35;
-    --coral-light: #fdf3ef;
+    --coral-light: #fdf0eb;
     --amber:       #c47a1e;
     --amber-light: #fdf6ec;
-    --slate:       #1c1f1a;
-    --slate-mid:   #52574e;
-    --slate-light: #9ea398;
-    --shadow-sm:   0 1px 4px rgba(28,31,26,0.06);
-    --shadow-md:   0 8px 28px rgba(28,31,26,0.10);
-    --shadow-lg:   0 20px 56px rgba(28,31,26,0.13);
-    --shadow-xl:   0 32px 80px rgba(28,31,26,0.16);
-    --radius:      14px;
-    --radius-sm:   8px;
-    --radius-lg:   22px;
+    --slate:       #1a1c18;
+    --slate-mid:   #4e5449;
+    --slate-light: #9a9e95;
+    --shadow-sm:   0 1px 3px rgba(26,28,24,0.06), 0 1px 2px rgba(26,28,24,0.04);
+    --shadow-md:   0 4px 20px rgba(26,28,24,0.09), 0 2px 6px rgba(26,28,24,0.05);
+    --shadow-lg:   0 12px 40px rgba(26,28,24,0.12), 0 4px 12px rgba(26,28,24,0.06);
+    --shadow-xl:   0 24px 64px rgba(26,28,24,0.15);
+    --radius:      16px;
+    --radius-sm:   10px;
+    --radius-lg:   24px;
     --ease:        cubic-bezier(0.16, 1, 0.3, 1);
-    --ease-out:    cubic-bezier(0.0, 0, 0.2, 1);
   }
 
-  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-behavior: smooth; }
   * { -webkit-overflow-scrolling: touch; -webkit-tap-highlight-color: transparent; }
   button, a { touch-action: manipulation; }
   input, select, textarea { -webkit-appearance: none; appearance: none; }
   button { -webkit-appearance: none; }
-  body {
-    background: var(--cream);
-    font-family: 'Inter', sans-serif;
-    color: var(--slate);
-    overscroll-behavior: none;
-    -webkit-font-smoothing: antialiased;
-  }
+  body { background: var(--cream); font-family: 'DM Sans', sans-serif; color: var(--slate); overscroll-behavior: none; -webkit-font-smoothing: antialiased; line-height: 1.6; }
+  h1, h2, h3, h4 { font-family: 'Inter', sans-serif; line-height: 1.15; letter-spacing: -0.02em; }
 
-  /* ── ANIMATIONS ── */
-  @keyframes fadeUp    { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeUp    { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
   @keyframes fadeIn    { from { opacity:0; } to { opacity:1; } }
   @keyframes spin      { to { transform: rotate(360deg); } }
-  @keyframes slideDown { from { opacity:0; transform:translateY(-12px) scale(0.97); } to { opacity:1; transform:translateY(0) scale(1); } }
-  @keyframes pulse     { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(1.25); } }
-  @keyframes shimmer   { from { background-position: -200% 0; } to { background-position: 200% 0; } }
+  @keyframes slideDown { from { opacity:0; transform:translateY(-10px) scale(0.98); } to { opacity:1; transform:translateY(0) scale(1); } }
+  @keyframes pulse     { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(1.3); } }
 
-  .fade-up   { animation: fadeUp  0.6s var(--ease) both; }
-  .fade-up-1 { animation: fadeUp  0.6s 0.1s  var(--ease) both; }
-  .fade-up-2 { animation: fadeUp  0.6s 0.2s  var(--ease) both; }
-  .fade-up-3 { animation: fadeUp  0.6s 0.3s  var(--ease) both; }
-  .fade-in   { animation: fadeIn  0.35s ease  both; }
+  .fade-up   { animation: fadeUp  0.55s var(--ease) both; }
+  .fade-up-1 { animation: fadeUp  0.55s 0.08s var(--ease) both; }
+  .fade-up-2 { animation: fadeUp  0.55s 0.16s var(--ease) both; }
+  .fade-up-3 { animation: fadeUp  0.55s 0.24s var(--ease) both; }
+  .fade-in   { animation: fadeIn  0.3s ease both; }
 
-  /* ── TYPOGRAPHY ── */
-  .serif  { font-family: 'Playfair Display', serif; }
-  .sans   { font-family: 'Inter', sans-serif; }
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:7px; font-family:'DM Sans',sans-serif; font-weight:700; cursor:pointer; border:none; white-space:nowrap; letter-spacing:0.01em; transition:all 0.22s var(--ease); }
+  .btn:disabled { opacity:0.45; cursor:not-allowed; }
+  .btn-primary { background:var(--sage); color:#fff; border-radius:var(--radius-sm); box-shadow:0 1px 0 var(--sage-dark), 0 3px 12px rgba(107,143,113,0.28); }
+  .btn-primary:hover { background:var(--sage-dark); transform:translateY(-2px); box-shadow:0 1px 0 #2d4a33, 0 8px 22px rgba(107,143,113,0.38); }
+  .btn-primary:active { transform:translateY(0); }
+  .btn-secondary { background:transparent; color:var(--sage); border:1.5px solid var(--sage) !important; border-radius:var(--radius-sm); }
+  .btn-secondary:hover { background:var(--sage-light); transform:translateY(-1px); }
+  .btn-ghost { background:transparent; color:var(--slate-mid); border:1.5px solid var(--border) !important; border-radius:var(--radius-sm); }
+  .btn-ghost:hover { background:var(--sand); color:var(--slate); border-color:var(--slate-light) !important; }
+  .btn-white { background:#fff; color:var(--sage-dark); border-radius:var(--radius-sm); box-shadow:0 1px 0 rgba(0,0,0,0.06), 0 3px 12px rgba(0,0,0,0.1); font-weight:700; }
+  .btn-white:hover { transform:translateY(-2px); box-shadow:0 1px 0 rgba(0,0,0,0.08), 0 8px 22px rgba(0,0,0,0.14); }
+  .btn-sm  { padding:8px 16px;  font-size:13px; border-radius:8px !important; }
+  .btn-md  { padding:11px 22px; font-size:14px; }
+  .btn-lg  { padding:14px 30px; font-size:15px; font-weight:700; }
 
-  /* ── LAYOUT ── */
-  .page-wrap  { max-width: 1160px; margin: 0 auto; padding: 0 clamp(16px,4vw,40px); }
-  .section    { padding: clamp(56px,8vw,100px) clamp(16px,4vw,40px); }
-  .section-sm { padding: clamp(36px,5vw,64px) clamp(16px,4vw,40px); }
+  .input, .select, .textarea { width:100%; padding:12px 16px; border:1.5px solid var(--border); border-radius:var(--radius-sm); background:var(--warm-white); font-family:'DM Sans',sans-serif; font-size:14px; color:var(--slate); outline:none; transition:border-color 0.2s, box-shadow 0.2s; }
+  .input:focus, .select:focus, .textarea:focus { border-color:var(--sage); box-shadow:0 0 0 3px rgba(107,143,113,0.12); }
+  .input::placeholder, .textarea::placeholder { color:var(--slate-light); }
+  .select { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a9e95' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; cursor:pointer; padding-right:36px; }
+  .textarea { resize:vertical; line-height:1.65; }
+  .label { display:block; font-size:11px; font-weight:700; color:var(--slate-mid); margin-bottom:6px; letter-spacing:0.07em; text-transform:uppercase; }
 
-  /* ── BUTTONS ── */
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    font-family: 'Inter', sans-serif; font-weight: 600; cursor: pointer;
-    border: none; white-space: nowrap; letter-spacing: 0.01em;
-    transition: transform 0.28s var(--ease), box-shadow 0.28s var(--ease), background 0.2s ease, color 0.2s ease;
-  }
-  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .card { background:var(--warm-white); border-radius:var(--radius); border:1px solid var(--border); box-shadow:var(--shadow-sm); }
+  .card-hover { transition:transform 0.28s var(--ease), box-shadow 0.28s var(--ease); cursor:pointer; }
+  .card-hover:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); }
 
-  .btn-primary {
-    background: var(--sage); color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 0 var(--sage-dark), 0 4px 14px rgba(107,143,113,0.3);
-  }
-  .btn-primary:hover {
-    background: var(--sage-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 2px 0 #2d4a33, 0 8px 24px rgba(107,143,113,0.42);
-  }
-  .btn-primary:active { transform: translateY(0); }
+  .animal-card { background:var(--warm-white); border-radius:var(--radius-lg); border:1px solid var(--border); overflow:hidden; cursor:pointer; box-shadow:var(--shadow-sm); transition:transform 0.32s var(--ease), box-shadow 0.32s var(--ease), border-color 0.2s; }
+  .animal-card:hover { transform:translateY(-6px); box-shadow:var(--shadow-xl); border-color:transparent; }
+  .animal-card-img { overflow:hidden; position:relative; }
+  .animal-card-img img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.5s var(--ease); }
+  .animal-card:hover .animal-card-img img { transform:scale(1.07); }
 
-  .btn-secondary {
-    background: transparent; color: var(--sage);
-    border: 2px solid var(--sage) !important;
-    border-radius: 10px;
-  }
-  .btn-secondary:hover { background: var(--sage-light); transform: translateY(-1px); }
+  .badge { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:700; padding:4px 10px; border-radius:20px; letter-spacing:0.05em; text-transform:uppercase; font-family:'DM Sans',sans-serif; }
+  .badge-critical { background:var(--coral-light); color:var(--coral); border:1px solid rgba(200,90,53,0.2); }
+  .badge-urgent   { background:var(--amber-light); color:var(--amber); border:1px solid rgba(196,122,30,0.2); }
+  .badge-good     { background:#edf7ef; color:#2d7a3a; border:1px solid rgba(45,122,58,0.2); }
+  .badge-info     { background:#eff6ff; color:#2563eb; border:1px solid rgba(37,99,235,0.2); }
+  .badge-sage     { background:var(--sage-light); color:var(--sage-dark); border:1px solid var(--sage-mid); }
+  .badge-overflow { background:var(--coral-light); color:var(--coral); border:1px solid rgba(200,90,53,0.2); }
 
-  .btn-dark {
-    background: var(--slate); color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 0 #080a07, 0 4px 14px rgba(28,31,26,0.25);
-  }
-  .btn-dark:hover {
-    background: #2a2e28;
-    transform: translateY(-2px);
-    box-shadow: 0 2px 0 #080a07, 0 8px 24px rgba(28,31,26,0.35);
-  }
+  .tab-bar { display:flex; background:var(--sand); border-radius:12px; padding:4px; border:1px solid var(--border); gap:2px; }
+  .tab { flex:1; padding:10px 12px; border:none; border-radius:9px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; cursor:pointer; transition:all 0.22s var(--ease); background:transparent; color:var(--slate-mid); display:flex; align-items:center; justify-content:center; gap:6px; }
+  .tab.active { background:var(--warm-white); color:var(--slate); font-weight:700; box-shadow:var(--shadow-sm); }
 
-  .btn-coral {
-    background: var(--coral); color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 0 #9a3e22, 0 4px 14px rgba(200,90,53,0.32);
-  }
-  .btn-coral:hover { background: #a84828; transform: translateY(-2px); }
+  .modal-backdrop { position:fixed; inset:0; background:rgba(26,28,24,0.6); backdrop-filter:blur(10px) saturate(0.9); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; animation:fadeIn 0.2s ease; }
+  .modal { background:var(--warm-white); border-radius:var(--radius-lg); box-shadow:var(--shadow-xl); max-height:95vh; overflow-y:auto; animation:fadeUp 0.3s var(--ease); }
 
-  .btn-ghost {
-    background: transparent; color: var(--slate-mid);
-    border: 1.5px solid var(--border) !important;
-    border-radius: 10px;
-  }
-  .btn-ghost:hover { background: var(--sand); color: var(--slate); border-color: var(--slate-light) !important; }
+  .upload-zone { border:2px dashed var(--border); border-radius:var(--radius); padding:36px 24px; text-align:center; cursor:pointer; transition:all 0.22s; background:var(--cream); }
+  .upload-zone:hover { border-color:var(--sage); background:var(--sage-light); }
+  .progress-track { height:5px; background:var(--sand); border-radius:4px; overflow:hidden; }
+  .progress-fill  { height:100%; border-radius:4px; transition:width 0.6s var(--ease); }
 
-  .btn-white {
-    background: #fff; color: var(--slate);
-    border-radius: 10px;
-    box-shadow: 0 2px 0 rgba(0,0,0,0.08), 0 4px 14px rgba(0,0,0,0.1);
-  }
-  .btn-white:hover { transform: translateY(-2px); box-shadow: 0 2px 0 rgba(0,0,0,0.1), 0 10px 28px rgba(0,0,0,0.15); }
+  .filter-chip { padding:9px 18px; border-radius:24px; border:1.5px solid var(--border); background:var(--warm-white); color:var(--slate-mid); font-size:13px; font-weight:500; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s var(--ease); }
+  .filter-chip.active { border-color:var(--sage); background:var(--sage-light); color:var(--sage-dark); font-weight:700; }
+  .filter-chip:hover:not(.active) { border-color:var(--slate-light); color:var(--slate); background:var(--sand); }
 
-  .btn-sm  { padding: 8px 16px;  font-size: 13px; border-radius: 8px !important; }
-  .btn-md  { padding: 12px 24px; font-size: 14px; }
-  .btn-lg  { padding: 16px 36px; font-size: 16px; font-weight: 700; }
-  .btn-xl  { padding: 18px 44px; font-size: 17px; font-weight: 700; }
+  .nav-link { padding:9px 14px; border:none; background:transparent; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; color:var(--slate-mid); cursor:pointer; border-radius:9px; transition:all 0.2s var(--ease); display:flex; align-items:center; gap:6px; }
+  .nav-link:hover { background:var(--sand); color:var(--slate); }
+  .nav-link.active { background:var(--sage); color:#fff; font-weight:700; }
 
-  /* ── INPUTS ── */
-  .input, .select, .textarea {
-    width: 100%;
-    padding: 12px 16px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--warm-white);
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    color: var(--slate);
-    outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  }
-  .input:focus, .select:focus, .textarea:focus {
-    border-color: var(--sage);
-    box-shadow: 0 0 0 3px rgba(107,143,113,0.15);
-  }
-  .input::placeholder, .textarea::placeholder { color: var(--slate-light); }
-  .select {
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239ea398' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 14px center;
-    cursor: pointer;
-    padding-right: 36px;
-  }
-  .textarea { resize: vertical; line-height: 1.65; }
-  .label {
-    display: block;
-    font-size: 11px; font-weight: 700;
-    color: var(--slate-mid);
-    margin-bottom: 6px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
+  .toast { position:fixed; top:20px; right:20px; z-index:500; background:var(--slate); color:#fff; padding:14px 20px; border-radius:12px; box-shadow:var(--shadow-xl); display:flex; align-items:center; gap:10px; font-size:14px; font-weight:500; max-width:380px; animation:slideDown 0.32s var(--ease); font-family:'DM Sans',sans-serif; border:1px solid rgba(255,255,255,0.07); }
 
-  /* ── CARDS ── */
-  .card {
-    background: var(--warm-white);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow-sm);
-  }
-  .card-hover {
-    transition: transform 0.32s var(--ease), box-shadow 0.32s var(--ease);
-    cursor: pointer;
-  }
-  .card-hover:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-  }
+  .section-header { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:14px; }
+  .stat-card { background:var(--warm-white); border-radius:var(--radius); border:1px solid var(--border); padding:22px 24px; display:flex; gap:16px; align-items:center; box-shadow:var(--shadow-sm); transition:transform 0.25s var(--ease), box-shadow 0.25s var(--ease); }
+  .stat-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
+  .stat-icon { width:48px; height:48px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+  .animal-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:22px; }
+  .shelter-list { display:grid; gap:14px; }
+  .trait-pill { font-size:11px; padding:4px 10px; border-radius:6px; font-weight:600; font-family:'DM Sans',sans-serif; }
 
-  /* ── ANIMAL CARDS — Petfinder premium ── */
-  .animal-card {
-    background: var(--warm-white);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border);
-    overflow: hidden;
-    cursor: pointer;
-    box-shadow: var(--shadow-sm);
-    transition: transform 0.38s var(--ease), box-shadow 0.38s var(--ease), border-color 0.2s ease;
-  }
-  .animal-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-xl);
-    border-color: transparent;
-  }
-  .animal-card-img {
-    overflow: hidden;
-    position: relative;
-  }
-  .animal-card-img img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.6s var(--ease);
-  }
-  .animal-card:hover .animal-card-img img {
-    transform: scale(1.08);
-  }
+  ::-webkit-scrollbar { width:5px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 
-  /* ── BADGES ── */
-  .badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 10px; font-weight: 700;
-    padding: 4px 10px; border-radius: 20px;
-    letter-spacing: 0.05em; text-transform: uppercase;
-    font-family: 'Inter', sans-serif;
-  }
-  .badge-critical { background: var(--coral-light); color: var(--coral); border: 1px solid rgba(200,90,53,0.2); }
-  .badge-urgent   { background: var(--amber-light); color: var(--amber); border: 1px solid rgba(196,122,30,0.2); }
-  .badge-good     { background: #edf7ef; color: #2d7a3a; border: 1px solid rgba(45,122,58,0.2); }
-  .badge-info     { background: #eff6ff; color: #2563eb; border: 1px solid rgba(37,99,235,0.2); }
-  .badge-sage     { background: var(--sage-light); color: var(--sage-dark); border: 1px solid var(--sage-mid); }
-  .badge-overflow { background: var(--coral-light); color: var(--coral); border: 1px solid rgba(200,90,53,0.2); }
+  .safe-bottom { padding-bottom:env(safe-area-inset-bottom,16px); }
+  nav { padding-top:env(safe-area-inset-top,0); }
 
-  /* ── TABS ── */
-  .tab-bar {
-    display: flex;
-    background: var(--sand);
-    border-radius: 12px;
-    padding: 4px;
-    border: 1px solid var(--border);
-    gap: 2px;
-  }
-  .tab {
-    flex: 1; padding: 10px 12px;
-    border: none; border-radius: 9px;
-    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
-    cursor: pointer;
-    transition: all 0.25s var(--ease);
-    background: transparent; color: var(--slate-mid);
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-  }
-  .tab.active {
-    background: var(--warm-white);
-    color: var(--slate);
-    font-weight: 700;
-    box-shadow: 0 2px 8px rgba(28,31,26,0.1);
-  }
-
-  /* ── MODAL ── */
-  .modal-backdrop {
-    position: fixed; inset: 0;
-    background: rgba(28,31,26,0.6);
-    backdrop-filter: blur(10px) saturate(0.8);
-    z-index: 200;
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px;
-    animation: fadeIn 0.22s ease;
-  }
-  .modal {
-    background: var(--warm-white);
-    border-radius: 24px;
-    box-shadow: var(--shadow-xl);
-    max-height: 95vh;
-    overflow-y: auto;
-    animation: fadeUp 0.35s var(--ease);
-  }
-
-  /* ── MISC ── */
-  .upload-zone {
-    border: 2px dashed var(--border);
-    border-radius: var(--radius);
-    padding: 36px 24px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.25s var(--ease);
-    background: var(--cream);
-  }
-  .upload-zone:hover { border-color: var(--sage); background: var(--sage-light); }
-
-  .progress-track { height: 6px; background: var(--sand); border-radius: 4px; overflow: hidden; }
-  .progress-fill  { height: 100%; border-radius: 4px; transition: width 0.7s var(--ease); }
-
-  .filter-chip {
-    padding: 9px 18px; border-radius: 24px;
-    border: 1.5px solid var(--border);
-    background: var(--warm-white); color: var(--slate-mid);
-    font-size: 13px; font-weight: 500; cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    transition: all 0.22s var(--ease);
-  }
-  .filter-chip.active {
-    border-color: var(--sage);
-    background: var(--sage-light);
-    color: var(--sage-dark);
-    font-weight: 700;
-    box-shadow: 0 0 0 3px rgba(107,143,113,0.12);
-  }
-  .filter-chip:hover:not(.active) { border-color: var(--slate-light); color: var(--slate); background: var(--sand); }
-
-  .nav-link {
-    padding: 9px 15px; border: none;
-    background: transparent;
-    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
-    color: var(--slate-mid); cursor: pointer;
-    border-radius: 9px;
-    transition: all 0.2s var(--ease);
-    display: flex; align-items: center; gap: 6px;
-  }
-  .nav-link:hover { background: var(--sand); color: var(--slate); }
-  .nav-link.active { background: var(--sage); color: #fff; font-weight: 700; }
-
-  .toast {
-    position: fixed; top: 20px; right: 20px; z-index: 500;
-    background: var(--slate); color: #fff;
-    padding: 14px 22px; border-radius: 12px;
-    box-shadow: var(--shadow-xl);
-    display: flex; align-items: center; gap: 10px;
-    font-size: 14px; font-weight: 500; max-width: 380px;
-    animation: slideDown 0.38s var(--ease);
-    font-family: 'Inter', sans-serif;
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-
-  .section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
-
-  .stat-card {
-    background: var(--warm-white);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    padding: 22px 24px;
-    display: flex; gap: 16px; align-items: center;
-    box-shadow: var(--shadow-sm);
-    transition: transform 0.28s var(--ease), box-shadow 0.28s var(--ease);
-  }
-  .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-  .stat-icon { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-
-  .animal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
-  .shelter-list { display: grid; gap: 14px; }
-
-  .trait-pill {
-    font-size: 11px; padding: 4px 10px;
-    border-radius: 6px; font-weight: 600;
-    font-family: 'Inter', sans-serif;
-    letter-spacing: 0.02em;
-  }
-
-  /* ── IMPACT BANNERS ── */
-  .banner-critical {
-    background: linear-gradient(135deg, var(--coral-light), #fde8e0);
-    border: 1px solid rgba(200,90,53,0.18);
-    border-left: 4px solid var(--coral);
-    border-radius: 0 var(--radius) var(--radius) 0;
-    padding: 20px 24px;
-  }
-  .banner-amber {
-    background: linear-gradient(135deg, var(--amber-light), #fdeede);
-    border: 1px solid rgba(196,122,30,0.18);
-    border-left: 4px solid var(--amber);
-    border-radius: 0 var(--radius) var(--radius) 0;
-    padding: 20px 24px;
-  }
-  .banner-sage {
-    background: linear-gradient(135deg, var(--sage-light), #e4f0e6);
-    border: 1px solid rgba(107,143,113,0.2);
-    border-left: 4px solid var(--sage);
-    border-radius: 0 var(--radius) var(--radius) 0;
-    padding: 20px 24px;
-  }
-
-  /* ── EYEBROW LABELS ── */
-  .eyebrow {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 11px; font-weight: 700;
-    color: var(--sage); letter-spacing: 0.1em;
-    text-transform: uppercase; margin-bottom: 14px;
-    font-family: 'Inter', sans-serif;
-  }
-
-  /* ── DIVIDER ── */
-  .divider { height: 1px; background: var(--border); margin: 0; }
-
-  /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-  /* ── SAFE AREAS ── */
-  .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 16px); }
-  nav { padding-top: env(safe-area-inset-top, 0); }
-
-  /* ── RESPONSIVE ── */
   @media (max-width: 768px) {
     .hide-mobile { display: none !important; }
     .show-mobile-only { display: flex !important; }
@@ -502,27 +232,19 @@ const css = `
 
   @media (max-width: 480px) {
     .animal-grid { grid-template-columns: 1fr; }
-    .modal {
-      border-radius: 24px 24px 0 0;
-      position: fixed; bottom: 0; left: 0; right: 0;
-      max-height: 92vh; margin: 0;
-      padding-bottom: env(safe-area-inset-bottom, 16px);
-    }
-    .modal-backdrop { align-items: flex-end; padding: 0; }
-    .tab { font-size: 11px; padding: 8px 6px; }
-    .toast {
-      left: 16px; right: 16px; top: 16px; max-width: 100%;
-      padding-top: calc(env(safe-area-inset-top, 0px) + 12px);
-    }
-    .filter-chip { min-height: 44px; }
-    .card-hover:hover { transform: none; }
-    .nav-link { padding: 10px 8px; min-height: 44px; }
+    .modal { border-radius:24px 24px 0 0; position:fixed; bottom:0; left:0; right:0; max-height:92vh; margin:0; padding-bottom:env(safe-area-inset-bottom,16px); }
+    .modal-backdrop { align-items:flex-end; padding:0; }
+    .tab { font-size:11px; padding:8px 6px; }
+    .toast { left:16px; right:16px; top:16px; max-width:100%; padding-top:calc(env(safe-area-inset-top,0px) + 12px); }
+    .filter-chip { min-height:44px; }
+    .card-hover:hover { transform:none; }
+    .nav-link { padding:10px 8px; min-height:44px; }
   }
 
   @media (max-width: 480px) and (hover: none) {
-    .card-hover:active { transform: scale(0.98); }
-    .animal-card:active { transform: scale(0.98); }
-    button:active { opacity: 0.8; }
+    .card-hover:active { transform:scale(0.98); }
+    .animal-card:active { transform:scale(0.98); }
+    button:active { opacity:0.82; }
   }
 `;
 const styleEl = document.createElement("style");
@@ -1018,6 +740,7 @@ export default function RescuPawLink() {
     "s2-s3": [{ id:1, from:"Dallas Animal Services", fromId:"s3", to:"s2", time:"10:32 AM", text:"We're critically over capacity. Can you take 3 dogs this week?" }, { id:2, from:"Houston SPCA", fromId:"s2", to:"s3", time:"10:45 AM", text:"Yes! We can take up to 5. Arrange transport by Thursday?" }],
   });
   const [applyF,  setApplyF]  = useState({ name:"", email:"", phone:"", message:"", type:"adopt" });
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const fileRef = useRef();
 
@@ -1259,12 +982,11 @@ export default function RescuPawLink() {
       {toast && <Toast msg={toast}/>}
 
       {/* ── NAV ── */}
-      { (()=>{
-        const [mobileOpen, setMobileOpen] = React.useState(false);
+      { (() => {
         const NAV_LINKS = [["Pet Search",()=>{setPage("app");setTab("adopt");setMobileOpen(false);}],["Shelters",()=>{setPage("app");setTab("network");setMobileOpen(false);}],["Community",()=>{setPage("app");setTab("chat");setMobileOpen(false);}],["About",null],["Resources",null],["Contact",null]];
         return (
           <nav style={{ background:"#f5f0e8", borderBottom:"1px solid #e0d8cc", position:"sticky", top:0, zIndex:100 }}>
-            <div style={{ maxWidth:1160, margin:"0 auto", padding:"0 20px", height:62, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+            <div style={{ maxWidth:1160, margin:"0 auto", padding:"0 clamp(14px,3vw,20px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
 
               {/* Logo */}
               <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:10, padding:0 }}>
@@ -1325,7 +1047,7 @@ export default function RescuPawLink() {
       })() }
 
       {/* ── HERO — rounded card photo ── */}
-      <div style={{ maxWidth:1160, margin:"0 auto", padding:"28px 32px 0" }}>
+      <div style={{ maxWidth:1160, margin:"0 auto", padding:"clamp(12px,3vw,28px) clamp(12px,3vw,32px) 0" }}>
         <div style={{ position:"relative", borderRadius:22, overflow:"hidden", height:"clamp(320px,52vh,560px)" }}>
           <img src="https://i.imgur.com/VxvRJfd.png" alt="Dog and cat"
             style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"55% center" }}
@@ -1357,7 +1079,7 @@ export default function RescuPawLink() {
 
       {/* ── 4 FEATURE TILES with descriptions ── */}
       <div style={{ maxWidth:1160, margin:"0 auto", padding:"20px 32px" }}>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14 }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:12 }}>
           {[
             {
               icon:<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
@@ -1437,7 +1159,7 @@ export default function RescuPawLink() {
           <h2 style={{ fontSize:18, fontWeight:800, color:"var(--slate)" }}>Adoptable Pets</h2>
           <button onClick={()=>{setPage("app");setTab("adopt");}} style={{ fontSize:13, fontWeight:700, color:"var(--sage)", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit" }}>See All →</button>
         </div>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))", gap:12 }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))", gap:12 }}>
           {animals.slice(0,6).map((a,i)=>(
             <div key={a.id} style={{ background:"#fff", borderRadius:12, overflow:"hidden", cursor:"pointer", border:"1px solid #e8e0d4", transition:"all 0.18s" }}
               onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
@@ -1470,7 +1192,7 @@ export default function RescuPawLink() {
       <div style={{ height:1, background:"#e0d8cc", margin:"8px 32px" }}/>
 
       {/* ── FEATURED ANIMALS ── */}
-      <div style={{ maxWidth:1160, margin:"0 auto", padding:"36px 32px" }}>
+      <div style={{ maxWidth:1160, margin:"0 auto", padding:"clamp(28px,5vw,48px) clamp(16px,3vw,32px)" }}>
         <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:24, flexWrap:"wrap", gap:12 }}>
           <div>
             <div style={{ fontSize:11, fontWeight:800, color:"var(--coral)", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>⚠ Needs You Now</div>
@@ -1510,13 +1232,13 @@ export default function RescuPawLink() {
       </div>
 
       {/* ── DOGS ── */}
-      <div style={{ background:"#ede8df", padding:"36px 32px" }}>
+      <div style={{ background:"#ede8df", padding:"clamp(28px,5vw,48px) clamp(16px,3vw,32px)" }}>
         <div style={{ maxWidth:1160, margin:"0 auto" }}>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20, flexWrap:"wrap", gap:12 }}>
             <h2 style={{ fontSize:22, fontWeight:800 }}>🐕 Dogs Looking for Homes</h2>
             <button className="btn btn-secondary btn-md" style={{ borderColor:"#d0c8bc" }} onClick={()=>{setPage("app");setTab("adopt");setFSpecies("Dog");}}>See All Dogs →</button>
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))", gap:14 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))", gap:14 }}>
             {animals.filter(a=>a.species==="Dog").slice(0,4).map((a,i)=>(
               <div key={a.id} className="fade-up" style={{ animationDelay:`${i*0.07}s`, background:"#fff", borderRadius:14, overflow:"hidden", cursor:"pointer", border:"1px solid #e8e0d4", transition:"all 0.18s" }}
                 onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
@@ -1538,13 +1260,13 @@ export default function RescuPawLink() {
       </div>
 
       {/* ── CATS ── */}
-      <div style={{ background:"#fff", padding:"36px 32px" }}>
+      <div style={{ background:"#fff", padding:"clamp(28px,5vw,48px) clamp(16px,3vw,32px)" }}>
         <div style={{ maxWidth:1160, margin:"0 auto" }}>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20, flexWrap:"wrap", gap:12 }}>
             <h2 style={{ fontSize:22, fontWeight:800 }}>🐈 Cats Looking for Homes</h2>
             <button className="btn btn-secondary btn-md" style={{ borderColor:"#d0c8bc" }} onClick={()=>{setPage("app");setTab("adopt");setFSpecies("Cat");}}>See All Cats →</button>
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))", gap:14 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))", gap:14 }}>
             {animals.filter(a=>a.species==="Cat").slice(0,4).map((a,i)=>(
               <div key={a.id} className="fade-up" style={{ animationDelay:`${i*0.07}s`, background:"#fff", borderRadius:14, overflow:"hidden", cursor:"pointer", border:"1px solid #e8e0d4", transition:"all 0.18s" }}
                 onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
@@ -1566,14 +1288,14 @@ export default function RescuPawLink() {
       </div>
 
       {/* ── FOR SHELTERS ── */}
-      <div style={{ background:"linear-gradient(135deg,#2d4a32,#1a2e1d)", padding:"56px 32px" }}>
+      <div style={{ background:"linear-gradient(135deg,#2d4a32,#1a2e1d)", padding:"clamp(36px,6vw,64px) clamp(16px,3vw,32px)" }}>
         <div style={{ maxWidth:1160, margin:"0 auto" }}>
           <div style={{ textAlign:"center", marginBottom:36 }}>
             <div style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.45)", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:8 }}>For Shelters & Rescues</div>
             <h2 style={{ fontSize:28, color:"#fff", marginBottom:10 }}>Your Network Is Stronger Together</h2>
             <p style={{ color:"rgba(255,255,255,0.65)", fontSize:15, maxWidth:480, margin:"0 auto", lineHeight:1.65 }}>When one shelter is full, another has space. RescuPawLink makes that connection instant.</p>
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(250px,1fr))", gap:14, marginBottom:36 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))", gap:14, marginBottom:36 }}>
             {[
               { icon:"📊", title:"Live Capacity Board", desc:"See who has space right now — updated in real time." },
               { icon:"💬", title:"Direct Coordinator Chat", desc:"Message other shelter staff instantly." },
@@ -1582,7 +1304,7 @@ export default function RescuPawLink() {
               { icon:"🐾", title:"Animal Listings", desc:"Post animals with photos, health info, and urgency timers." },
               { icon:"📈", title:"Network Reach", desc:"Your listings reach adopters and fosters nationwide." },
             ].map((b,i)=>(
-              <div key={b.title} className="fade-up" style={{ animationDelay:`${i*0.06}s`, background:"rgba(255,255,255,0.07)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:12, padding:"18px 20px" }}>
+              <div key={b.title} className="fade-up" style={{ animationDelay:`${i*0.06}s`, background:"rgba(255,255,255,0.08)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:14, padding:"20px 22px" }}>
                 <div style={{ fontSize:22, marginBottom:8 }}>{b.icon}</div>
                 <div style={{ fontWeight:700, color:"#fff", fontSize:14, marginBottom:4 }}>{b.title}</div>
                 <div style={{ fontSize:12, color:"rgba(255,255,255,0.58)", lineHeight:1.6 }}>{b.desc}</div>
@@ -1597,7 +1319,7 @@ export default function RescuPawLink() {
       </div>
 
       {/* ── SUCCESS STORIES ── */}
-      <div style={{ background:"#f5f0e8", padding:"48px 32px" }}>
+      <div style={{ background:"#f5f0e8", padding:"clamp(32px,5vw,56px) clamp(16px,3vw,32px)" }}>
         <div style={{ maxWidth:1160, margin:"0 auto" }}>
           <div style={{ textAlign:"center", marginBottom:28 }}>
             <div style={{ fontSize:11, fontWeight:700, color:"var(--sage)", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:6 }}>Real Impact</div>
@@ -1622,7 +1344,7 @@ export default function RescuPawLink() {
       </div>
 
       {/* ── HOW IT WORKS ── */}
-      <div style={{ background:"#fff", padding:"48px 32px" }}>
+      <div style={{ background:"#fff", padding:"clamp(32px,5vw,56px) clamp(16px,3vw,32px)" }}>
         <div style={{ maxWidth:960, margin:"0 auto", textAlign:"center" }}>
           <h2 style={{ fontSize:26, fontWeight:800, marginBottom:6 }}>How It Works</h2>
           <p style={{ color:"var(--slate-mid)", marginBottom:36, fontSize:14 }}>For shelters, rescues, adopters, and fosters</p>
@@ -1645,7 +1367,7 @@ export default function RescuPawLink() {
       </div>
 
       {/* ── CTA ── */}
-      <div style={{ background:"var(--sage)", padding:"44px 32px", textAlign:"center" }}>
+      <div style={{ background:"var(--sage)", padding:"clamp(28px,5vw,48px) clamp(16px,3vw,32px)", textAlign:"center" }}>
         <h2 style={{ fontSize:26, fontWeight:800, color:"#fff", marginBottom:8 }}>Together, we save more lives.</h2>
         <p style={{ color:"rgba(255,255,255,0.8)", marginBottom:24, fontSize:15, maxWidth:400, margin:"0 auto 24px", lineHeight:1.6 }}>Join hundreds of shelters using RescuPawLink to coordinate and save animals.</p>
         <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
@@ -1689,7 +1411,7 @@ export default function RescuPawLink() {
   if (page === "login") return (
     <div style={{ minHeight:"100vh", background:"var(--cream)", display:"flex", flexDirection:"column", fontFamily:"'DM Sans',sans-serif" }}>
       {/* Auth Nav */}
-      <nav style={{ background:"#fff", borderBottom:"1px solid var(--border)", padding:"0 32px", height:64, display:"flex", alignItems:"center", justifyContent:"space-between", boxShadow:"0 1px 6px rgba(0,0,0,0.04)" }}>
+      <nav style={{ background:"var(--cream)", borderBottom:"1px solid var(--border)", padding:"0 32px", height:64, display:"flex", alignItems:"center", justifyContent:"space-between", boxShadow:"0 1px 6px rgba(0,0,0,0.04)" }}>
         <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:9 }}>
           <div style={{ width:34, height:34, background:"var(--sage)", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center" }}>
             <svg viewBox="0 0 100 100" width="19" height="19" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z"/></svg>
@@ -1698,7 +1420,7 @@ export default function RescuPawLink() {
         </button>
         <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", color:"var(--slate-mid)", cursor:"pointer", fontSize:13, fontFamily:"inherit", display:"flex", alignItems:"center", gap:5 }}>← Back to site</button>
       </nav>
-      <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
+      <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", padding:24, background:"var(--cream)" }}>
       <div className="card fade-up" style={{ width:"100%", maxWidth:460, padding:"36px 40px", boxShadow:"0 8px 40px rgba(0,0,0,0.1)", border:"1px solid var(--border)" }}>
         <div style={{ marginBottom:24 }}>
           <h1 style={{ fontFamily:"'Inter',sans-serif", fontSize:22, fontWeight:800, color:"var(--slate)", marginBottom:4 }}>
@@ -1763,8 +1485,8 @@ export default function RescuPawLink() {
       {toast && <Toast msg={toast} />}
 
       {/* Header */}
-      <header style={{ background:"#fff", borderBottom:"1px solid var(--border)", position:"sticky", top:0, zIndex:100, boxShadow:"0 1px 6px rgba(0,0,0,0.04)" }}>
-        <div style={{ maxWidth:1200, margin:"0 auto", padding:"0 clamp(12px,3vw,32px)", height:64, display:"flex", alignItems:"center", justifyContent:"space-between", gap:8 }}>
+      <header style={{ background:"var(--cream)", borderBottom:"1px solid var(--border)", position:"sticky", top:0, zIndex:100, boxShadow:"0 1px 4px rgba(26,28,24,0.05)" }}>
+        <div style={{ maxWidth:1160, margin:"0 auto", padding:"0 clamp(14px,3vw,32px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", gap:8 }}>
           <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", gap:9 }}>
             <div style={{ width:34, height:34, background:"var(--sage)", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center" }}>
               <svg viewBox="0 0 100 100" width="19" height="19" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z"/></svg>
@@ -1801,7 +1523,7 @@ export default function RescuPawLink() {
         </div>
       </header>
 
-      <main style={{ maxWidth:1200, margin:"0 auto", padding:"32px 32px" }}>
+      <main style={{ maxWidth:1160, margin:"0 auto", padding:"clamp(20px,3vw,32px) clamp(14px,3vw,32px)" }}>
 
         {/* ══ ADOPTABLE ANIMALS ══════════════════════════════ */}
         {tab === "adopt" && (
@@ -1809,7 +1531,7 @@ export default function RescuPawLink() {
             <div className="section-header">
               <div>
                 <h1 style={{ fontSize:26, marginBottom:5, fontFamily:"'Inter',sans-serif", fontWeight:800, letterSpacing:"-0.5px" }}>Adoptable Animals</h1>
-                <p style={{ color:"var(--slate-mid)", fontSize:14, fontFamily:"'Inter',sans-serif" }}>Real listings from verified shelters — sorted by urgency. Apply directly from any listing.</p>
+                <p style={{ color:"var(--slate-mid)", fontSize:14 }}>Real listings from verified shelters — sorted by urgency. Apply directly from any listing.</p>
               </div>
               <div style={{ fontSize:13, color:"var(--slate-mid)", background:"var(--warm-white)", border:"1px solid var(--border)", borderRadius:10, padding:"8px 14px" }}>
                 <strong style={{ color:"var(--slate)" }}>{filteredAnimals.length}</strong> animals found
@@ -1845,7 +1567,7 @@ export default function RescuPawLink() {
             )}
 
             {/* Filter bar */}
-            <div style={{ background:"#fff", border:"1px solid var(--border)", borderRadius:12, padding:"16px 20px", marginBottom:24, boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
+            <div style={{ background:"var(--warm-white)", border:"1px solid var(--border)", borderRadius:14, padding:"18px 22px", marginBottom:26, boxShadow:"var(--shadow-sm)" }}>
               <div style={{ display:"flex", gap:12, flexWrap:"wrap", alignItems:"flex-end" }}>
                 {/* Search */}
                 <div style={{ flex:"1 1 180px", minWidth:160 }}>
@@ -1897,7 +1619,7 @@ export default function RescuPawLink() {
                 {filteredAnimals.map((a,i) => (
                   <div key={a.id} className="animal-card fade-up" style={{ animationDelay:`${i*0.05}s` }} onClick={()=>setSelectedAnimal(a)}>
                     {/* Photo with zoom on hover */}
-                    <div className="animal-card-img" style={{ height:210, background:a.photos?.[0]?"transparent":`linear-gradient(135deg,${a.status==="critical"?"var(--coral-light),#f9e0d8":a.status==="urgent"?"var(--amber-light),#f5e8cc":"var(--sage-light),#e4eed6"})` }}>
+                    <div className="animal-card-img" style={{ height:220, background:a.photos?.[0]?"transparent":`linear-gradient(135deg,${a.status==="critical"?"var(--coral-light),#f9e0d8":a.status==="urgent"?"var(--amber-light),#f5e8cc":"var(--sage-light),#e4eed6"})` }}>
                       {a.photos?.[0]
                         ? <img src={a.photos[0]} alt={a.name} />
                         : <div style={{ height:"100%", display:"flex", alignItems:"center", justifyContent:"center" }}>{a.species==="Dog"?<svg viewBox="0 0 100 100" width="88" height="88" fill="none" stroke={a.status==="critical"?"var(--coral)":"var(--amber)"} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z"/></svg>:a.species==="Cat"?<svg viewBox="0 0 100 100" width="88" height="88" fill="none" stroke="var(--sage)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51"/></svg>:<span style={{fontSize:70}}>🐾</span>}</div>
@@ -1958,7 +1680,7 @@ export default function RescuPawLink() {
 
             {/* Sign-in prompt for guests */}
             {!isLoggedIn && (
-              <div style={{ background:"linear-gradient(135deg,#eef4ef,#f0f7f0)", border:"1px solid #c7dfc9", borderRadius:16, padding:"24px 28px", marginBottom:24, display:"grid", gridTemplateColumns:"1fr auto", gap:20, alignItems:"center", flexWrap:"wrap" }}>
+              <div style={{ background:"linear-gradient(135deg,var(--sage-light),#e8f2e9)", border:"1px solid var(--sage-mid)", borderRadius:16, padding:"24px 28px", marginBottom:24, display:"grid", gridTemplateColumns:"1fr auto", gap:20, alignItems:"center", flexWrap:"wrap" }}>
                 <div>
                   <div style={{ fontWeight:700, fontSize:16, color:"var(--slate)", marginBottom:6 }}>🔗 Want to coordinate with these shelters?</div>
                   <p style={{ fontSize:14, color:"var(--slate-mid)", lineHeight:1.55 }}>Registered shelters can see full contact details, claim available space, send transfer requests, and message coordinators directly — all in one place.</p>
