@@ -88,201 +88,441 @@ async function sendTransferEmail(data) {
 // ── Google Fonts ──────────────────────────────────────────
 const fontLink = document.createElement("link");
 fontLink.rel = "stylesheet";
-fontLink.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap";
+fontLink.href = "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@400;500;600;700;800;900&display=swap";
 document.head.appendChild(fontLink);
+
 
 const css = `
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
   :root {
-    --cream: #f7f4ef;
-    --warm-white: #fffdf9;
-    --sand: #e8e0d0;
-    --sage: #6b8f71;
-    --sage-light: #eef4ef;
-    --sage-dark: #4a6b50;
-    --amber: #d97706;
-    --amber-light: #fef3c7;
-    --coral: #e05c3a;
-    --coral-light: #fef0eb;
-    --slate: #374151;
-    --slate-mid: #6b7280;
-    --slate-light: #9ca3af;
-    --border: #e5ddd0;
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-    --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
-    --shadow-lg: 0 12px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
-    --radius: 16px;
-    --radius-sm: 10px;
+    --sage:        #6b8f71;
+    --sage-dark:   #4a6b50;
+    --sage-light:  #eef4ef;
+    --sage-mid:    #c7dfc9;
+    --cream:       #faf8f4;
+    --warm-white:  #ffffff;
+    --sand:        #f0ebe2;
+    --border:      #e8e2d8;
+    --coral:       #c85a35;
+    --coral-light: #fdf3ef;
+    --amber:       #c47a1e;
+    --amber-light: #fdf6ec;
+    --slate:       #1c1f1a;
+    --slate-mid:   #52574e;
+    --slate-light: #9ea398;
+    --shadow-sm:   0 1px 4px rgba(28,31,26,0.06);
+    --shadow-md:   0 8px 28px rgba(28,31,26,0.10);
+    --shadow-lg:   0 20px 56px rgba(28,31,26,0.13);
+    --shadow-xl:   0 32px 80px rgba(28,31,26,0.16);
+    --radius:      14px;
+    --radius-sm:   8px;
+    --radius-lg:   22px;
+    --ease:        cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out:    cubic-bezier(0.0, 0, 0.2, 1);
   }
-  body { background: var(--cream); font-family: 'DM Sans', sans-serif; }
-  h1,h2,h3,h4 { font-family: 'Inter', sans-serif; }
 
-  @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
-  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
-  @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.6; transform:scale(1.15); } }
-
-  .fade-up  { animation: fadeUp 0.5s ease both; }
-  .fade-up-1{ animation: fadeUp 0.5s 0.08s ease both; }
-  .fade-up-2{ animation: fadeUp 0.5s 0.16s ease both; }
-  .fade-up-3{ animation: fadeUp 0.5s 0.24s ease both; }
-  .fade-in  { animation: fadeIn 0.3s ease both; }
-
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-    font-family: 'DM Sans', sans-serif; font-weight: 600; cursor: pointer;
-    border-radius: var(--radius-sm); transition: all 0.18s; border: none;
-    white-space: nowrap;
-  }
-  .btn-primary { background: var(--sage); color: #fff; box-shadow: 0 2px 8px rgba(107,143,113,0.28); }
-  .btn-primary:hover { background: var(--sage-dark); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(107,143,113,0.38); }
-  .btn-secondary { background: transparent; color: var(--sage); border: 1.5px solid var(--sage) !important; }
-  .btn-secondary:hover { background: var(--sage-light); }
-  .btn-coral { background: var(--coral); color: #fff; box-shadow: 0 2px 8px rgba(224,92,58,0.28); }
-  .btn-coral:hover { background: #c4482a; transform: translateY(-1px); }
-  .btn-ghost { background: transparent; color: var(--slate-mid); border: 1px solid var(--border) !important; }
-  .btn-ghost:hover { background: var(--cream); color: var(--slate); }
-  .btn-sm { padding: 8px 16px; font-size: 13px; }
-  .btn-md { padding: 11px 22px; font-size: 14px; }
-  .btn-lg { padding: 14px 32px; font-size: 16px; }
-
-  .input, .select, .textarea {
-    width: 100%; padding: 11px 15px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-    background: var(--warm-white); font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--slate);
-    outline: none; transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  .input:focus, .select:focus, .textarea:focus { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(107,143,113,0.14); }
-  .input::placeholder, .textarea::placeholder { color: var(--slate-light); }
-  .select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 13px center; cursor: pointer; }
-  .textarea { resize: vertical; font-family: 'DM Sans', sans-serif; }
-  .label { display: block; font-size: 12px; font-weight: 600; color: var(--slate-mid); margin-bottom: 5px; letter-spacing: 0.04em; text-transform: uppercase; }
-
-  .card { background: var(--warm-white); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
-  .card-hover { transition: box-shadow 0.2s, transform 0.2s; }
-  .card-hover:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
-
-  .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.04em; text-transform: uppercase; }
-  .badge-critical { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
-  .badge-urgent   { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
-  .badge-good     { background: #dcfce7; color: #16a34a; border: 1px solid #86efac; }
-  .badge-info     { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
-  .badge-sage     { background: var(--sage-light); color: var(--sage-dark); border: 1px solid #c7dfc9; }
-  .badge-overflow { background: #fef0eb; color: var(--coral); border: 1px solid #fbd0c3; }
-
-  .tab-bar { display: flex; background: var(--cream); border-radius: 12px; padding: 4px; border: 1px solid var(--border); }
-  .tab { flex: 1; padding: 9px 10px; border: none; border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.18s; background: transparent; color: var(--slate-mid); display: flex; align-items: center; justify-content: center; gap: 6px; }
-  .tab.active { background: #fff; color: var(--slate); font-weight: 600; box-shadow: var(--shadow-sm); }
-
-  .modal-backdrop { position: fixed; inset: 0; background: rgba(55,65,81,0.5); backdrop-filter: blur(6px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.2s ease; }
-  .modal { background: var(--warm-white); border-radius: 20px; box-shadow: var(--shadow-lg); max-height: 95vh; overflow-y: auto; animation: fadeUp 0.25s ease; }
-
-  .upload-zone { border: 2px dashed var(--border); border-radius: var(--radius-sm); padding: 28px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--cream); }
-  .upload-zone:hover { border-color: var(--sage); background: var(--sage-light); }
-
-  .progress-track { height: 7px; background: var(--sand); border-radius: 4px; overflow: hidden; }
-  .progress-fill  { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
-
-  .filter-chip { padding: 7px 16px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--warm-white); color: var(--slate-mid); font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
-  .filter-chip.active { border-color: var(--sage); background: var(--sage-light); color: var(--sage-dark); font-weight: 600; }
-  .filter-chip:hover:not(.active) { border-color: var(--slate-light); color: var(--slate); }
-
-  .nav-link { padding: 8px 14px; border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--slate-mid); cursor: pointer; border-radius: 8px; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
-  .nav-link:hover { background: var(--cream); color: var(--slate); }
-  .nav-link.active { background: var(--sage); color: #fff; font-weight: 600; }
-
-  .toast { position: fixed; top: 20px; right: 20px; z-index: 500; background: var(--sage); color: #fff; padding: 13px 20px; border-radius: 12px; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 500; max-width: 360px; animation: slideDown 0.3s ease; }
-
-  .section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
-
-  .stat-card { background: var(--warm-white); border-radius: var(--radius); border: 1px solid var(--border); padding: 20px; display: flex; gap: 14px; align-items: center; }
-  .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-
-  .animal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 20px; }
-  .shelter-list { display: grid; gap: 14px; }
-
-  .trait-pill { font-size: 12px; padding: 4px 11px; border-radius: 7px; font-weight: 600; }
-
-
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--sand); border-radius: 3px; }
-
-  /* ── iOS & Android fixes ── */
-
-  /* Prevent iOS font size bump on orientation change */
   html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-
-  /* Smooth scrolling everywhere */
-  * { -webkit-overflow-scrolling: touch; }
-
-  /* Remove iOS tap highlight */
-  * { -webkit-tap-highlight-color: transparent; }
-
-  /* Prevent double-tap zoom on buttons */
+  * { -webkit-overflow-scrolling: touch; -webkit-tap-highlight-color: transparent; }
   button, a { touch-action: manipulation; }
+  input, select, textarea { -webkit-appearance: none; appearance: none; }
+  button { -webkit-appearance: none; }
+  body {
+    background: var(--cream);
+    font-family: 'Inter', sans-serif;
+    color: var(--slate);
+    overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+  }
 
-  /* Fix iOS input styling */
-  input, select, textarea {
-    -webkit-appearance: none;
-    appearance: none;
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp    { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn    { from { opacity:0; } to { opacity:1; } }
+  @keyframes spin      { to { transform: rotate(360deg); } }
+  @keyframes slideDown { from { opacity:0; transform:translateY(-12px) scale(0.97); } to { opacity:1; transform:translateY(0) scale(1); } }
+  @keyframes pulse     { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(1.25); } }
+  @keyframes shimmer   { from { background-position: -200% 0; } to { background-position: 200% 0; } }
+
+  .fade-up   { animation: fadeUp  0.6s var(--ease) both; }
+  .fade-up-1 { animation: fadeUp  0.6s 0.1s  var(--ease) both; }
+  .fade-up-2 { animation: fadeUp  0.6s 0.2s  var(--ease) both; }
+  .fade-up-3 { animation: fadeUp  0.6s 0.3s  var(--ease) both; }
+  .fade-in   { animation: fadeIn  0.35s ease  both; }
+
+  /* ── TYPOGRAPHY ── */
+  .serif  { font-family: 'Playfair Display', serif; }
+  .sans   { font-family: 'Inter', sans-serif; }
+
+  /* ── LAYOUT ── */
+  .page-wrap  { max-width: 1160px; margin: 0 auto; padding: 0 clamp(16px,4vw,40px); }
+  .section    { padding: clamp(56px,8vw,100px) clamp(16px,4vw,40px); }
+  .section-sm { padding: clamp(36px,5vw,64px) clamp(16px,4vw,40px); }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font-family: 'Inter', sans-serif; font-weight: 600; cursor: pointer;
+    border: none; white-space: nowrap; letter-spacing: 0.01em;
+    transition: transform 0.28s var(--ease), box-shadow 0.28s var(--ease), background 0.2s ease, color 0.2s ease;
+  }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-primary {
+    background: var(--sage); color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 0 var(--sage-dark), 0 4px 14px rgba(107,143,113,0.3);
+  }
+  .btn-primary:hover {
+    background: var(--sage-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 0 #2d4a33, 0 8px 24px rgba(107,143,113,0.42);
+  }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    background: transparent; color: var(--sage);
+    border: 2px solid var(--sage) !important;
     border-radius: 10px;
   }
+  .btn-secondary:hover { background: var(--sage-light); transform: translateY(-1px); }
 
-  /* Fix iOS button appearance */
-  button { -webkit-appearance: none; }
+  .btn-dark {
+    background: var(--slate); color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 0 #080a07, 0 4px 14px rgba(28,31,26,0.25);
+  }
+  .btn-dark:hover {
+    background: #2a2e28;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 0 #080a07, 0 8px 24px rgba(28,31,26,0.35);
+  }
 
-  /* Safe area insets for iPhone notch/Dynamic Island */
+  .btn-coral {
+    background: var(--coral); color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 0 #9a3e22, 0 4px 14px rgba(200,90,53,0.32);
+  }
+  .btn-coral:hover { background: #a84828; transform: translateY(-2px); }
+
+  .btn-ghost {
+    background: transparent; color: var(--slate-mid);
+    border: 1.5px solid var(--border) !important;
+    border-radius: 10px;
+  }
+  .btn-ghost:hover { background: var(--sand); color: var(--slate); border-color: var(--slate-light) !important; }
+
+  .btn-white {
+    background: #fff; color: var(--slate);
+    border-radius: 10px;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.08), 0 4px 14px rgba(0,0,0,0.1);
+  }
+  .btn-white:hover { transform: translateY(-2px); box-shadow: 0 2px 0 rgba(0,0,0,0.1), 0 10px 28px rgba(0,0,0,0.15); }
+
+  .btn-sm  { padding: 8px 16px;  font-size: 13px; border-radius: 8px !important; }
+  .btn-md  { padding: 12px 24px; font-size: 14px; }
+  .btn-lg  { padding: 16px 36px; font-size: 16px; font-weight: 700; }
+  .btn-xl  { padding: 18px 44px; font-size: 17px; font-weight: 700; }
+
+  /* ── INPUTS ── */
+  .input, .select, .textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--warm-white);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--slate);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .input:focus, .select:focus, .textarea:focus {
+    border-color: var(--sage);
+    box-shadow: 0 0 0 3px rgba(107,143,113,0.15);
+  }
+  .input::placeholder, .textarea::placeholder { color: var(--slate-light); }
+  .select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239ea398' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    cursor: pointer;
+    padding-right: 36px;
+  }
+  .textarea { resize: vertical; line-height: 1.65; }
+  .label {
+    display: block;
+    font-size: 11px; font-weight: 700;
+    color: var(--slate-mid);
+    margin-bottom: 6px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--warm-white);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+  .card-hover {
+    transition: transform 0.32s var(--ease), box-shadow 0.32s var(--ease);
+    cursor: pointer;
+  }
+  .card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* ── ANIMAL CARDS — Petfinder premium ── */
+  .animal-card {
+    background: var(--warm-white);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.38s var(--ease), box-shadow 0.38s var(--ease), border-color 0.2s ease;
+  }
+  .animal-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+    border-color: transparent;
+  }
+  .animal-card-img {
+    overflow: hidden;
+    position: relative;
+  }
+  .animal-card-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s var(--ease);
+  }
+  .animal-card:hover .animal-card-img img {
+    transform: scale(1.08);
+  }
+
+  /* ── BADGES ── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; font-weight: 700;
+    padding: 4px 10px; border-radius: 20px;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+  }
+  .badge-critical { background: var(--coral-light); color: var(--coral); border: 1px solid rgba(200,90,53,0.2); }
+  .badge-urgent   { background: var(--amber-light); color: var(--amber); border: 1px solid rgba(196,122,30,0.2); }
+  .badge-good     { background: #edf7ef; color: #2d7a3a; border: 1px solid rgba(45,122,58,0.2); }
+  .badge-info     { background: #eff6ff; color: #2563eb; border: 1px solid rgba(37,99,235,0.2); }
+  .badge-sage     { background: var(--sage-light); color: var(--sage-dark); border: 1px solid var(--sage-mid); }
+  .badge-overflow { background: var(--coral-light); color: var(--coral); border: 1px solid rgba(200,90,53,0.2); }
+
+  /* ── TABS ── */
+  .tab-bar {
+    display: flex;
+    background: var(--sand);
+    border-radius: 12px;
+    padding: 4px;
+    border: 1px solid var(--border);
+    gap: 2px;
+  }
+  .tab {
+    flex: 1; padding: 10px 12px;
+    border: none; border-radius: 9px;
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s var(--ease);
+    background: transparent; color: var(--slate-mid);
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .tab.active {
+    background: var(--warm-white);
+    color: var(--slate);
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(28,31,26,0.1);
+  }
+
+  /* ── MODAL ── */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(28,31,26,0.6);
+    backdrop-filter: blur(10px) saturate(0.8);
+    z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.22s ease;
+  }
+  .modal {
+    background: var(--warm-white);
+    border-radius: 24px;
+    box-shadow: var(--shadow-xl);
+    max-height: 95vh;
+    overflow-y: auto;
+    animation: fadeUp 0.35s var(--ease);
+  }
+
+  /* ── MISC ── */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 36px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s var(--ease);
+    background: var(--cream);
+  }
+  .upload-zone:hover { border-color: var(--sage); background: var(--sage-light); }
+
+  .progress-track { height: 6px; background: var(--sand); border-radius: 4px; overflow: hidden; }
+  .progress-fill  { height: 100%; border-radius: 4px; transition: width 0.7s var(--ease); }
+
+  .filter-chip {
+    padding: 9px 18px; border-radius: 24px;
+    border: 1.5px solid var(--border);
+    background: var(--warm-white); color: var(--slate-mid);
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.22s var(--ease);
+  }
+  .filter-chip.active {
+    border-color: var(--sage);
+    background: var(--sage-light);
+    color: var(--sage-dark);
+    font-weight: 700;
+    box-shadow: 0 0 0 3px rgba(107,143,113,0.12);
+  }
+  .filter-chip:hover:not(.active) { border-color: var(--slate-light); color: var(--slate); background: var(--sand); }
+
+  .nav-link {
+    padding: 9px 15px; border: none;
+    background: transparent;
+    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
+    color: var(--slate-mid); cursor: pointer;
+    border-radius: 9px;
+    transition: all 0.2s var(--ease);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .nav-link:hover { background: var(--sand); color: var(--slate); }
+  .nav-link.active { background: var(--sage); color: #fff; font-weight: 700; }
+
+  .toast {
+    position: fixed; top: 20px; right: 20px; z-index: 500;
+    background: var(--slate); color: #fff;
+    padding: 14px 22px; border-radius: 12px;
+    box-shadow: var(--shadow-xl);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px; font-weight: 500; max-width: 380px;
+    animation: slideDown 0.38s var(--ease);
+    font-family: 'Inter', sans-serif;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
+
+  .stat-card {
+    background: var(--warm-white);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 22px 24px;
+    display: flex; gap: 16px; align-items: center;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.28s var(--ease), box-shadow 0.28s var(--ease);
+  }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .stat-icon { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+
+  .animal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+  .shelter-list { display: grid; gap: 14px; }
+
+  .trait-pill {
+    font-size: 11px; padding: 4px 10px;
+    border-radius: 6px; font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── IMPACT BANNERS ── */
+  .banner-critical {
+    background: linear-gradient(135deg, var(--coral-light), #fde8e0);
+    border: 1px solid rgba(200,90,53,0.18);
+    border-left: 4px solid var(--coral);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 20px 24px;
+  }
+  .banner-amber {
+    background: linear-gradient(135deg, var(--amber-light), #fdeede);
+    border: 1px solid rgba(196,122,30,0.18);
+    border-left: 4px solid var(--amber);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 20px 24px;
+  }
+  .banner-sage {
+    background: linear-gradient(135deg, var(--sage-light), #e4f0e6);
+    border: 1px solid rgba(107,143,113,0.2);
+    border-left: 4px solid var(--sage);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 20px 24px;
+  }
+
+  /* ── EYEBROW LABELS ── */
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700;
+    color: var(--sage); letter-spacing: 0.1em;
+    text-transform: uppercase; margin-bottom: 14px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ── DIVIDER ── */
+  .divider { height: 1px; background: var(--border); margin: 0; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── SAFE AREAS ── */
   .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 16px); }
   nav { padding-top: env(safe-area-inset-top, 0); }
 
-  /* Prevent overscroll bounce showing white on iOS */
-  body { overscroll-behavior: none; }
-
+  /* ── RESPONSIVE ── */
   @media (max-width: 768px) {
     .hide-mobile { display: none !important; }
-    .animal-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .show-mobile-only { display: flex !important; }
+    .animal-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
     .nav-link span { display: none; }
     .nav-link { padding: 8px 10px; }
-    .stat-card { padding: 14px; }
+    .stat-card { padding: 14px 16px; }
     .section-header { flex-direction: column; align-items: flex-start; }
-    /* Larger touch targets for mobile */
     button { min-height: 44px; }
-    .input, .select, .textarea { font-size: 16px !important; } /* Prevent iOS zoom on focus */
+    .input, .select, .textarea { font-size: 16px !important; }
   }
 
   @media (max-width: 480px) {
     .animal-grid { grid-template-columns: 1fr; }
-    /* Bottom sheet modal on mobile — feels native on iOS & Android */
     .modal {
-      border-radius: 20px 20px 0 0;
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      max-height: 92vh;
-      margin: 0;
+      border-radius: 24px 24px 0 0;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      max-height: 92vh; margin: 0;
       padding-bottom: env(safe-area-inset-bottom, 16px);
     }
     .modal-backdrop { align-items: flex-end; padding: 0; }
-    .tab-bar { gap: 2px; }
     .tab { font-size: 11px; padding: 8px 6px; }
     .toast {
-      left: 16px; right: 16px; top: 16px;
-      max-width: 100%;
+      left: 16px; right: 16px; top: 16px; max-width: 100%;
       padding-top: calc(env(safe-area-inset-top, 0px) + 12px);
     }
-    .filter-chip { padding: 8px 14px; font-size: 13px; min-height: 44px; }
-    /* Better card tap area on mobile */
-    .card-hover:hover { transform: none; } /* Disable hover lift on touch */
-    /* Larger form inputs on mobile */
-    .label { font-size: 13px; }
-    /* Fix nav on mobile */
+    .filter-chip { min-height: 44px; }
+    .card-hover:hover { transform: none; }
     .nav-link { padding: 10px 8px; min-height: 44px; }
   }
 
-  /* Android Chrome specific */
   @media (max-width: 480px) and (hover: none) {
-    .card-hover:active { transform: scale(0.98); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-    button:active { opacity: 0.85; }
+    .card-hover:active { transform: scale(0.98); }
+    .animal-card:active { transform: scale(0.98); }
+    button:active { opacity: 0.8; }
   }
 `;
 const styleEl = document.createElement("style");
@@ -407,10 +647,11 @@ const I = {
   transfer: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>,
 
   // Dog silhouette — brand-specific
-  dog: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" opacity=".85"><path d="M17 4c0-1.1-.9-2-2-2h-1l-1 2H9L8 2H7C5.9 2 5 2.9 5 4v2L3 8v4h2v5a1 1 0 002 0v-5h10v5a1 1 0 002 0v-5h2V8l-2-2V4zM9 10H7V8h2v2zm8 0h-2V8h2v2z"/></svg>,
+  // Dog — Gemini premium continuity line icon
+  dog: <svg viewBox="0 0 100 100" width="32" height="32" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>,
 
-  // Cat silhouette — brand-specific
-  cat: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" opacity=".85"><path d="M18 3l-2 4H8L6 3 3 6v6c0 5 2 9 9 9s9-4 9-9V6l-3-3zm-5 12H11v-2h2v2zm-4-4a1 1 0 110-2 1 1 0 010 2zm6 0a1 1 0 110-2 1 1 0 010 2z"/></svg>,
+  // Cat — Gemini premium continuity line icon
+  cat: <svg viewBox="0 0 100 100" width="32" height="32" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>,
 };
 
 function Spinner() {
@@ -528,7 +769,7 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
           <p style={{ color:"var(--slate-mid)", fontSize:14 }}>Group channels for the whole network + private messages between shelters.</p>
         </div>
         {totalUnread > 0 && (
-          <div style={{ background:"#fee2e2", border:"1px solid #fca5a5", color:"#dc2626", borderRadius:10, padding:"8px 16px", fontSize:13, fontWeight:700, display:"flex", alignItems:"center", gap:6 }}>
+          <div style={{ background:"var(--coral-light)", border:"1px solid #f0c4b4", color:"#dc2626", borderRadius:10, padding:"8px 16px", fontSize:13, fontWeight:700, display:"flex", alignItems:"center", gap:6 }}>
             🔔 {totalUnread} unread message{totalUnread!==1?"s":""}
           </div>
         )}
@@ -1014,566 +1255,429 @@ export default function RescuPawLink() {
   ];
 
   if (page === "landing") return (
-    <div style={{ fontFamily:"'DM Sans',sans-serif", color:"#1a1a1a", background:"#fff", minHeight:"100vh" }}>
-      {toast && <Toast msg={toast} />}
+    <div style={{ fontFamily:"'DM Sans',sans-serif", color:"var(--slate)", background:"#f5f0e8", minHeight:"100vh" }}>
+      {toast && <Toast msg={toast}/>}
 
-      {/* ─── NAV ─────────────────────────────────── */}
-      <nav style={{ background:"#fff", borderBottom:"1px solid #f0ede8", position:"sticky", top:0, zIndex:100 }}>
-        <div style={{ maxWidth:1140, margin:"0 auto", padding:"0 clamp(16px,4vw,40px)", height:60, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+      {/* ── NAV ── */}
+      { (()=>{
+        const [mobileOpen, setMobileOpen] = React.useState(false);
+        const NAV_LINKS = [["Pet Search",()=>{setPage("app");setTab("adopt");setMobileOpen(false);}],["Shelters",()=>{setPage("app");setTab("network");setMobileOpen(false);}],["Community",()=>{setPage("app");setTab("chat");setMobileOpen(false);}],["About",null],["Resources",null],["Contact",null]];
+        return (
+          <nav style={{ background:"#f5f0e8", borderBottom:"1px solid #e0d8cc", position:"sticky", top:0, zIndex:100 }}>
+            <div style={{ maxWidth:1160, margin:"0 auto", padding:"0 20px", height:62, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
 
-          {/* Wordmark */}
-          <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0 }}>
-            <div style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(16px,4vw,20px)", fontWeight:800, letterSpacing:"-0.5px" }}>
-              <span style={{ color:"var(--sage)" }}>Rescu</span>
-              <span style={{ color:"#1a1a1a" }}>PawLink</span>
-            </div>
-          </button>
+              {/* Logo */}
+              <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:10, padding:0 }}>
+                <div style={{ width:34, height:34, background:"var(--sage)", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <svg viewBox="0 0 100 100" width="19" height="19" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z"/>
+                  </svg>
+                </div>
+                <span style={{ fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"var(--slate)", letterSpacing:"-0.4px" }}>
+                  <span style={{ color:"var(--sage)" }}>Rescu</span>PawLink
+                </span>
+              </button>
 
-          {/* Nav links — hidden on mobile */}
-          <div style={{ display:"flex", alignItems:"center", gap:4 }}>
-            <button onClick={()=>{ setPage("app"); setTab("adopt"); }}
-              className="hide-mobile"
-              style={{ padding:"8px 14px", border:"none", background:"transparent", color:"#666", fontSize:13, fontWeight:500, cursor:"pointer", fontFamily:"inherit", borderRadius:8 }}
-              onMouseEnter={e=>e.currentTarget.style.color="#1a1a1a"}
-              onMouseLeave={e=>e.currentTarget.style.color="#666"}>
-              Find Animals
-            </button>
-            <button onClick={()=>{ setPage("app"); setTab("network"); }}
-              className="hide-mobile"
-              style={{ padding:"8px 14px", border:"none", background:"transparent", color:"#666", fontSize:13, fontWeight:500, cursor:"pointer", fontFamily:"inherit", borderRadius:8 }}
-              onMouseEnter={e=>e.currentTarget.style.color="#1a1a1a"}
-              onMouseLeave={e=>e.currentTarget.style.color="#666"}>
-              Shelter Network
-            </button>
-            <div className="hide-mobile" style={{ width:1, height:18, background:"#e5e7eb", margin:"0 6px" }}/>
-            <button onClick={()=>{ setAuthMode("login"); setPage("login"); }}
-              className="hide-mobile"
-              style={{ padding:"8px 14px", border:"none", background:"transparent", color:"#666", fontSize:13, fontWeight:500, cursor:"pointer", fontFamily:"inherit", borderRadius:8 }}
-              onMouseEnter={e=>e.currentTarget.style.color="#1a1a1a"}
-              onMouseLeave={e=>e.currentTarget.style.color="#666"}>
-              Sign In
-            </button>
-            <button onClick={()=>{ setAuthMode("register"); setPage("login"); }}
-              style={{ padding:"9px clamp(12px,3vw,20px)", border:"none", background:"var(--sage)", color:"#fff", fontSize:"clamp(12px,3vw,14px)", fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:8, marginLeft:4, transition:"all 0.18s", whiteSpace:"nowrap" }}
-              onMouseEnter={e=>{ e.currentTarget.style.background="var(--sage-dark)"; }}
-              onMouseLeave={e=>{ e.currentTarget.style.background="var(--sage)"; }}>
-              Register Free
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* ─── HERO — full bleed photo ─────────────── */}
-      <div style={{ position:"relative", height:"clamp(500px,88vh,900px)", minHeight:480, overflow:"hidden", width:"100vw", marginLeft:"calc(-50vw + 50%)" }}>
-
-        {/* Your photo — full bleed */}
-        <img
-          src="https://i.imgur.com/VxvRJfd.png"
-          alt="Dog and cat"
-          onError={e=>{ e.target.style.display="none"; }}
-          style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"60% center", display:"block" }}
-        />
-
-        {/* Gradient — stronger on mobile so text is always readable */}
-        <div style={{ position:"absolute", inset:0, background:"linear-gradient(to right, rgba(255,253,249,0.98) 0%, rgba(255,253,249,0.95) 30%, rgba(255,253,249,0.7) 50%, rgba(255,253,249,0.2) 68%, rgba(255,253,249,0) 82%)" }}/>
-
-        {/* Bottom fade into white */}
-        <div style={{ position:"absolute", bottom:0, left:0, right:0, height:80, background:"linear-gradient(to top, #fff, transparent)" }}/>
-
-        {/* Text — LEFT side, animals visible on right */}
-        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center" }}>
-          <div style={{ width:"100%", padding:"0 clamp(16px,4vw,48px)" }}>
-            <div style={{ maxWidth:500 }}>
-
-              {/* Headline */}
-              <h1 className="fade-up" style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(30px,5.5vw,74px)", fontWeight:900, lineHeight:1.0, color:"#1a1a1a", marginBottom:"clamp(12px,3vw,20px)", letterSpacing:"clamp(-1px,-0.3vw,-2.5px)" }}>
-                CONNECTING<br/>
-                SHELTERS.<br/>
-                <span style={{ color:"var(--sage)" }}>SAVING LIVES.</span>
-              </h1>
-
-              {/* Subtext — hidden on small mobile to reduce clutter */}
-              <p className="fade-up-2" style={{ fontSize:"clamp(13px,2vw,17px)", color:"#555", lineHeight:1.65, marginBottom:"clamp(20px,3vw,32px)", maxWidth:420 }}>
-                Share capacity, coordinate transfers, and get animals placed — before time runs out. Free for every shelter and rescue.
-              </p>
-
-              {/* CTAs */}
-              <div className="fade-up-3" style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:"clamp(20px,4vw,44px)" }}>
-                <button onClick={()=>{ setPage("app"); setTab("adopt"); }}
-                  style={{ padding:"clamp(11px,2vw,15px) clamp(18px,3vw,30px)", borderRadius:9, border:"none", background:"var(--sage)", color:"#fff", fontSize:"clamp(13px,2vw,15px)", fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all 0.2s", boxShadow:"0 4px 20px rgba(107,143,113,0.35)" }}
-                  onMouseEnter={e=>{ e.currentTarget.style.background="var(--sage-dark)"; }}
-                  onMouseLeave={e=>{ e.currentTarget.style.background="var(--sage)"; }}>
-                  Find Animals Near You
-                </button>
-                <button onClick={()=>{ setAuthMode("register"); setPage("login"); }}
-                  style={{ padding:"clamp(11px,2vw,15px) clamp(18px,3vw,30px)", borderRadius:9, border:"1.5px solid #ccc", background:"rgba(255,255,255,0.85)", color:"#1a1a1a", fontSize:"clamp(13px,2vw,15px)", fontWeight:600, cursor:"pointer", fontFamily:"inherit", transition:"all 0.2s", backdropFilter:"blur(4px)" }}
-                  onMouseEnter={e=>{ e.currentTarget.style.borderColor="#1a1a1a"; }}
-                  onMouseLeave={e=>{ e.currentTarget.style.borderColor="#ccc"; }}>
-                  Register →
-                </button>
-              </div>
-
-              {/* Stats */}
-              <div className="fade-up-3" style={{ display:"flex", gap:"clamp(16px,4vw,28px)", paddingTop:"clamp(14px,2vw,24px)", borderTop:"1px solid rgba(0,0,0,0.1)" }}>
-                {[["12,400+","Animals"],["400+","Shelters"],["38","States"]].map(([n,l])=>(
-                  <div key={l}>
-                    <div style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(16px,3vw,22px)", fontWeight:800, color:"#1a1a1a", lineHeight:1 }}>{n}</div>
-                    <div style={{ fontSize:"clamp(10px,1.5vw,11px)", color:"#888", marginTop:3 }}>{l}</div>
-                  </div>
+              {/* Desktop pipe links */}
+              <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:0 }}>
+                {NAV_LINKS.map(([l,fn],i,arr)=>(
+                  <span key={l} style={{ display:"flex", alignItems:"center" }}>
+                    <button onClick={fn||undefined} style={{ background:"none", border:"none", cursor:fn?"pointer":"default", fontFamily:"inherit", fontSize:13, fontWeight:500, color:"var(--slate-mid)", padding:"6px 12px", borderRadius:6, transition:"color 0.15s" }}
+                      onMouseEnter={e=>{ if(fn) e.currentTarget.style.color="var(--slate)"; }}
+                      onMouseLeave={e=>e.currentTarget.style.color="var(--slate-mid)"}>{l}</button>
+                    {i < arr.length-1 && <span style={{ color:"#d0c8bc", fontSize:12 }}>|</span>}
+                  </span>
                 ))}
               </div>
 
-            </div>
-          </div>
-        </div>
-
-        {/* Live alert pill — bottom right, hidden on mobile */}
-        <div className="hide-mobile" style={{ position:"absolute", bottom:28, right:36, background:"rgba(255,255,255,0.95)", backdropFilter:"blur(12px)", borderRadius:12, padding:"11px 18px", boxShadow:"0 4px 20px rgba(0,0,0,0.1)", border:"1px solid #f0ede8", display:"flex", alignItems:"center", gap:9 }}>
-          <div style={{ width:8, height:8, borderRadius:"50%", background:"#dc2626", flexShrink:0, animation:"pulse 1.5s ease-in-out infinite" }}/>
-          <div>
-            <div style={{ fontSize:13, fontWeight:700, color:"#1a1a1a" }}>{animals.filter(a=>a.status==="critical").length || 6} animals critical right now</div>
-            <div style={{ fontSize:11, color:"#9ca3af" }}>Across the RescuPawLink network</div>
-          </div>
-        </div>
-      </div>
-
-      {/* ─── FEATURED ANIMALS ────────────────────── */}
-      <div style={{ padding:"clamp(40px,8vw,80px) clamp(16px,4vw,40px)", background:"#fafaf8" }}>
-        <div style={{ maxWidth:1140, margin:"0 auto" }}>
-
-          <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:44, flexWrap:"wrap", gap:12 }}>
-            <div>
-              <div style={{ fontSize:11, fontWeight:800, color:"var(--sage)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:10 }}>Urgent — Needs You Now</div>
-              <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(28px,4vw,44px)", fontWeight:800, color:"#1a1a1a", lineHeight:1.1, letterSpacing:"-1px" }}>Animals Running Out of Time</h2>
-            </div>
-            <button onClick={()=>{ setPage("app"); setTab("adopt"); }}
-              style={{ padding:"12px 22px", border:"1.5px solid #1a1a1a", background:"transparent", color:"#1a1a1a", fontSize:14, fontWeight:600, cursor:"pointer", fontFamily:"inherit", borderRadius:8, transition:"all 0.18s", whiteSpace:"nowrap" }}
-              onMouseEnter={e=>{ e.currentTarget.style.background="#1a1a1a"; e.currentTarget.style.color="#fff"; }}
-              onMouseLeave={e=>{ e.currentTarget.style.background="transparent"; e.currentTarget.style.color="#1a1a1a"; }}>
-              View All Animals →
-            </button>
-          </div>
-
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(310px,1fr))", gap:22 }}>
-            {featuredAnimals.map((a,i) => (
-              <div key={a.id} className="fade-up" style={{ animationDelay:`${i*0.08}s`, background:"#fff", borderRadius:18, overflow:"hidden", border:"1px solid #f0ede8", cursor:"pointer", transition:"all 0.22s" }}
-                onClick={()=>{ setPage("app"); setTab("adopt"); setSelectedAnimal(a); }}
-                onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-5px)"; e.currentTarget.style.boxShadow="0 16px 48px rgba(0,0,0,0.1)"; }}
-                onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="none"; }}>
-
-                {/* Photo */}
-                <div style={{ height:220, background:a.photos?.[0]?"transparent":`linear-gradient(135deg,${a.status==="critical"?"#fef2f2,#fee2e2":"#fffbeb,#fef3c7"})`, overflow:"hidden", position:"relative" }}>
-                  {a.photos?.[0]
-                    ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
-                    : <div style={{ height:"100%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:90 }}>{a.species==="Dog"?"🐕":a.species==="Cat"?"🐈":"🐾"}</div>
+              {/* Desktop CTA + Mobile hamburger */}
+              <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+                <button className="hide-mobile btn btn-ghost btn-sm" style={{ borderColor:"#d0c8bc" }} onClick={()=>{setAuthMode("login");setPage("login");}}>Login</button>
+                <button className="hide-mobile btn btn-primary btn-sm" style={{ fontWeight:700 }} onClick={()=>{setAuthMode("register");setPage("login");}}>Register Your Shelter</button>
+                {/* Hamburger — mobile only */}
+                <button className="show-mobile-only" onClick={()=>setMobileOpen(o=>!o)}
+                  style={{ background:"none", border:"1px solid #d0c8bc", borderRadius:8, padding:"7px 10px", cursor:"pointer", display:"none", flexDirection:"column", gap:5, alignItems:"center", justifyContent:"center" }}>
+                  {mobileOpen
+                    ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--slate)" strokeWidth="2.2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--slate)" strokeWidth="2.2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                   }
-                  <div style={{ position:"absolute", top:12, left:12 }}>
-                    <span style={{ background:a.status==="critical"?"#dc2626":"#d97706", color:"#fff", fontSize:10, fontWeight:800, padding:"4px 11px", borderRadius:20, letterSpacing:"0.06em", textTransform:"uppercase" }}>
-                      {a.status==="critical"?"⚠ Critical":"⏱ Urgent"}
-                    </span>
-                  </div>
-                  <div style={{ position:"absolute", bottom:12, right:12, background:"rgba(0,0,0,0.55)", backdropFilter:"blur(6px)", color:"#fff", borderRadius:7, padding:"4px 10px", fontSize:12, fontWeight:700 }}>
-                    {a.daysLeft} day{a.daysLeft!==1?"s":""} left
-                  </div>
-                </div>
+                </button>
+              </div>
+            </div>
 
-                {/* Info */}
-                <div style={{ padding:"18px 20px" }}>
-                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:5 }}>
-                    <h3 style={{ fontFamily:"'Inter',sans-serif", fontSize:20, fontWeight:700, color:"#1a1a1a" }}>{a.name}</h3>
-                    <span style={{ fontSize:12, color:"#888", background:"#f5f5f3", padding:"3px 9px", borderRadius:6, marginLeft:8, flexShrink:0 }}>{a.age}</span>
-                  </div>
-                  <div style={{ fontSize:13, color:"#aaa", marginBottom:10 }}>{a.breed}</div>
-                  <p style={{ fontSize:14, color:"#444", lineHeight:1.6, marginBottom:14, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{a.description}</p>
-                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", paddingTop:12, borderTop:"1px solid #f5f5f3" }}>
-                    <span style={{ fontSize:12, color:"#aaa" }}>📍 {a.shelterName} · {a.shelterCity}, {a.shelterState}</span>
-                    <span style={{ fontSize:13, fontWeight:700, color:"var(--sage)" }}>Learn More →</span>
-                  </div>
+            {/* Mobile drawer */}
+            {mobileOpen && (
+              <div style={{ background:"#f5f0e8", borderTop:"1px solid #e0d8cc", padding:"12px 20px 20px", animation:"slideDown 0.2s ease" }}>
+                {NAV_LINKS.map(([l,fn])=>(
+                  <button key={l} onClick={fn||undefined}
+                    style={{ display:"block", width:"100%", textAlign:"left", background:"none", border:"none", fontFamily:"inherit", fontSize:15, fontWeight:500, color:fn?"var(--slate)":"var(--slate-light)", padding:"12px 4px", borderBottom:"1px solid #e8e2d8", cursor:fn?"pointer":"default" }}>
+                    {l}
+                  </button>
+                ))}
+                <div style={{ display:"flex", flexDirection:"column", gap:10, marginTop:16 }}>
+                  <button className="btn btn-ghost btn-md" style={{ width:"100%", borderColor:"#d0c8bc", justifyContent:"center" }} onClick={()=>{setAuthMode("login");setPage("login");setMobileOpen(false);}}>Login</button>
+                  <button className="btn btn-primary btn-md" style={{ width:"100%", fontWeight:700, justifyContent:"center" }} onClick={()=>{setAuthMode("register");setPage("login");setMobileOpen(false);}}>Register Your Shelter</button>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </div>
+            )}
+          </nav>
+        );
+      })() }
 
-      {/* ─── FOR SHELTERS ────────────────────────── */}
-      <div style={{ padding:"clamp(40px,8vw,80px) clamp(16px,4vw,40px)", background:"var(--cream)" }}>
-        <div style={{ maxWidth:1140, margin:"0 auto" }}>
+      {/* ── HERO — rounded card photo ── */}
+      <div style={{ maxWidth:1160, margin:"0 auto", padding:"28px 32px 0" }}>
+        <div style={{ position:"relative", borderRadius:22, overflow:"hidden", height:"clamp(320px,52vh,560px)" }}>
+          <img src="https://i.imgur.com/VxvRJfd.png" alt="Dog and cat"
+            style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"55% center" }}
+            onError={e=>e.target.style.display="none"}
+          />
+          <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.12) 40%, rgba(0,0,0,0.48) 100%)" }}/>
 
-          {/* Header centered */}
-          <div style={{ textAlign:"center", marginBottom:56 }}>
-            <div style={{ fontSize:11, fontWeight:800, color:"var(--sage)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:12 }}>For Shelters & Rescues</div>
-            <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(28px,4vw,48px)", fontWeight:900, color:"#1a1a1a", lineHeight:1.1, marginBottom:16, letterSpacing:"-1.5px" }}>
-              Your Network Is<br/>Stronger Together
-            </h2>
-            <p style={{ fontSize:17, color:"#555", lineHeight:1.75, maxWidth:520, margin:"0 auto 32px" }}>
-              When one shelter is full, another has space. RescuPawLink makes that connection instant — no phone tag, no guessing.
+          {/* Search bar overlaid */}
+          <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"0 24px" }}>
+            <h1 className="fade-up" style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(22px,4vw,48px)", fontWeight:900, color:"#fff", textAlign:"center", lineHeight:1.1, letterSpacing:"-1px", textShadow:"0 2px 16px rgba(0,0,0,0.3)", marginBottom:10 }}>
+              Connecting Shelters. Saving Lives.
+            </h1>
+            <p className="fade-up-1" style={{ fontSize:"clamp(13px,1.6vw,16px)", color:"rgba(255,255,255,0.88)", textAlign:"center", marginBottom:18, textShadow:"0 1px 8px rgba(0,0,0,0.3)", maxWidth:520 }}>
+              Share capacity, coordinate transfers, and get animals placed — before time runs out. Free for every shelter and rescue.
             </p>
-            <button onClick={()=>{ setAuthMode("register"); setPage("login"); }}
-              style={{ padding:"15px 32px", border:"none", background:"var(--sage)", color:"#fff", fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:9, transition:"all 0.2s", boxShadow:"0 4px 20px rgba(90,138,96,0.3)" }}
-              onMouseEnter={e=>{ e.currentTarget.style.background="var(--sage-dark)"; e.currentTarget.style.transform="translateY(-2px)"; }}
-              onMouseLeave={e=>{ e.currentTarget.style.background="var(--sage)"; e.currentTarget.style.transform="translateY(0)"; }}>
-              Register Free — 2 Minutes
-            </button>
-          </div>
-
-          {/* 6 benefit tiles in 3-col grid */}
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))", gap:20, marginBottom:48 }}>
-            {BENEFITS.map((b,i) => (
-              <div key={b.title} className="fade-up" style={{ animationDelay:`${i*0.06}s`, background:"#fff", border:"1px solid #e8e2da", borderRadius:16, padding:"28px 24px", transition:"all 0.2s" }}
-                onMouseEnter={e=>{ e.currentTarget.style.boxShadow="0 8px 32px rgba(0,0,0,0.08)"; e.currentTarget.style.transform="translateY(-3px)"; }}
-                onMouseLeave={e=>{ e.currentTarget.style.boxShadow="none"; e.currentTarget.style.transform="translateY(0)"; }}>
-                <div style={{ width:44, height:44, borderRadius:12, background:"var(--sage-light)", display:"flex", alignItems:"center", justifyContent:"center", color:"var(--sage)", marginBottom:16 }}>
-                  {b.icon}
-                </div>
-                <div style={{ fontSize:16, fontWeight:700, color:"#1a1a1a", marginBottom:8 }}>{b.title}</div>
-                <div style={{ fontSize:14, color:"#777", lineHeight:1.65 }}>{b.desc}</div>
+            <div className="fade-up-1" style={{ background:"rgba(255,255,255,0.96)", backdropFilter:"blur(12px)", borderRadius:10, display:"flex", alignItems:"center", maxWidth:580, width:"100%", boxShadow:"0 4px 24px rgba(0,0,0,0.18)", overflow:"hidden" }}>
+              <div style={{ display:"flex", alignItems:"center", gap:8, flex:1, padding:"0 16px" }}>
+                {I.search}
+                <input placeholder="Search..." value={fSearch} onChange={e=>setFSearch(e.target.value)}
+                  style={{ border:"none", outline:"none", fontFamily:"inherit", fontSize:14, color:"var(--slate)", background:"transparent", width:"100%", padding:"13px 0" }}/>
               </div>
-            ))}
+              <button className="btn btn-primary" style={{ margin:5, borderRadius:8, padding:"10px 20px", fontSize:14, fontWeight:700, flexShrink:0 }} onClick={()=>{setPage("app");setTab("adopt");}}>
+                Search
+              </button>
+            </div>
           </div>
+        </div>
+      </div>
 
-          {/* Live network snapshot — always shows all shelters */}
-          <div style={{ background:"#fff", border:"1px solid #e8e2da", borderRadius:20, overflow:"hidden" }}>
-            <div style={{ padding:"20px 24px", borderBottom:"1px solid #f0ede8", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+      {/* ── 4 FEATURE TILES with descriptions ── */}
+      <div style={{ maxWidth:1160, margin:"0 auto", padding:"20px 32px" }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14 }}>
+          {[
+            {
+              icon:<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+              label:"SHELTER NETWORK",
+              desc:"Find shelter networks, maps, and shelter coordinators.",
+              fn:()=>{setPage("app");setTab("network");},
+              active:true
+            },
+            {
+              icon:<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4.93 19.07a10 10 0 1114.14 0M12 12l3.5-3.5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>,
+              label:"LIVE CAPACITY TRACKING",
+              desc:"Elevate live capacity tracking and resources for coordination.",
+              fn:()=>{setPage("app");setTab("network");},
+              active:false
+            },
+            {
+              icon:<svg viewBox="0 0 100 100" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z"/></svg>,
+              label:"PET ADOPTION HUB",
+              desc:"See live internationals with pet adoption hub and pet adoption.",
+              fn:()=>{setPage("app");setTab("adopt");},
+              active:false
+            },
+            {
+              icon:<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 000-7.8z"/></svg>,
+              label:"VOLUNTEER & SUPPORT",
+              desc:"Empower volunteer & support, community volunteer and support.",
+              fn:()=>{setPage("app");setTab("chat");},
+              active:false
+            },
+          ].map(t=>(
+            <button key={t.label} onClick={t.fn}
+              style={{ display:"flex", flexDirection:"column", alignItems:"flex-start", gap:10, padding:"20px 18px", background:t.active?"var(--sage)":"#fff", borderRadius:14, border:`1px solid ${t.active?"var(--sage)":"#e8e0d4"}`, cursor:"pointer", textAlign:"left", transition:"all 0.2s", fontFamily:"inherit" }}
+              onMouseEnter={e=>{ if(!t.active){ e.currentTarget.style.background="#faf6f0"; e.currentTarget.style.borderColor="#d0c8bc"; }}}
+              onMouseLeave={e=>{ if(!t.active){ e.currentTarget.style.background="#fff"; e.currentTarget.style.borderColor="#e8e0d4"; }}}>
+              <div style={{ color:t.active?"#fff":"var(--sage)" }}>{t.icon}</div>
               <div>
-                <div style={{ fontSize:15, fontWeight:700, color:"#1a1a1a" }}>Live Network Snapshot</div>
-                <div style={{ fontSize:13, color:"#aaa", marginTop:2 }}>{shelters.length} shelters connected · updated in real time</div>
+                <div style={{ fontSize:11, fontWeight:800, color:t.active?"rgba(255,255,255,0.9)":"var(--slate)", letterSpacing:"0.07em", marginBottom:5 }}>{t.label}</div>
+                <div style={{ fontSize:12, color:t.active?"rgba(255,255,255,0.75)":"var(--slate-mid)", lineHeight:1.55 }}>{t.desc}</div>
               </div>
-              <div style={{ display:"flex", gap:16 }}>
-                <div style={{ textAlign:"center" }}>
-                  <div style={{ fontSize:20, fontWeight:800, color:"var(--sage)" }}>{shelters.reduce((s,sh)=>s+(sh.availableSpace||sh.available_space||0),0)}</div>
-                  <div style={{ fontSize:11, color:"#aaa" }}>Open Spaces</div>
-                </div>
-                <div style={{ textAlign:"center" }}>
-                  <div style={{ fontSize:20, fontWeight:800, color:"#dc2626" }}>{shelters.filter(s=>s.needsHelp).length}</div>
-                  <div style={{ fontSize:11, color:"#aaa" }}>Need Help</div>
-                </div>
-              </div>
-            </div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))" }}>
-              {shelters.map((s,i) => (
-                <div key={s.id} style={{ padding:"18px 24px", borderRight:i%2===0?"1px solid #f0ede8":"none", borderBottom:"1px solid #f0ede8" }}>
-                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:10 }}>
-                    <div>
-                      <div style={{ fontSize:14, fontWeight:700, color:"#1a1a1a", marginBottom:2 }}>{s.name}</div>
-                      <div style={{ fontSize:12, color:"#aaa" }}>📍 {s.city}, {s.state}</div>
-                    </div>
-                    <span style={{ fontSize:10, background:s.needsHelp?"#fee2e2":"var(--sage-light)", color:s.needsHelp?"#dc2626":"var(--sage-dark)", padding:"4px 10px", borderRadius:20, fontWeight:700, flexShrink:0, marginLeft:8 }}>
-                      {s.needsHelp?"Needs Help":"Active"}
-                    </span>
-                  </div>
-                  {s.totalSpace > 0 ? (
-                    <>
-                      <div style={{ display:"flex", justifyContent:"space-between", fontSize:12, color:"#aaa", marginBottom:5 }}>
-                        <span>Capacity</span>
-                        <span style={{ fontWeight:700, color: Math.round(s.availableSpace/s.totalSpace*100)<10?"#dc2626":Math.round(s.availableSpace/s.totalSpace*100)<30?"#d97706":"#16a34a" }}>
-                          {s.availableSpace}/{s.totalSpace}
-                        </span>
-                      </div>
-                      <div style={{ height:4, background:"#f0ede8", borderRadius:2, overflow:"hidden" }}>
-                        <div style={{ width:`${Math.round(s.availableSpace/s.totalSpace*100)}%`, height:"100%", background: Math.round(s.availableSpace/s.totalSpace*100)<10?"#dc2626":Math.round(s.availableSpace/s.totalSpace*100)<30?"#d97706":"#16a34a", borderRadius:2 }}/>
-                      </div>
-                    </>
-                  ) : (
-                    <div style={{ fontSize:12, color:"#ccc", fontStyle:"italic" }}>Capacity not set yet</div>
-                  )}
-                </div>
-              ))}
-            </div>
-            <div style={{ padding:"16px 24px", background:"#fafaf8", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-              <div style={{ fontSize:13, color:"#aaa" }}>Register to see full contact details, message shelters, and request transfers</div>
-              <button onClick={()=>{ setPage("app"); setTab("network"); }}
-                style={{ padding:"9px 18px", border:"1px solid var(--border)", background:"#fff", color:"var(--sage)", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:8, transition:"all 0.15s", whiteSpace:"nowrap" }}
-                onMouseEnter={e=>{ e.currentTarget.style.background="var(--sage-light)"; }}
-                onMouseLeave={e=>{ e.currentTarget.style.background="#fff"; }}>
-                View Full Network →
-              </button>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {/* ─── ADOPT & FOSTER PROMO ────────────────── */}
-      <div style={{ padding:"clamp(40px,8vw,80px) clamp(16px,4vw,40px)" }}>
-        <div style={{ maxWidth:1140, margin:"0 auto" }}>
-
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:48, alignItems:"center" }}>
-
-            {/* Left — adopt CTA */}
-            <div>
-              <div style={{ fontSize:11, fontWeight:800, color:"var(--sage)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:12 }}>Find Your New Best Friend</div>
-              <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(28px,4vw,46px)", fontWeight:900, color:"#1a1a1a", lineHeight:1.1, marginBottom:18, letterSpacing:"-1.5px" }}>
-                Give an Animal<br/>a Forever Home
-              </h2>
-              <p style={{ fontSize:16, color:"#555", lineHeight:1.75, marginBottom:28 }}>
-                Every animal on RescuPawLink is real, listed by a verified shelter, and needs you. Browse by location, species, or urgency — and apply directly to the shelter in seconds.
-              </p>
-              <div style={{ display:"flex", flexDirection:"column", gap:12, marginBottom:32 }}>
-                {[
-                  ["🏠", "Adopt", "Give an animal a permanent home. Apply directly — the shelter gets your info instantly."],
-                  ["💚", "Foster", "Not ready to commit? Foster an animal temporarily and save a life while they find their forever home."],
-                  ["📣", "Share", "Even sharing a listing helps. Every share puts an animal in front of more potential adopters."],
-                ].map(([icon, title, desc]) => (
-                  <div key={title} style={{ display:"flex", gap:14, alignItems:"flex-start", padding:"16px 18px", background:"var(--cream)", borderRadius:14, border:"1px solid var(--border)" }}>
-                    <span style={{ fontSize:24, flexShrink:0 }}>{icon}</span>
-                    <div>
-                      <div style={{ fontSize:15, fontWeight:700, color:"#1a1a1a", marginBottom:3 }}>{title}</div>
-                      <div style={{ fontSize:13, color:"#777", lineHeight:1.55 }}>{desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <button onClick={()=>{ setPage("app"); setTab("adopt"); }}
-                style={{ padding:"15px 32px", border:"none", background:"var(--sage)", color:"#fff", fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:9, transition:"all 0.2s", boxShadow:"0 4px 20px rgba(90,138,96,0.3)" }}
-                onMouseEnter={e=>{ e.currentTarget.style.background="var(--sage-dark)"; e.currentTarget.style.transform="translateY(-2px)"; }}
-                onMouseLeave={e=>{ e.currentTarget.style.background="var(--sage)"; e.currentTarget.style.transform="translateY(0)"; }}>
-                Browse Animals Now →
-              </button>
-            </div>
-
-            {/* Right — featured urgent animals preview */}
-            <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
-              <div style={{ fontSize:13, fontWeight:700, color:"#aaa", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:4 }}>Animals waiting right now</div>
-              {featuredAnimals.map((a,i) => (
-                <div key={a.id} onClick={()=>{ setPage("app"); setTab("adopt"); setSelectedAnimal(a); }}
-                  style={{ display:"flex", gap:14, alignItems:"center", background:"#fff", border:"1px solid #e8e2da", borderRadius:14, padding:"14px 16px", cursor:"pointer", transition:"all 0.18s" }}
-                  onMouseEnter={e=>{ e.currentTarget.style.boxShadow="0 4px 20px rgba(0,0,0,0.08)"; e.currentTarget.style.transform="translateX(4px)"; }}
-                  onMouseLeave={e=>{ e.currentTarget.style.boxShadow="none"; e.currentTarget.style.transform="translateX(0)"; }}>
-                  {/* Photo */}
-                  <div style={{ width:60, height:60, borderRadius:12, overflow:"hidden", background:a.status==="critical"?"#fee2e2":"#fef3c7", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                    {a.photos?.[0]
-                      ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
-                      : <span style={{ fontSize:30 }}>{a.species==="Dog"?"🐕":"🐈"}</span>
-                    }
-                  </div>
-                  {/* Info */}
-                  <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:3 }}>
-                      <span style={{ fontSize:15, fontWeight:700, color:"#1a1a1a" }}>{a.name}</span>
-                      <span style={{ fontSize:10, background:a.status==="critical"?"#fee2e2":"#fef3c7", color:a.status==="critical"?"#dc2626":"#d97706", padding:"2px 8px", borderRadius:10, fontWeight:700, textTransform:"uppercase" }}>
-                        {a.daysLeft}d left
-                      </span>
-                    </div>
-                    <div style={{ fontSize:13, color:"#aaa" }}>{a.breed} · {a.shelterName}</div>
-                    <div style={{ fontSize:12, color:"#bbb", marginTop:2 }}>📍 {a.shelterCity}, {a.shelterState}</div>
-                  </div>
-                  {/* Arrow */}
-                  <div style={{ color:"var(--sage)", fontSize:18, flexShrink:0 }}>›</div>
-                </div>
-              ))}
-              <button onClick={()=>{ setPage("app"); setTab("adopt"); }}
-                style={{ padding:"12px", border:"1.5px solid var(--sage)", background:"var(--sage-light)", color:"var(--sage-dark)", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:12, transition:"all 0.15s" }}
-                onMouseEnter={e=>e.currentTarget.style.background="var(--sage-mid)"}
-                onMouseLeave={e=>e.currentTarget.style.background="var(--sage-light)"}>
-                View All Animals →
-              </button>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
-      {/* ─── ADOPTABLE DOGS ──────────────────────── */}
-      <div style={{ padding:"clamp(40px,8vw,80px) clamp(16px,4vw,40px)", background:"#fff" }}>
-        <div style={{ maxWidth:1140, margin:"0 auto" }}>
-          <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:36, flexWrap:"wrap", gap:12 }}>
-            <div>
-              <div style={{ fontSize:11, fontWeight:800, color:"var(--sage)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:10 }}>Available Now</div>
-              <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(26px,4vw,40px)", fontWeight:900, color:"#1a1a1a", letterSpacing:"-1px", lineHeight:1.1 }}>
-                🐕 Dogs Looking for Homes
-              </h2>
-            </div>
-            <button onClick={()=>{ setPage("app"); setTab("adopt"); setFSpecies("Dog"); }}
-              style={{ padding:"11px 22px", border:"1.5px solid #1a1a1a", background:"transparent", color:"#1a1a1a", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:8, transition:"all 0.18s", whiteSpace:"nowrap" }}
-              onMouseEnter={e=>{ e.currentTarget.style.background="#1a1a1a"; e.currentTarget.style.color="#fff"; }}
-              onMouseLeave={e=>{ e.currentTarget.style.background="transparent"; e.currentTarget.style.color="#1a1a1a"; }}>
-              See All Dogs →
             </button>
-          </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))", gap:20 }}>
-            {animals.filter(a=>a.species==="Dog").slice(0,4).map((a,i)=>(
-              <div key={a.id} className="fade-up" style={{ animationDelay:`${i*0.07}s`, background:"#fff", borderRadius:16, overflow:"hidden", border:"1px solid #e8e2da", cursor:"pointer", transition:"all 0.22s" }}
-                onClick={()=>{ setPage("app"); setTab("adopt"); setSelectedAnimal(a); }}
-                onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 12px 36px rgba(0,0,0,0.09)"; }}
-                onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="none"; }}>
-                <div style={{ height:180, background:a.photos?.[0]?"transparent":"linear-gradient(135deg,#fef3c7,#fef9ef)", overflow:"hidden", position:"relative" }}>
-                  {a.photos?.[0]
-                    ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
-                    : <div style={{ height:"100%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:72 }}>🐕</div>
-                  }
-                  <div style={{ position:"absolute", top:10, left:10 }}>
-                    <span style={{ background:a.status==="critical"?"#dc2626":"#d97706", color:"#fff", fontSize:10, fontWeight:800, padding:"3px 9px", borderRadius:20, textTransform:"uppercase" }}>
-                      {a.daysLeft}d left
-                    </span>
-                  </div>
-                </div>
-                <div style={{ padding:"14px 16px" }}>
-                  <div style={{ fontSize:16, fontWeight:700, color:"#1a1a1a", marginBottom:3 }}>{a.name}</div>
-                  <div style={{ fontSize:13, color:"#aaa", marginBottom:8 }}>{a.breed} · {a.age}</div>
-                  <div style={{ fontSize:12, color:"#bbb", marginBottom:10 }}>📍 {a.shelterName} · {a.shelterCity}, {a.shelterState}</div>
-                  <button onClick={e=>{ e.stopPropagation(); setPage("app"); setTab("adopt"); setSelectedAnimal(a); setApplyTarget(a); setApplyF(p=>({...p,type:"adopt"})); }}
-                    style={{ width:"100%", padding:"9px", border:"none", background:"var(--sage-light)", color:"var(--sage-dark)", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:8, transition:"background 0.15s" }}
-                    onMouseEnter={e=>e.currentTarget.style.background="var(--sage-mid)"}
-                    onMouseLeave={e=>e.currentTarget.style.background="var(--sage-light)"}>
-                    Apply to Adopt
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* ─── ADOPTABLE CATS ──────────────────────── */}
-      <div style={{ padding:"0 clamp(16px,4vw,40px) clamp(40px,8vw,80px)", background:"#fff" }}>
-        <div style={{ maxWidth:1140, margin:"0 auto" }}>
-          <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:36, flexWrap:"wrap", gap:12 }}>
-            <div>
-              <div style={{ fontSize:11, fontWeight:800, color:"var(--sage)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:10 }}>Available Now</div>
-              <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(26px,4vw,40px)", fontWeight:900, color:"#1a1a1a", letterSpacing:"-1px", lineHeight:1.1 }}>
-                🐈 Cats Looking for Homes
-              </h2>
+      {/* ── URGENCY STRIP ── */}
+      <div style={{ maxWidth:1160, margin:"0 auto", padding:"0 32px 20px" }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))", gap:14 }}>
+          <div style={{ background:"var(--sage)", borderRadius:14, padding:"20px 22px", cursor:"pointer" }} onClick={()=>{setPage("app");setTab("network");}}>
+            <h3 style={{ fontSize:17, fontWeight:800, color:"#fff", marginBottom:6 }}>Shelter Network</h3>
+            <p style={{ fontSize:12, color:"rgba(255,255,255,0.75)", lineHeight:1.6, marginBottom:10 }}>Connect with partner shelters nationwide. Share capacity and coordinate transfers.</p>
+            <div style={{ fontSize:12, fontWeight:700, color:"rgba(255,255,255,0.9)", display:"flex", alignItems:"center", gap:4 }}>View Network {I.arrow}</div>
+          </div>
+          <div style={{ background:"#fff", border:"1px solid #e8e0d4", borderRadius:14, padding:"20px 22px", cursor:"pointer" }} onClick={()=>{setPage("app");setTab("adopt");}}>
+            <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:7 }}>
+              <div style={{ width:8, height:8, borderRadius:"50%", background:"var(--coral)", animation:"pulse 1.5s ease-in-out infinite" }}/>
+              <span style={{ fontSize:10, fontWeight:800, color:"var(--coral)", textTransform:"uppercase", letterSpacing:"0.08em" }}>Live</span>
             </div>
-            <button onClick={()=>{ setPage("app"); setTab("adopt"); setFSpecies("Cat"); }}
-              style={{ padding:"11px 22px", border:"1.5px solid #1a1a1a", background:"transparent", color:"#1a1a1a", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:8, transition:"all 0.18s", whiteSpace:"nowrap" }}
-              onMouseEnter={e=>{ e.currentTarget.style.background="#1a1a1a"; e.currentTarget.style.color="#fff"; }}
-              onMouseLeave={e=>{ e.currentTarget.style.background="transparent"; e.currentTarget.style.color="#1a1a1a"; }}>
-              See All Cats →
-            </button>
+            <h3 style={{ fontSize:17, fontWeight:800, color:"var(--slate)", marginBottom:6 }}>Urgent Capacity</h3>
+            <p style={{ fontSize:12, color:"var(--slate-mid)", lineHeight:1.6, marginBottom:10 }}>
+              {animals.filter(a=>a.status==="critical").length > 0
+                ? `${animals.filter(a=>a.status==="critical").length} animals are critical right now. Every hour counts.`
+                : "Monitor animals that need immediate placement across the network."}
+            </p>
+            <div style={{ fontSize:12, fontWeight:700, color:"var(--coral)", display:"flex", alignItems:"center", gap:4 }}>View Urgent {I.arrow}</div>
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))", gap:20 }}>
-            {animals.filter(a=>a.species==="Cat").slice(0,4).map((a,i)=>(
-              <div key={a.id} className="fade-up" style={{ animationDelay:`${i*0.07}s`, background:"#fff", borderRadius:16, overflow:"hidden", border:"1px solid #e8e2da", cursor:"pointer", transition:"all 0.22s" }}
-                onClick={()=>{ setPage("app"); setTab("adopt"); setSelectedAnimal(a); }}
-                onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 12px 36px rgba(0,0,0,0.09)"; }}
-                onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="none"; }}>
-                <div style={{ height:180, background:a.photos?.[0]?"transparent":"linear-gradient(135deg,#f0fdf4,#dcfce7)", overflow:"hidden", position:"relative" }}>
-                  {a.photos?.[0]
-                    ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
-                    : <div style={{ height:"100%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:72 }}>🐈</div>
-                  }
-                  <div style={{ position:"absolute", top:10, left:10 }}>
-                    <span style={{ background:a.status==="critical"?"#dc2626":"#d97706", color:"#fff", fontSize:10, fontWeight:800, padding:"3px 9px", borderRadius:20, textTransform:"uppercase" }}>
-                      {a.daysLeft}d left
-                    </span>
-                  </div>
-                </div>
-                <div style={{ padding:"14px 16px" }}>
-                  <div style={{ fontSize:16, fontWeight:700, color:"#1a1a1a", marginBottom:3 }}>{a.name}</div>
-                  <div style={{ fontSize:13, color:"#aaa", marginBottom:8 }}>{a.breed} · {a.age}</div>
-                  <div style={{ fontSize:12, color:"#bbb", marginBottom:10 }}>📍 {a.shelterName} · {a.shelterCity}, {a.shelterState}</div>
-                  <button onClick={e=>{ e.stopPropagation(); setPage("app"); setTab("adopt"); setSelectedAnimal(a); setApplyTarget(a); setApplyF(p=>({...p,type:"adopt"})); }}
-                    style={{ width:"100%", padding:"9px", border:"none", background:"var(--sage-light)", color:"var(--sage-dark)", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", borderRadius:8, transition:"background 0.15s" }}
-                    onMouseEnter={e=>e.currentTarget.style.background="var(--sage-mid)"}
-                    onMouseLeave={e=>e.currentTarget.style.background="var(--sage-light)"}>
-                    Apply to Adopt
-                  </button>
+          <div style={{ background:"#fff", border:"1px solid #e8e0d4", borderRadius:14, padding:"20px 22px", cursor:"pointer" }} onClick={()=>{setPage("app");setTab("chat");}}>
+            <h3 style={{ fontSize:17, fontWeight:800, color:"var(--slate)", marginBottom:6 }}>Resources</h3>
+            <p style={{ fontSize:12, color:"var(--slate-mid)", lineHeight:1.6, marginBottom:10 }}>Coordinator chat, transport boards, medical support and network-wide announcements.</p>
+            <div style={{ fontSize:12, fontWeight:700, color:"var(--sage)", display:"flex", alignItems:"center", gap:4 }}>Open Resources {I.arrow}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── ADOPTABLE PETS — compact row ── */}
+      <div style={{ maxWidth:1160, margin:"0 auto", padding:"0 32px 20px" }}>
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
+          <h2 style={{ fontSize:18, fontWeight:800, color:"var(--slate)" }}>Adoptable Pets</h2>
+          <button onClick={()=>{setPage("app");setTab("adopt");}} style={{ fontSize:13, fontWeight:700, color:"var(--sage)", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit" }}>See All →</button>
+        </div>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))", gap:12 }}>
+          {animals.slice(0,6).map((a,i)=>(
+            <div key={a.id} style={{ background:"#fff", borderRadius:12, overflow:"hidden", cursor:"pointer", border:"1px solid #e8e0d4", transition:"all 0.18s" }}
+              onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
+              onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-3px)"; e.currentTarget.style.boxShadow="0 6px 20px rgba(0,0,0,0.1)"; }}
+              onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="none"; }}>
+              <div style={{ height:110, background:a.status==="critical"?"linear-gradient(135deg,#fef2f2,#fee2e2)":"linear-gradient(135deg,#fffbeb,#fef3c7)", display:"flex", alignItems:"center", justifyContent:"center", position:"relative" }}>
+                {a.photos?.[0]
+                  ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                  : <div style={{ color:a.status==="critical"?"var(--coral)":"var(--amber)" }}>
+                      {a.species==="Dog"
+                        ? <svg viewBox="0 0 100 100" width="62" height="62" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z"/></svg>
+                        : <svg viewBox="0 0 100 100" width="62" height="62" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51"/></svg>
+                      }
+                    </div>
+                }
+                <div style={{ position:"absolute", top:6, left:6 }}>
+                  <span style={{ background:a.status==="critical"?"var(--coral)":"var(--amber)", color:"#fff", fontSize:9, fontWeight:800, padding:"2px 7px", borderRadius:20, textTransform:"uppercase" }}>{a.daysLeft}d</span>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ─── SUCCESS STORIES ─────────────────────── */}
-      <div style={{ padding:"clamp(40px,8vw,80px) clamp(16px,4vw,40px)", background:"#fafaf8" }}>
-        <div style={{ maxWidth:1140, margin:"0 auto" }}>
-          <div style={{ textAlign:"center", marginBottom:52 }}>
-            <div style={{ fontSize:11, fontWeight:800, color:"var(--sage)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:10 }}>Real Impact</div>
-            <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(28px,4vw,44px)", fontWeight:800, color:"#1a1a1a", letterSpacing:"-1px" }}>Lives Saved Through the Network</h2>
-          </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))", gap:20 }}>
-            {SUCCESS_STORIES.map(s => (
-              <div key={s.name} style={{ background:"#fff", borderRadius:18, border:"1px solid #f0ede8", padding:"28px 24px" }}>
-                <div style={{ fontSize:36, marginBottom:16 }}>{s.emoji}</div>
-                <h3 style={{ fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"#1a1a1a", marginBottom:8, letterSpacing:"-0.3px" }}>{s.name}</h3>
-                <p style={{ fontSize:14, color:"#555", lineHeight:1.7, marginBottom:14, fontStyle:"italic" }}>"{s.outcome}"</p>
-                <div style={{ height:1, background:"#f0ede8", marginBottom:12 }}/>
-                <div style={{ fontSize:12, color:"#aaa" }}>🔗 {s.shelters}</div>
-                <div style={{ fontSize:11, color:"#ccc", marginTop:3 }}>{s.date}</div>
+              <div style={{ padding:"9px 11px" }}>
+                <div style={{ fontSize:13, fontWeight:700, color:"var(--slate)", marginBottom:1 }}>{a.name}</div>
+                <div style={{ fontSize:11, color:"var(--slate-mid)" }}>{a.breed}</div>
+                <div style={{ fontSize:10, color:"var(--slate-light)", marginTop:2 }}>{a.shelterCity}, {a.shelterState}</div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* ─── HOW IT WORKS ────────────────────────── */}
-      <div style={{ padding:"clamp(40px,8vw,80px) clamp(16px,4vw,40px)" }}>
-        <div style={{ maxWidth:860, margin:"0 auto", textAlign:"center" }}>
-          <div style={{ fontSize:11, fontWeight:800, color:"var(--sage)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:10 }}>Simple by Design</div>
-          <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(28px,4vw,44px)", fontWeight:800, color:"#1a1a1a", marginBottom:12, letterSpacing:"-1px" }}>How It Works</h2>
-          <p style={{ fontSize:16, color:"#666", marginBottom:56, lineHeight:1.65 }}>Built for shelter staff. Fast, simple, focused on what matters.</p>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))", gap:36 }}>
-            {[
-              { n:"01", icon:I.home,     t:"Register Free",  d:"Create your shelter account in under 2 minutes." },
-              { n:"02", icon:I.capacity, t:"Set Capacity",   d:"Update your space live. The network sees it instantly." },
-              { n:"03", icon:I.transfer, t:"Connect",        d:"Message partners, request transfers, arrange transport." },
-              { n:"04", icon:I.heartPaw, t:"Save Lives",     d:"Animals get placed — not lost in the system." },
-            ].map(c => (
-              <div key={c.n}>
-                <div style={{ width:54, height:54, borderRadius:14, background:"var(--sage-light)", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 14px", color:"var(--sage)" }}>
-                  {c.icon}
-                </div>
-                <div style={{ fontSize:10, fontWeight:800, color:"var(--sage)", letterSpacing:"0.12em", marginBottom:6, textTransform:"uppercase" }}>Step {c.n}</div>
-                <div style={{ fontFamily:"'Inter',sans-serif", fontSize:16, fontWeight:700, color:"#1a1a1a", marginBottom:7, letterSpacing:"-0.2px" }}>{c.t}</div>
-                <div style={{ fontSize:13, color:"#777", lineHeight:1.6 }}>{c.d}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <div style={{ height:1, background:"#e0d8cc", margin:"8px 32px" }}/>
 
-      {/* ─── FINAL CTA ───────────────────────────── */}
-      <div style={{ margin:"0 40px 80px", borderRadius:20, background:"linear-gradient(135deg, var(--sage-dark) 0%, var(--sage) 100%)", padding:"clamp(36px,6vw,72px) clamp(20px,5vw,56px)", textAlign:"center", maxWidth:1060, marginLeft:"auto", marginRight:"auto" }}>
-        <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(28px,4vw,48px)", fontWeight:900, color:"#fff", marginBottom:14, lineHeight:1.1, letterSpacing:"-1px" }}>
-          Together, we save more lives.
-        </h2>
-        <p style={{ color:"rgba(255,255,255,0.75)", fontSize:16, maxWidth:420, margin:"0 auto 36px", lineHeight:1.7 }}>
-          Join hundreds of shelters using RescuPawLink to coordinate, connect, and save animals — for free.
-        </p>
-        <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
-          <button onClick={()=>{ setAuthMode("register"); setPage("login"); }}
-            style={{ padding:"16px 36px", borderRadius:9, border:"none", background:"#fff", color:"var(--sage-dark)", fontSize:15, fontWeight:800, cursor:"pointer", fontFamily:"inherit", transition:"all 0.2s" }}
-            onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-2px)"; e.currentTarget.style.boxShadow="0 8px 24px rgba(0,0,0,0.15)"; }}
-            onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="none"; }}>
-            Register Your Shelter →
-          </button>
-          <button onClick={()=>{ setPage("app"); setTab("adopt"); }}
-            style={{ padding:"16px 36px", borderRadius:9, border:"2px solid rgba(255,255,255,0.45)", background:"transparent", color:"#fff", fontSize:15, fontWeight:600, cursor:"pointer", fontFamily:"inherit", transition:"all 0.2s" }}
-            onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.1)"}
-            onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-            Browse Animals
-          </button>
-        </div>
-      </div>
-
-      {/* ─── FOOTER ──────────────────────────────── */}
-      <footer style={{ borderTop:"1px solid #f0ede8", padding:"clamp(24px,4vw,44px) clamp(16px,4vw,40px)" }}>
-        <div style={{ maxWidth:1140, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:20 }}>
+      {/* ── FEATURED ANIMALS ── */}
+      <div style={{ maxWidth:1160, margin:"0 auto", padding:"36px 32px" }}>
+        <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:24, flexWrap:"wrap", gap:12 }}>
           <div>
-            <div style={{ fontFamily:"'Inter',sans-serif", fontSize:17, fontWeight:800, color:"#1a1a1a", letterSpacing:"-0.3px", marginBottom:5 }}>
-              <span style={{ color:"var(--sage)" }}>Rescu</span>PawLink
-            </div>
-            <div style={{ fontSize:12, color:"#aaa" }}>Free for shelters and rescues · forever</div>
+            <div style={{ fontSize:11, fontWeight:800, color:"var(--coral)", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>⚠ Needs You Now</div>
+            <h2 style={{ fontSize:26, fontWeight:800 }}>Animals Running Out of Time</h2>
           </div>
-          <div style={{ display:"flex", gap:24, flexWrap:"wrap" }}>
-            {[
-              ["Find Animals",    ()=>{ setPage("app"); setTab("adopt"); }],
-              ["Shelter Network", ()=>{ setPage("app"); setTab("network"); }],
-              ["Register",        ()=>{ setAuthMode("register"); setPage("login"); }],
-              ["Sign In",         ()=>{ setAuthMode("login"); setPage("login"); }],
-            ].map(([l,fn]) => (
-              <button key={l} onClick={fn}
-                style={{ background:"none", border:"none", color:"#888", cursor:"pointer", fontFamily:"inherit", fontSize:13, fontWeight:500, transition:"color 0.15s" }}
-                onMouseEnter={e=>e.currentTarget.style.color="#1a1a1a"}
-                onMouseLeave={e=>e.currentTarget.style.color="#888"}>
-                {l}
-              </button>
+          <button className="btn btn-secondary btn-md" style={{ borderColor:"#d0c8bc" }} onClick={()=>{setPage("app");setTab("adopt");}}>See All →</button>
+        </div>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:18 }}>
+          {featuredAnimals.map((a,i)=>(
+            <div key={a.id} className="fade-up" style={{ animationDelay:`${i*0.08}s`, background:"#fff", borderRadius:16, overflow:"hidden", cursor:"pointer", border:"1px solid #e8e0d4", transition:"all 0.2s" }}
+              onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
+              onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 12px 32px rgba(0,0,0,0.1)"; }}
+              onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="none"; }}>
+              <div style={{ height:195, background:a.photos?.[0]?"transparent":`linear-gradient(135deg,${a.status==="critical"?"#fef2f2,#fee2e2":"#fffbeb,#fef3c7"})`, overflow:"hidden", position:"relative", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                {a.photos?.[0]
+                  ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                  : <div style={{ color:a.status==="critical"?"var(--coral)":"var(--amber)" }}>{a.species==="Dog"?<svg viewBox="0 0 100 100" width="90" height="90" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z"/></svg>:<svg viewBox="0 0 100 100" width="90" height="90" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51"/></svg>}</div>
+                }
+                <div style={{ position:"absolute", top:10, left:10 }}><span className={`badge ${stateBadgeColor(a.status)}`}>{a.status==="critical"?"⚠ Critical":"⏱ Urgent"}</span></div>
+                <div style={{ position:"absolute", bottom:10, right:10, background:"rgba(0,0,0,0.55)", backdropFilter:"blur(4px)", color:"#fff", borderRadius:7, padding:"4px 10px", fontSize:11, fontWeight:700 }}>{a.daysLeft}d left</div>
+              </div>
+              <div style={{ padding:16 }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:4 }}>
+                  <h3 style={{ fontSize:17, fontWeight:700 }}>{a.name}</h3>
+                  <span style={{ fontSize:11, color:"var(--slate-mid)", background:"#f5f0e8", padding:"3px 9px", borderRadius:6, border:"1px solid #e0d8cc" }}>{a.sex} · {a.age}</span>
+                </div>
+                <div style={{ fontSize:12, color:"var(--slate-mid)", marginBottom:7 }}>{a.breed}</div>
+                <p style={{ fontSize:13, color:"var(--slate)", lineHeight:1.55, marginBottom:10, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{a.description}</p>
+                <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", paddingTop:10, borderTop:"1px solid #f0ece4" }}>
+                  <div><div style={{ fontSize:12, fontWeight:600 }}>{a.shelterName}</div><span style={{ fontSize:11, color:"var(--slate-light)" }}>📍 {a.shelterCity}, {a.shelterState}</span></div>
+                  <button className="btn btn-primary btn-sm" onClick={e=>{e.stopPropagation();setPage("app");setTab("adopt");setSelectedAnimal(a);}}>View</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── DOGS ── */}
+      <div style={{ background:"#ede8df", padding:"36px 32px" }}>
+        <div style={{ maxWidth:1160, margin:"0 auto" }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20, flexWrap:"wrap", gap:12 }}>
+            <h2 style={{ fontSize:22, fontWeight:800 }}>🐕 Dogs Looking for Homes</h2>
+            <button className="btn btn-secondary btn-md" style={{ borderColor:"#d0c8bc" }} onClick={()=>{setPage("app");setTab("adopt");setFSpecies("Dog");}}>See All Dogs →</button>
+          </div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))", gap:14 }}>
+            {animals.filter(a=>a.species==="Dog").slice(0,4).map((a,i)=>(
+              <div key={a.id} className="fade-up" style={{ animationDelay:`${i*0.07}s`, background:"#fff", borderRadius:14, overflow:"hidden", cursor:"pointer", border:"1px solid #e8e0d4", transition:"all 0.18s" }}
+                onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
+                onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-3px)"; e.currentTarget.style.boxShadow="0 8px 24px rgba(0,0,0,0.1)"; }}
+                onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="none"; }}>
+                <div style={{ height:148, background:"linear-gradient(135deg,#fffbeb,#fef3c7)", display:"flex", alignItems:"center", justifyContent:"center", position:"relative" }}>
+                  {a.photos?.[0]?<img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>:<div style={{ color:"var(--amber)" }}><svg viewBox="0 0 100 100" width="72" height="72" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z"/></svg></div>}
+                  <div style={{ position:"absolute", top:7, left:7 }}><span style={{ background:a.status==="critical"?"var(--coral)":"var(--amber)", color:"#fff", fontSize:9, fontWeight:800, padding:"2px 8px", borderRadius:20, textTransform:"uppercase" }}>{a.daysLeft}d left</span></div>
+                </div>
+                <div style={{ padding:"11px 13px" }}>
+                  <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>{a.name}</div>
+                  <div style={{ fontSize:11, color:"var(--slate-mid)", marginBottom:8 }}>{a.breed} · {a.age}</div>
+                  <button className="btn btn-primary btn-sm" style={{ width:"100%" }} onClick={e=>{e.stopPropagation();setPage("app");setTab("adopt");setSelectedAnimal(a);setApplyTarget(a);}}>Apply to Adopt</button>
+                </div>
+              </div>
             ))}
           </div>
-          <div style={{ fontSize:12, color:"#ccc" }}>© 2026 RescuPawLink Network · Every animal deserves a second chance · All rights reserved</div>
-          <div style={{ fontSize:11, color:"#ddd", marginTop:6 }}>RescuPawLink is not responsible for the actions of individual shelters or rescues. All adoption inquiries are handled directly between users and organizations. By using this site you agree to our Terms of Use and Privacy Policy.</div>
+        </div>
+      </div>
+
+      {/* ── CATS ── */}
+      <div style={{ background:"#fff", padding:"36px 32px" }}>
+        <div style={{ maxWidth:1160, margin:"0 auto" }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20, flexWrap:"wrap", gap:12 }}>
+            <h2 style={{ fontSize:22, fontWeight:800 }}>🐈 Cats Looking for Homes</h2>
+            <button className="btn btn-secondary btn-md" style={{ borderColor:"#d0c8bc" }} onClick={()=>{setPage("app");setTab("adopt");setFSpecies("Cat");}}>See All Cats →</button>
+          </div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))", gap:14 }}>
+            {animals.filter(a=>a.species==="Cat").slice(0,4).map((a,i)=>(
+              <div key={a.id} className="fade-up" style={{ animationDelay:`${i*0.07}s`, background:"#fff", borderRadius:14, overflow:"hidden", cursor:"pointer", border:"1px solid #e8e0d4", transition:"all 0.18s" }}
+                onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
+                onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-3px)"; e.currentTarget.style.boxShadow="0 8px 24px rgba(0,0,0,0.1)"; }}
+                onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="none"; }}>
+                <div style={{ height:148, background:"linear-gradient(135deg,#f0fdf4,#dcfce7)", display:"flex", alignItems:"center", justifyContent:"center", position:"relative" }}>
+                  {a.photos?.[0]?<img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>:<div style={{ color:"var(--sage)" }}><svg viewBox="0 0 100 100" width="72" height="72" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51"/></svg></div>}
+                  <div style={{ position:"absolute", top:7, left:7 }}><span style={{ background:a.status==="critical"?"var(--coral)":"var(--amber)", color:"#fff", fontSize:9, fontWeight:800, padding:"2px 8px", borderRadius:20, textTransform:"uppercase" }}>{a.daysLeft}d left</span></div>
+                </div>
+                <div style={{ padding:"11px 13px" }}>
+                  <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>{a.name}</div>
+                  <div style={{ fontSize:11, color:"var(--slate-mid)", marginBottom:8 }}>{a.breed} · {a.age}</div>
+                  <button className="btn btn-primary btn-sm" style={{ width:"100%" }} onClick={e=>{e.stopPropagation();setPage("app");setTab("adopt");setSelectedAnimal(a);setApplyTarget(a);}}>Apply to Adopt</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── FOR SHELTERS ── */}
+      <div style={{ background:"linear-gradient(135deg,#2d4a32,#1a2e1d)", padding:"56px 32px" }}>
+        <div style={{ maxWidth:1160, margin:"0 auto" }}>
+          <div style={{ textAlign:"center", marginBottom:36 }}>
+            <div style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.45)", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:8 }}>For Shelters & Rescues</div>
+            <h2 style={{ fontSize:28, color:"#fff", marginBottom:10 }}>Your Network Is Stronger Together</h2>
+            <p style={{ color:"rgba(255,255,255,0.65)", fontSize:15, maxWidth:480, margin:"0 auto", lineHeight:1.65 }}>When one shelter is full, another has space. RescuPawLink makes that connection instant.</p>
+          </div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(250px,1fr))", gap:14, marginBottom:36 }}>
+            {[
+              { icon:"📊", title:"Live Capacity Board", desc:"See who has space right now — updated in real time." },
+              { icon:"💬", title:"Direct Coordinator Chat", desc:"Message other shelter staff instantly." },
+              { icon:"🔔", title:"Overflow Alerts", desc:"Flag when you're over capacity — the network responds." },
+              { icon:"📋", title:"Transfer Requests", desc:"Request space at a partner shelter in one click." },
+              { icon:"🐾", title:"Animal Listings", desc:"Post animals with photos, health info, and urgency timers." },
+              { icon:"📈", title:"Network Reach", desc:"Your listings reach adopters and fosters nationwide." },
+            ].map((b,i)=>(
+              <div key={b.title} className="fade-up" style={{ animationDelay:`${i*0.06}s`, background:"rgba(255,255,255,0.07)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:12, padding:"18px 20px" }}>
+                <div style={{ fontSize:22, marginBottom:8 }}>{b.icon}</div>
+                <div style={{ fontWeight:700, color:"#fff", fontSize:14, marginBottom:4 }}>{b.title}</div>
+                <div style={{ fontSize:12, color:"rgba(255,255,255,0.58)", lineHeight:1.6 }}>{b.desc}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ textAlign:"center" }}>
+            <button className="btn btn-lg" style={{ background:"#fff", color:"var(--sage-dark)", fontWeight:700 }} onClick={()=>{setAuthMode("register");setPage("login");}}>Register Your Shelter</button>
+            <div style={{ marginTop:10, fontSize:12, color:"rgba(255,255,255,0.35)" }}>No credit card · No commitment · Free forever</div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── SUCCESS STORIES ── */}
+      <div style={{ background:"#f5f0e8", padding:"48px 32px" }}>
+        <div style={{ maxWidth:1160, margin:"0 auto" }}>
+          <div style={{ textAlign:"center", marginBottom:28 }}>
+            <div style={{ fontSize:11, fontWeight:700, color:"var(--sage)", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:6 }}>Real Impact</div>
+            <h2 style={{ fontSize:26, fontWeight:800 }}>Lives Saved Through the Network</h2>
+          </div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))", gap:16 }}>
+            {[
+              { name:"Max & Daisy", outcome:"Transferred from Dallas to Houston — both adopted within 48 hours", shelters:"Dallas Animal Services → Houston SPCA", emoji:"🐕🐕", date:"May 2025" },
+              { name:"The Tuxedo Trio", outcome:"3 bonded cats moved to Denver when LA hit capacity. All 3 found one home.", shelters:"LA Animal Services → Denver Dumb Friends League", emoji:"🐈🐈🐈", date:"April 2025" },
+              { name:"Biscuit", outcome:"6-year-old beagle hours from deadline. Foster stepped up same day.", shelters:"Austin Animal Center + Foster Network", emoji:"🐕", date:"March 2025" },
+            ].map((s,i)=>(
+              <div key={s.name} className="fade-up" style={{ animationDelay:`${i*0.08}s`, background:"#fff", borderRadius:14, border:"1px solid #e8e0d4", padding:22 }}>
+                <div style={{ fontSize:34, marginBottom:10 }}>{s.emoji}</div>
+                <h3 style={{ fontSize:16, fontWeight:700, marginBottom:6 }}>{s.name}</h3>
+                <p style={{ fontSize:13, color:"var(--slate)", lineHeight:1.65, marginBottom:10 }}>"{s.outcome}"</p>
+                <div style={{ fontSize:11, color:"var(--slate-light)", marginBottom:2 }}>🔗 {s.shelters}</div>
+                <div style={{ fontSize:11, color:"var(--slate-light)" }}>{s.date}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── HOW IT WORKS ── */}
+      <div style={{ background:"#fff", padding:"48px 32px" }}>
+        <div style={{ maxWidth:960, margin:"0 auto", textAlign:"center" }}>
+          <h2 style={{ fontSize:26, fontWeight:800, marginBottom:6 }}>How It Works</h2>
+          <p style={{ color:"var(--slate-mid)", marginBottom:36, fontSize:14 }}>For shelters, rescues, adopters, and fosters</p>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))", gap:24 }}>
+            {[
+              { icon:"🏠", step:"01", title:"Register Free", desc:"Create your account in minutes. No fees, no commitment." },
+              { icon:"📊", step:"02", title:"Share Capacity", desc:"Update your space live. Flag when you're over capacity." },
+              { icon:"🔗", step:"03", title:"Connect", desc:"Message coordinators, arrange transfers, save animals." },
+              { icon:"❤️", step:"04", title:"Save Lives", desc:"Listings reach adopters nationwide. Animals find homes." },
+            ].map(c=>(
+              <div key={c.step}>
+                <div style={{ width:48, height:48, borderRadius:"50%", background:"var(--sage-light)", border:"2px solid #c7dfc9", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, margin:"0 auto 12px" }}>{c.icon}</div>
+                <div style={{ fontSize:10, fontWeight:700, color:"var(--sage)", letterSpacing:"0.1em", marginBottom:5 }}>STEP {c.step}</div>
+                <h3 style={{ fontSize:15, fontWeight:700, marginBottom:5 }}>{c.title}</h3>
+                <p style={{ fontSize:13, color:"var(--slate-mid)", lineHeight:1.6 }}>{c.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── CTA ── */}
+      <div style={{ background:"var(--sage)", padding:"44px 32px", textAlign:"center" }}>
+        <h2 style={{ fontSize:26, fontWeight:800, color:"#fff", marginBottom:8 }}>Together, we save more lives.</h2>
+        <p style={{ color:"rgba(255,255,255,0.8)", marginBottom:24, fontSize:15, maxWidth:400, margin:"0 auto 24px", lineHeight:1.6 }}>Join hundreds of shelters using RescuPawLink to coordinate and save animals.</p>
+        <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
+          <button className="btn btn-lg" style={{ background:"#fff", color:"var(--sage-dark)", fontWeight:700 }} onClick={()=>{setAuthMode("register");setPage("login");}}>Register Your Shelter →</button>
+          <button className="btn btn-lg" style={{ background:"transparent", color:"#fff", border:"2px solid rgba(255,255,255,0.55)" }} onClick={()=>{setPage("app");setTab("adopt");}}>Browse Animals</button>
+        </div>
+      </div>
+
+      {/* ── FOOTER ── */}
+      <footer style={{ background:"#2a2520", padding:"28px 32px" }}>
+        <div style={{ maxWidth:1160, margin:"0 auto" }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:20, marginBottom:16 }}>
+            <div>
+              <div style={{ fontFamily:"'Inter',sans-serif", fontSize:15, fontWeight:800, color:"#fff", marginBottom:4 }}>
+                <span style={{ color:"var(--sage)" }}>Rescu</span>PawLink
+              </div>
+              <div style={{ fontSize:12, color:"rgba(255,255,255,0.38)" }}>Every animal deserves a second chance.</div>
+            </div>
+            <div style={{ display:"flex", gap:0, alignItems:"center", fontSize:12, color:"rgba(255,255,255,0.45)" }}>
+              {[["About",null],["Resources",null],["Pet Search",()=>{setPage("app");setTab("adopt");}],["Shelters",()=>{setPage("app");setTab("network");}],["Community",()=>{setPage("app");setTab("chat");}],["Contact",null]].map(([l,fn],i,arr)=>(
+                <span key={l} style={{ display:"flex", alignItems:"center" }}>
+                  <button onClick={fn||undefined} style={{ background:"none", border:"none", color:"rgba(255,255,255,0.45)", cursor:fn?"pointer":"default", fontFamily:"inherit", fontSize:12, padding:"4px 10px" }}
+                    onMouseEnter={e=>{ if(fn) e.currentTarget.style.color="#fff"; }}
+                    onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.45)"}>{l}</button>
+                  {i < arr.length-1 && <span style={{ color:"rgba(255,255,255,0.2)" }}>|</span>}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div style={{ paddingTop:14, borderTop:"1px solid rgba(255,255,255,0.07)", fontSize:11, color:"rgba(255,255,255,0.22)" }}>
+            © 2026 RescuPawLink Network · All rights reserved · rescupawlink.com
+          </div>
         </div>
       </footer>
 
@@ -1583,13 +1687,24 @@ export default function RescuPawLink() {
   // AUTH
   // ─────────────────────────────────────────────────────────
   if (page === "login") return (
-    <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#eef4ef,#f7f4ef)", display:"flex", alignItems:"center", justifyContent:"center", padding:24, fontFamily:"'DM Sans',sans-serif" }}>
-      <div className="card fade-up" style={{ width:"100%", maxWidth:480, padding:"36px 40px" }}>
-        <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", color:"var(--slate-mid)", cursor:"pointer", fontSize:13, marginBottom:22, display:"flex", alignItems:"center", gap:5 }}>← Back</button>
-        <div style={{ marginBottom:28 }}>
-          <div style={{ fontFamily:"'Inter',sans-serif", fontSize:22, fontWeight:800, color:"var(--slate)", letterSpacing:"-0.5px" }}>
-            <span style={{ color:"var(--sage)" }}>Rescu</span>PawLink
+    <div style={{ minHeight:"100vh", background:"var(--cream)", display:"flex", flexDirection:"column", fontFamily:"'DM Sans',sans-serif" }}>
+      {/* Auth Nav */}
+      <nav style={{ background:"#fff", borderBottom:"1px solid var(--border)", padding:"0 32px", height:64, display:"flex", alignItems:"center", justifyContent:"space-between", boxShadow:"0 1px 6px rgba(0,0,0,0.04)" }}>
+        <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:9 }}>
+          <div style={{ width:34, height:34, background:"var(--sage)", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <svg viewBox="0 0 100 100" width="19" height="19" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z"/></svg>
           </div>
+          <span style={{ fontFamily:"'Inter',sans-serif", fontSize:17, fontWeight:800, color:"var(--slate)", letterSpacing:"-0.4px" }}>RescuPawLink.com</span>
+        </button>
+        <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", color:"var(--slate-mid)", cursor:"pointer", fontSize:13, fontFamily:"inherit", display:"flex", alignItems:"center", gap:5 }}>← Back to site</button>
+      </nav>
+      <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
+      <div className="card fade-up" style={{ width:"100%", maxWidth:460, padding:"36px 40px", boxShadow:"0 8px 40px rgba(0,0,0,0.1)", border:"1px solid var(--border)" }}>
+        <div style={{ marginBottom:24 }}>
+          <h1 style={{ fontFamily:"'Inter',sans-serif", fontSize:22, fontWeight:800, color:"var(--slate)", marginBottom:4 }}>
+            {authMode === "login" ? "Sign in to your account" : "Join RescuPawLink"}
+          </h1>
+          <p style={{ fontSize:13, color:"var(--slate-mid)" }}>{authMode === "login" ? "Welcome back — sign in to your shelter account." : "Free for all shelters and rescues. No credit card."}</p>
         </div>
 
         <div className="tab-bar" style={{ marginBottom:26 }}>
@@ -1598,7 +1713,7 @@ export default function RescuPawLink() {
           ))}
         </div>
 
-        {authErr && <div style={{ background:"#fee2e2", border:"1px solid #fca5a5", color:"#dc2626", borderRadius:9, padding:"10px 14px", fontSize:13, marginBottom:18 }}>{authErr}</div>}
+        {authErr && <div style={{ background:"var(--coral-light)", border:"1px solid #f0c4b4", color:"#dc2626", borderRadius:9, padding:"10px 14px", fontSize:13, marginBottom:18 }}>{authErr}</div>}
 
         {authMode === "login" ? (
           <form onSubmit={handleLogin}>
@@ -1634,6 +1749,7 @@ export default function RescuPawLink() {
           </form>
         )}
       </div>
+      </div>
     </div>
   );
 
@@ -1643,16 +1759,17 @@ export default function RescuPawLink() {
   const isLoggedIn = !!user;
 
   return (
-    <div style={{ fontFamily:"'DM Sans',sans-serif", color:"var(--slate)", background:"var(--cream)", minHeight:"100vh" }}>
+    <div style={{ fontFamily:"'Inter',sans-serif", color:"var(--slate)", background:"var(--cream)", minHeight:"100vh" }}>
       {toast && <Toast msg={toast} />}
 
       {/* Header */}
-      <header style={{ background:"var(--warm-white)", borderBottom:"1px solid var(--border)", position:"sticky", top:0, zIndex:100, boxShadow:"var(--shadow-sm)" }}>
-        <div style={{ maxWidth:1160, margin:"0 auto", padding:"0 clamp(12px,3vw,24px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", gap:8 }}>
-          <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", flexShrink:0 }}>
-            <div style={{ fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"var(--slate)", letterSpacing:"-0.5px" }}>
-              <span style={{ color:"var(--sage)" }}>Rescu</span>PawLink
+      <header style={{ background:"#fff", borderBottom:"1px solid var(--border)", position:"sticky", top:0, zIndex:100, boxShadow:"0 1px 6px rgba(0,0,0,0.04)" }}>
+        <div style={{ maxWidth:1200, margin:"0 auto", padding:"0 clamp(12px,3vw,32px)", height:64, display:"flex", alignItems:"center", justifyContent:"space-between", gap:8 }}>
+          <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", gap:9 }}>
+            <div style={{ width:34, height:34, background:"var(--sage)", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center" }}>
+              <svg viewBox="0 0 100 100" width="19" height="19" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z"/></svg>
             </div>
+            <div style={{ fontFamily:"'Inter',sans-serif", fontSize:17, fontWeight:800, color:"var(--slate)", letterSpacing:"-0.4px" }}>RescuPawLink.com</div>
           </button>
 
           <nav style={{ display:"flex", gap:2, flexWrap:"wrap" }}>
@@ -1684,15 +1801,15 @@ export default function RescuPawLink() {
         </div>
       </header>
 
-      <main style={{ maxWidth:1160, margin:"0 auto", padding:"28px 24px" }}>
+      <main style={{ maxWidth:1200, margin:"0 auto", padding:"32px 32px" }}>
 
         {/* ══ ADOPTABLE ANIMALS ══════════════════════════════ */}
         {tab === "adopt" && (
           <div className="fade-in">
             <div className="section-header">
               <div>
-                <h1 style={{ fontSize:30, marginBottom:5 }}>Adoptable Animals</h1>
-                <p style={{ color:"var(--slate-mid)", fontSize:14 }}>Real listings from shelters across the country — sorted by urgency.</p>
+                <h1 style={{ fontSize:26, marginBottom:5, fontFamily:"'Inter',sans-serif", fontWeight:800, letterSpacing:"-0.5px" }}>Adoptable Animals</h1>
+                <p style={{ color:"var(--slate-mid)", fontSize:14, fontFamily:"'Inter',sans-serif" }}>Real listings from verified shelters — sorted by urgency. Apply directly from any listing.</p>
               </div>
               <div style={{ fontSize:13, color:"var(--slate-mid)", background:"var(--warm-white)", border:"1px solid var(--border)", borderRadius:10, padding:"8px 14px" }}>
                 <strong style={{ color:"var(--slate)" }}>{filteredAnimals.length}</strong> animals found
@@ -1701,7 +1818,7 @@ export default function RescuPawLink() {
 
             {/* Critical banner — always visible to everyone */}
             {animals.filter(a=>a.status==="critical" && (fSpecies==="All"||a.species===fSpecies)).length > 0 && !fState && !fCity && !fSearch && (
-              <div style={{ background:"linear-gradient(135deg,#fff1f2,#fff5f5)", border:"1.5px solid #fca5a5", borderRadius:14, padding:"18px 22px", marginBottom:22 }}>
+              <div style={{ background:"linear-gradient(135deg,#fff1f2,var(--coral-light))", border:"1.5px solid #f0c4b4", borderRadius:14, padding:"18px 22px", marginBottom:22 }}>
                 <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
                   <span style={{ fontSize:20 }}>⚠️</span>
                   <div>
@@ -1711,11 +1828,11 @@ export default function RescuPawLink() {
                 </div>
                 <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
                   {animals.filter(a=>a.status==="critical" && (fSpecies==="All"||a.species===fSpecies)).map(a=>(
-                    <div key={a.id} onClick={()=>setSelectedAnimal(a)} style={{ display:"flex", alignItems:"center", gap:9, background:"#fff", border:"1px solid #fca5a5", borderRadius:10, padding:"8px 14px", cursor:"pointer", transition:"box-shadow 0.15s" }}
+                    <div key={a.id} onClick={()=>setSelectedAnimal(a)} style={{ display:"flex", alignItems:"center", gap:9, background:"#fff", border:"1px solid #f0c4b4", borderRadius:10, padding:"8px 14px", cursor:"pointer", transition:"box-shadow 0.15s" }}
                       onMouseEnter={e=>e.currentTarget.style.boxShadow="0 2px 10px rgba(220,38,38,0.12)"}
                       onMouseLeave={e=>e.currentTarget.style.boxShadow="none"}>
                       <div style={{ width:36, height:36, borderRadius:8, overflow:"hidden", background:"var(--sand)", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                        {a.photos?.[0] ? <img src={a.photos[0]} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> : <span style={{ fontSize:22 }}>{a.species==="Dog"?"🐕":"🐈"}</span>}
+                        {a.photos?.[0] ? <img src={a.photos[0]} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> : <span style={{ fontSize:22 }}>{a.species==="Dog"?<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>:<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>}</span>}
                       </div>
                       <div>
                         <div style={{ fontWeight:700, fontSize:13 }}>{a.name}</div>
@@ -1728,7 +1845,7 @@ export default function RescuPawLink() {
             )}
 
             {/* Filter bar */}
-            <div className="card" style={{ padding:"18px 20px", marginBottom:24 }}>
+            <div style={{ background:"#fff", border:"1px solid var(--border)", borderRadius:12, padding:"16px 20px", marginBottom:24, boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
               <div style={{ display:"flex", gap:12, flexWrap:"wrap", alignItems:"flex-end" }}>
                 {/* Search */}
                 <div style={{ flex:"1 1 180px", minWidth:160 }}>
@@ -1757,7 +1874,7 @@ export default function RescuPawLink() {
                   <div style={{ display:"flex", gap:6 }}>
                     {["All","Dog","Cat","Other"].map(sp=>(
                       <button key={sp} className={`filter-chip ${fSpecies===sp?"active":""}`} onClick={()=>setFSpecies(sp)}>
-                        {sp==="Dog"?"🐕":sp==="Cat"?"🐈":sp==="Other"?"🐾":""} {sp}
+                        {sp==="Dog"?<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>:sp==="Cat"?<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>:sp==="Other"?<span>🐾</span>:null} {sp}
                       </button>
                     ))}
                   </div>
@@ -1778,37 +1895,42 @@ export default function RescuPawLink() {
             ) : (
               <div className="animal-grid">
                 {filteredAnimals.map((a,i) => (
-                  <div key={a.id} className="card card-hover fade-up" style={{ animationDelay:`${i*0.05}s`, cursor:"pointer", overflow:"hidden" }} onClick={()=>setSelectedAnimal(a)}>
-                    {/* Photo */}
-                    <div style={{ height:195, background:a.photos?.[0]?"transparent":`linear-gradient(135deg,${a.status==="critical"?"#fef2f2,#fee2e2":a.status==="urgent"?"#fffbeb,#fef3c7":"#f0fdf4,#dcfce7"})`, overflow:"hidden", position:"relative" }}>
+                  <div key={a.id} className="animal-card fade-up" style={{ animationDelay:`${i*0.05}s` }} onClick={()=>setSelectedAnimal(a)}>
+                    {/* Photo with zoom on hover */}
+                    <div className="animal-card-img" style={{ height:210, background:a.photos?.[0]?"transparent":`linear-gradient(135deg,${a.status==="critical"?"var(--coral-light),#f9e0d8":a.status==="urgent"?"var(--amber-light),#f5e8cc":"var(--sage-light),#e4eed6"})` }}>
                       {a.photos?.[0]
-                        ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
-                        : <div style={{ height:"100%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:80 }}>{a.species==="Dog"?"🐕":a.species==="Cat"?"🐈":"🐾"}</div>
+                        ? <img src={a.photos[0]} alt={a.name} />
+                        : <div style={{ height:"100%", display:"flex", alignItems:"center", justifyContent:"center" }}>{a.species==="Dog"?<svg viewBox="0 0 100 100" width="88" height="88" fill="none" stroke={a.status==="critical"?"var(--coral)":"var(--amber)"} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z"/></svg>:a.species==="Cat"?<svg viewBox="0 0 100 100" width="88" height="88" fill="none" stroke="var(--sage)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51"/></svg>:<span style={{fontSize:70}}>🐾</span>}</div>
                       }
-                      <div style={{ position:"absolute", top:10, left:10 }}>
+                      {/* Status badge */}
+                      <div style={{ position:"absolute", top:12, left:12 }}>
                         <span className={`badge ${stateBadgeColor(a.status)}`}>{a.status==="critical"?"⚠ Critical":"⏱ Urgent"}</span>
                       </div>
-                      <div style={{ position:"absolute", bottom:10, right:10, background:"rgba(0,0,0,0.52)", backdropFilter:"blur(4px)", color:"#fff", borderRadius:8, padding:"4px 10px", fontSize:12, fontWeight:600 }}>
-                        {a.daysLeft} day{a.daysLeft!==1?"s":""} left
+                      {/* Days left */}
+                      <div style={{ position:"absolute", bottom:12, right:12, background:"rgba(27,28,25,0.65)", backdropFilter:"blur(6px)", color:"#fff", borderRadius:8, padding:"5px 11px", fontSize:12, fontWeight:700, fontFamily:"'Inter',sans-serif" }}>
+                        {a.daysLeft}d left
                       </div>
-                      {a.photos?.length > 1 && <div style={{ position:"absolute", bottom:10, left:10, background:"rgba(0,0,0,0.52)", color:"#fff", borderRadius:7, padding:"3px 9px", fontSize:11 }}>📷 {a.photos.length}</div>}
+                      {/* Trait pills on card face */}
+                      <div style={{ position:"absolute", bottom:12, left:12, display:"flex", gap:5, flexWrap:"wrap" }}>
+                        {a.vaccinated && <span style={{ background:"rgba(255,255,255,0.92)", color:"var(--sage-dark)", fontSize:10, fontWeight:700, padding:"3px 8px", borderRadius:6, fontFamily:"'Inter',sans-serif" }}>✓ Vacc'd</span>}
+                        {a.neutered   && <span style={{ background:"rgba(255,255,255,0.92)", color:"#2563eb", fontSize:10, fontWeight:700, padding:"3px 8px", borderRadius:6, fontFamily:"'Inter',sans-serif" }}>✓ Altered</span>}
+                        {a.goodWithKids && <span style={{ background:"rgba(255,255,255,0.92)", color:"#d97706", fontSize:10, fontWeight:700, padding:"3px 8px", borderRadius:6, fontFamily:"'Inter',sans-serif" }}>👶 Kids OK</span>}
+                      </div>
+                      {a.photos?.length > 1 && <div style={{ position:"absolute", top:12, right:12, background:"rgba(27,28,25,0.6)", color:"#fff", borderRadius:7, padding:"3px 9px", fontSize:11, fontFamily:"'Inter',sans-serif" }}>+{a.photos.length-1} photos</div>}
                     </div>
-                    <div style={{ padding:18 }}>
-                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:3 }}>
-                        <h3 style={{ fontSize:19 }}>{a.name}</h3>
-                        <span style={{ fontSize:12, color:"var(--slate-mid)", background:"var(--cream)", padding:"3px 9px", borderRadius:7, border:"1px solid var(--border)", flexShrink:0, marginLeft:6 }}>{a.sex}·{a.age}</span>
+                    <div style={{ padding:"16px 18px" }}>
+                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:4 }}>
+                        <h3 style={{ fontSize:19, fontFamily:"'Playfair Display',serif", fontWeight:700, color:"var(--slate)", letterSpacing:"-0.2px" }}>{a.name}</h3>
+                        <span style={{ fontSize:11, color:"var(--slate-mid)", background:"var(--cream)", padding:"3px 9px", borderRadius:6, border:"1px solid var(--border)", flexShrink:0, marginLeft:6, fontFamily:"'Inter',sans-serif" }}>{a.sex} · {a.age}</span>
                       </div>
-                      <div style={{ fontSize:13, color:"var(--slate-mid)", marginBottom:9 }}>{a.breed}</div>
-                      <p style={{ fontSize:13, color:"var(--slate)", lineHeight:1.55, marginBottom:13, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{a.description}</p>
-                      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:6 }}>
+                      <div style={{ fontSize:13, color:"var(--slate-light)", marginBottom:8, fontFamily:"'Inter',sans-serif" }}>{a.breed}</div>
+                      <p style={{ fontSize:13, color:"var(--slate-mid)", lineHeight:1.6, marginBottom:12, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden", fontFamily:"'Inter',sans-serif" }}>{a.description}</p>
+                      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", paddingTop:10, borderTop:"1px solid var(--border)" }}>
                         <div>
-                          <div style={{ fontSize:13, fontWeight:600, color:"var(--text)", marginBottom:2 }}>{a.shelterName}</div>
-                          <span style={{ fontSize:12, color:"var(--slate-light)", display:"flex", alignItems:"center", gap:4 }}>{I.pin} {a.shelterCity}, {a.shelterState}</span>
+                          <div style={{ fontSize:13, fontWeight:600, color:"var(--slate)", marginBottom:2, fontFamily:"'Inter',sans-serif" }}>{a.shelterName}</div>
+                          <span style={{ fontSize:12, color:"var(--slate-light)", display:"flex", alignItems:"center", gap:4, fontFamily:"'Inter',sans-serif" }}>{I.pin} {a.shelterCity}, {a.shelterState}</span>
                         </div>
-                        <div style={{ display:"flex", gap:5 }}>
-                          {a.vaccinated && <span className="trait-pill" style={{ background:"var(--sage-light)", color:"var(--sage-dark)" }}>Vacc'd</span>}
-                          {a.neutered   && <span className="trait-pill" style={{ background:"#eff6ff", color:"#2563eb" }}>Altered</span>}
-                        </div>
+                        <span style={{ fontSize:13, fontWeight:700, color:"var(--sage)", fontFamily:"'Inter',sans-serif" }}>View →</span>
                       </div>
                     </div>
                   </div>
@@ -1824,7 +1946,7 @@ export default function RescuPawLink() {
             {/* Header + login nudge */}
             <div className="section-header">
               <div>
-                <h1 style={{ fontSize:30, marginBottom:5 }}>Shelter Network</h1>
+                <h1 style={{ fontSize:26, marginBottom:5, fontFamily:"'Inter',sans-serif", fontWeight:800, letterSpacing:"-0.5px" }}>Shelter Network</h1>
                 <p style={{ color:"var(--slate-mid)", fontSize:14 }}>Live capacity across every partner shelter. Connect, coordinate, and save animals together.</p>
               </div>
               {!isLoggedIn && (
@@ -1842,7 +1964,7 @@ export default function RescuPawLink() {
                   <p style={{ fontSize:14, color:"var(--slate-mid)", lineHeight:1.55 }}>Registered shelters can see full contact details, claim available space, send transfer requests, and message coordinators directly — all in one place.</p>
                 </div>
                 <div style={{ display:"flex", flexDirection:"column", gap:8, flexShrink:0 }}>
-                  <button className="btn btn-primary btn-md" onClick={()=>{setAuthMode("register");setPage("login");}}>Register Free</button>
+                  <button className="btn btn-primary btn-md" onClick={()=>{setAuthMode("register");setPage("login");}}>Register Your Shelter</button>
                   <button className="btn btn-ghost btn-sm" onClick={()=>{setAuthMode("login");setPage("login");}}>Sign In</button>
                 </div>
               </div>
@@ -1902,7 +2024,7 @@ export default function RescuPawLink() {
                     <div style={{ display:"flex", gap:16, alignItems:"flex-start", flexWrap:"wrap" }}>
 
                       {/* Avatar */}
-                      <div style={{ width:48, height:48, borderRadius:12, background:s.needsHelp?"#fee2e2":"var(--sage-light)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>
+                      <div style={{ width:48, height:48, borderRadius:12, background:s.needsHelp?"var(--coral-light)":"var(--sage-light)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>
                         {s.needsHelp?"⚠️":"🏠"}
                       </div>
 
@@ -1979,7 +2101,7 @@ export default function RescuPawLink() {
                           <div key={a.id} onClick={()=>setSelectedAnimal(a)} style={{ display:"flex", alignItems:"center", gap:7, background:"var(--cream)", border:"1px solid var(--border)", borderRadius:9, padding:"5px 11px", cursor:"pointer", transition:"box-shadow 0.15s", fontSize:13 }}
                             onMouseEnter={e=>e.currentTarget.style.boxShadow="var(--shadow-sm)"}
                             onMouseLeave={e=>e.currentTarget.style.boxShadow="none"}>
-                            {a.photos?.[0] ? <img src={a.photos[0]} style={{ width:26, height:26, borderRadius:6, objectFit:"cover" }}/> : <span style={{ fontSize:16 }}>{a.species==="Dog"?"🐕":"🐈"}</span>}
+                            {a.photos?.[0] ? <img src={a.photos[0]} style={{ width:26, height:26, borderRadius:6, objectFit:"cover" }}/> : <span style={{ fontSize:16 }}>{a.species==="Dog"?<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>:<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>}</span>}
                             <span style={{ fontWeight:500 }}>{a.name}</span>
                             <span className={`badge ${stateBadgeColor(a.status)}`} style={{ fontSize:10 }}>{a.daysLeft}d</span>
                           </div>
@@ -2008,7 +2130,7 @@ export default function RescuPawLink() {
         {tab === "post" && isLoggedIn && (
           <div className="fade-in" style={{ maxWidth:660, margin:"0 auto" }}>
             <div style={{ marginBottom:24 }}>
-              <h1 style={{ fontSize:30, marginBottom:5 }}>Post an Animal</h1>
+              <h1 style={{ fontSize:30, marginBottom:5, fontFamily:"'Playfair Display',serif", fontWeight:700 }}>Post an Animal</h1>
               <p style={{ color:"var(--slate-mid)", fontSize:14 }}>Real photos and complete info dramatically increase placement speed.</p>
             </div>
 
@@ -2194,9 +2316,9 @@ export default function RescuPawLink() {
 
             {/* ── CRITICAL ALERT BANNER — animals in network at ≤2 days ── */}
             {animals.filter(a=>a.status==="critical").length > 0 && (
-              <div style={{ background:"#fff5f5", border:"1.5px solid #fca5a5", borderRadius:14, padding:"18px 22px", marginBottom:22 }}>
+              <div style={{ background:"var(--coral-light)", border:"1px solid #f0c4b4", borderLeft:"4px solid var(--coral)", borderRadius:"0 14px 14px 0", padding:"18px 22px", marginBottom:22 }}>
                 <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14 }}>
-                  <div style={{ width:36, height:36, borderRadius:10, background:"#fee2e2", display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, flexShrink:0 }}>⚠️</div>
+                  <div style={{ width:36, height:36, borderRadius:10, background:"var(--coral-light)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, flexShrink:0 }}>⚠️</div>
                   <div>
                     <div style={{ fontWeight:700, color:"#dc2626", fontSize:15 }}>
                       {animals.filter(a=>a.status==="critical").length} Animal{animals.filter(a=>a.status==="critical").length!==1?"s":""} Are Critical — Under 48 Hours
@@ -2206,11 +2328,11 @@ export default function RescuPawLink() {
                 </div>
                 <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
                   {animals.filter(a=>a.status==="critical").map(a=>(
-                    <div key={a.id} onClick={()=>setSelectedAnimal(a)} style={{ display:"flex", alignItems:"center", gap:9, background:"#fff", border:"1px solid #fca5a5", borderRadius:10, padding:"8px 14px", cursor:"pointer", transition:"box-shadow 0.15s" }}
+                    <div key={a.id} onClick={()=>setSelectedAnimal(a)} style={{ display:"flex", alignItems:"center", gap:9, background:"#fff", border:"1px solid #f0c4b4", borderRadius:10, padding:"8px 14px", cursor:"pointer", transition:"box-shadow 0.15s" }}
                       onMouseEnter={e=>e.currentTarget.style.boxShadow="0 2px 10px rgba(220,38,38,0.15)"}
                       onMouseLeave={e=>e.currentTarget.style.boxShadow="none"}>
                       <div style={{ width:34, height:34, borderRadius:8, overflow:"hidden", background:"var(--sand)", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                        {a.photos?.[0] ? <img src={a.photos[0]} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> : <span style={{ fontSize:20 }}>{a.species==="Dog"?"🐕":"🐈"}</span>}
+                        {a.photos?.[0] ? <img src={a.photos[0]} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> : <span style={{ fontSize:20 }}>{a.species==="Dog"?<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>:<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>}</span>}
                       </div>
                       <div>
                         <div style={{ fontWeight:700, fontSize:13, color:"var(--slate)" }}>{a.name}</div>
@@ -2236,7 +2358,7 @@ export default function RescuPawLink() {
                 { label:"Your Open Spaces",    value:userShelter?.availableSpace||0,                      icon:"🏠", color:"#2563eb",      action:()=>document.getElementById("capacity-form")?.scrollIntoView({behavior:"smooth"}) },
                 { label:"Network Partners",    value:shelters.length-1,                                   icon:"🤝", color:"#7c3aed",      action:()=>setTab("network") },
               ].map(s=>(
-                <div key={s.label} className="stat-card" onClick={s.action||undefined} style={{ cursor:s.action?"pointer":"default", transition:"box-shadow 0.18s" }}
+                <div key={s.label} className="stat-card fade-up" onClick={s.action||undefined} style={{ cursor:s.action?"pointer":"default", transition:"box-shadow 0.18s" }}
                   onMouseEnter={e=>{ if(s.action) e.currentTarget.style.boxShadow="var(--shadow-md)"; }}
                   onMouseLeave={e=>e.currentTarget.style.boxShadow="var(--shadow-sm)"}>
                   <div className="stat-icon" style={{ background:"var(--cream)" }}>{s.icon}</div>
@@ -2258,7 +2380,7 @@ export default function RescuPawLink() {
               <div style={{ display:"grid", gap:10 }}>
                 {/* Shelters needing help */}
                 {shelters.filter(s=>s.needsHelp && s.id!==user.id).map(s=>(
-                  <div key={s.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 16px", background:"#fff5f5", border:"1px solid #fca5a5", borderRadius:12 }}>
+                  <div key={s.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 16px", background:"var(--coral-light)", border:"1px solid #f0c4b4", borderLeft:"3px solid var(--coral)", borderRadius:"0 12px 12px 0" }}>
                     <span style={{ fontSize:20, flexShrink:0 }}>⚠️</span>
                     <div style={{ flex:1 }}>
                       <span style={{ fontWeight:600, fontSize:14 }}>{s.name}</span>
@@ -2372,9 +2494,9 @@ export default function RescuPawLink() {
               ) : (
                 <div style={{ display:"grid", gap:10 }}>
                   {myAnimals.map(a=>(
-                    <div key={a.id} style={{ display:"flex", gap:14, alignItems:"center", padding:"14px 16px", background:a.status==="critical"?"#fff5f5":"var(--cream)", borderRadius:12, border:`1px solid ${a.status==="critical"?"#fca5a5":"var(--border)"}` }}>
+                    <div key={a.id} style={{ display:"flex", gap:14, alignItems:"center", padding:"14px 16px", background:a.status==="critical"?"var(--coral-light)":"var(--cream)", borderRadius:12, border:`1px solid ${a.status==="critical"?"#f0c4b4":"var(--border)"}` }}>
                       <div style={{ width:56, height:56, borderRadius:10, overflow:"hidden", background:"var(--sand)", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                        {a.photos?.[0] ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> : <span style={{ fontSize:26 }}>{a.species==="Dog"?"🐕":"🐈"}</span>}
+                        {a.photos?.[0] ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> : <span style={{ fontSize:26 }}>{a.species==="Dog"?<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>:<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>}</span>}
                       </div>
                       <div style={{ flex:1 }}>
                         <div style={{ fontWeight:700, marginBottom:2, fontSize:15 }}>{a.name}</div>
@@ -2407,7 +2529,7 @@ export default function RescuPawLink() {
         <div className="modal-backdrop" onClick={()=>setSelectedAnimal(null)}>
           <div className="modal" style={{ width:"100%", maxWidth:620 }} onClick={e=>e.stopPropagation()}>
             {/* Photo hero */}
-            <div style={{ height:340, background:selectedAnimal.photos?.[0]?"transparent":`linear-gradient(135deg,${selectedAnimal.status==="critical"?"#fef2f2,#fee2e2":"#fffbeb,#fef3c7"})`, overflow:"hidden", borderRadius:"20px 20px 0 0", position:"relative" }}>
+            <div style={{ height:340, background:selectedAnimal.photos?.[0]?"transparent":`linear-gradient(135deg,${selectedAnimal.status==="critical"?"#fef2f2,var(--coral-light)":"#fffbeb,#fef3c7"})`, overflow:"hidden", borderRadius:"20px 20px 0 0", position:"relative" }}>
               {selectedAnimal.photos?.[0] ? <img src={selectedAnimal.photos[0]} alt={selectedAnimal.name} style={{ width:"100%", height:"100%", objectFit:"contain", objectPosition:"center", background:"#f5f5f3" }}/> : <div style={{ height:"100%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:100 }}>{selectedAnimal.species==="Dog"?"🐕":selectedAnimal.species==="Cat"?"🐈":"🐾"}</div>}
               <button onClick={()=>setSelectedAnimal(null)} style={{ position:"absolute", top:14, right:14, background:"rgba(0,0,0,0.45)", border:"none", borderRadius:"50%", width:34, height:34, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", color:"#fff" }}>{I.x}</button>
               <div style={{ position:"absolute", top:14, left:14 }}><span className={`badge ${stateBadgeColor(selectedAnimal.status)}`}>{selectedAnimal.status==="critical"?"⚠ Critical":"⏱ Urgent"}</span></div>
