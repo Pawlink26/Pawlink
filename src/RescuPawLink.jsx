@@ -538,7 +538,7 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
     const isMe = m.fromId === myId;
     return (
       <div style={{ display:"flex", flexDirection:isMe?"row-reverse":"row", gap:9, alignItems:"flex-start" }}>
-        <div style={{ width:32, height:32, borderRadius:9, background:isMe?"#eef4ef":"#f4f4f2", border:"1px solid var(--border)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:14, flexShrink:0 }}>🏠</div>
+        <div style={{ width:32, height:32, borderRadius:9, background:isMe?"#eef4ef":"#f4f4f2", border:"1px solid #e4e4e2", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b8f71" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21v-8h6v8"/></svg></div>
         <div style={{ maxWidth:"74%" }}>
           {!isMe && <div style={{ fontSize:11, color:"#9a9e95", marginBottom:3 }}>{m.from} · {m.time}</div>}
           {isMe && <div style={{ fontSize:11, color:"#9a9e95", marginBottom:3, textAlign:"right" }}>{m.time}</div>}
@@ -599,12 +599,16 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
                 const isActive = activeChannel === ch.id && view === "channels";
                 return (
                   <div key={ch.id} onClick={()=>{ setActiveChannel(ch.id); setView("channels"); setUnread(p=>{const n={...p};delete n[ch.id];return n;}); setInput(""); }}
-                    style={{ padding:"9px 12px", borderRadius:9, marginBottom:2, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"space-between", background:isActive?"#eef4ef":"transparent", transition:"background 0.15s" }}
+                    style={{ padding:"9px 12px", borderRadius:9, marginBottom:2, cursor:"pointer", display:"flex", alignItems:"center", gap:9, justifyContent:"space-between", background:isActive?"#eef4ef":"transparent", transition:"background 0.15s", borderLeft:isActive?"3px solid #6b8f71":"3px solid transparent" }}
                     onMouseEnter={e=>{ if(!isActive) e.currentTarget.style.background="#f8f8f6"; }}
                     onMouseLeave={e=>{ if(!isActive) e.currentTarget.style.background="transparent"; }}>
-                    <span style={{ fontSize:13, fontWeight:isActive||hasUnread?700:400, color:isActive?"#4a6b50":hasUnread?"#1a1c18":"#4e5449" }}>
-                      {ch.label}
-                    </span>
+                    <div style={{ display:"flex", alignItems:"center", gap:8, flex:1, minWidth:0 }}>
+                      <div style={{ width:26, height:26, borderRadius:7, background:isActive?"rgba(107,143,113,0.15)":"#f0f0ee", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}
+                        dangerouslySetInnerHTML={{__html: typeof ch.icon === 'string' ? ch.icon : ''}}/>
+                      <span style={{ fontSize:13, fontWeight:isActive||hasUnread?700:400, color:isActive?"#4a6b50":hasUnread?"#1a1c18":"#4e5449", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                        {ch.label}
+                      </span>
+                    </div>
                     {hasUnread && <span style={{ width:8, height:8, borderRadius:"50%", background:"#dc2626", flexShrink:0 }}/>}
                   </div>
                 );
@@ -645,7 +649,7 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
                         onMouseEnter={e=>{ if(!isActive) e.currentTarget.style.background="#f8f8f6"; }}
                         onMouseLeave={e=>{ if(!isActive) e.currentTarget.style.background="transparent"; }}>
                         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                          <div style={{ width:32, height:32, borderRadius:8, background:isActive?"#6b8f71":"#f0f0ee", display:"flex", alignItems:"center", justifyContent:"center", fontSize:14, flexShrink:0 }}>🏠</div>
+                          <div style={{ width:32, height:32, borderRadius:8, background:isActive?"#6b8f71":"#eef4ef", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b8f71" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21v-8h6v8"/></svg></div>
                           <div style={{ flex:1, minWidth:0 }}>
                             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
                               <span style={{ fontSize:13, fontWeight:hasUnread||isActive?700:500, color:isActive?"#4a6b50":"#1a1c18", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{s.name}</span>
@@ -693,7 +697,7 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
           {view === "dms" && activeDmShelter && (
             <div style={{ padding:"14px 20px", borderBottom:"1px solid var(--border)", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
               <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                <div style={{ width:36, height:36, borderRadius:9, background:"#eef4ef", display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>🏠</div>
+                <div style={{ width:36, height:36, borderRadius:9, background:"#eef4ef", display:"flex", alignItems:"center", justifyContent:"center" }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b8f71" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21v-8h6v8"/></svg></div>
                 <div>
                   <div style={{ fontWeight:700, fontSize:15 }}>{activeDmShelter.name}</div>
                   <div style={{ fontSize:12, color:"#22c55e", display:"flex", alignItems:"center", gap:4 }}><div style={{ width:6, height:6, borderRadius:"50%", background:"#22c55e" }}/> Online</div>
@@ -724,7 +728,7 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
                 ))}
                 {(view === "channels" ? activeChannelMsgs : activeDmConvo).length === 0 && (
                   <div style={{ textAlign:"center", padding:"40px", color:"#9a9e95" }}>
-                    <div style={{ fontSize:32, marginBottom:8 }}>💬</div>
+                    <div style={{ marginBottom:8, color:"#6b8f71" }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b8f71" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
                     <div style={{ fontSize:14 }}>No messages yet. Be the first to say something.</div>
                   </div>
                 )}
@@ -1030,9 +1034,9 @@ export default function RescuPawLink() {
   const featuredAnimals = [...animals].sort((a,b) => a.daysLeft - b.daysLeft).slice(0,3);
 
   const SUCCESS_STORIES = [
-    { name:"Max & Daisy", outcome:"Transferred from Dallas to Houston — both adopted within 48 hours", shelters:"Dallas Animal Services → Houston SPCA", emoji:"🐕🐕", date:"May 2025" },
-    { name:"The Tuxedo Trio", outcome:"3 bonded cats moved to Denver when LA hit capacity. All 3 found one home together.", shelters:"LA Animal Services → Denver Dumb Friends League", emoji:"🐈🐈🐈", date:"April 2025" },
-    { name:"Biscuit", outcome:"6-year-old beagle hours from deadline. Foster in Austin stepped up same day via RescuPawLink.", shelters:"Austin Animal Center + Foster Network", emoji:"🐕", date:"March 2025" },
+    { name:"Max & Daisy", outcome:"Transferred from Dallas to Houston — both adopted within 48 hours", shelters:"Dallas Animal Services → Houston SPCA", img:"https://i.imgur.com/9y1Muh4.png", date:"May 2025" },
+    { name:"The Tuxedo Trio", outcome:"3 bonded cats moved to Denver when LA hit capacity. All 3 found one home together.", shelters:"LA Animal Services → Denver Dumb Friends League", img:"https://i.imgur.com/gy1SBr3.png", date:"April 2025" },
+    { name:"Biscuit", outcome:"6-year-old beagle hours from deadline. Foster in Austin stepped up same day via RescuPawLink.", shelters:"Austin Animal Center + Foster Network", img:"https://i.imgur.com/9y1Muh4.png", date:"March 2025" },
   ];
 
   const BENEFITS = [
@@ -1371,12 +1375,12 @@ export default function RescuPawLink() {
           </div>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:20 }}>
             {[
-              { name:"Max & Daisy", outcome:"Transferred from Dallas to Houston — both adopted within 48 hours", shelters:"Dallas Animal Services → Houston SPCA", emoji:"🐕🐕", date:"May 2025" },
-              { name:"The Tuxedo Trio", outcome:"3 bonded cats moved to Denver when LA hit capacity. All 3 found one home.", shelters:"LA Animal Services → Denver Dumb Friends League", emoji:"🐈🐈🐈", date:"April 2025" },
-              { name:"Biscuit", outcome:"6-year-old beagle hours from deadline. Foster stepped up same day.", shelters:"Austin Animal Center + Foster Network", emoji:"🐕", date:"March 2025" },
+              { name:"Max & Daisy", outcome:"Transferred from Dallas to Houston — both adopted within 48 hours", shelters:"Dallas Animal Services → Houston SPCA", img:"https://i.imgur.com/9y1Muh4.png", date:"May 2025" },
+              { name:"The Tuxedo Trio", outcome:"3 bonded cats moved to Denver when LA hit capacity. All 3 found one home.", shelters:"LA Animal Services → Denver Dumb Friends League", img:"https://i.imgur.com/gy1SBr3.png", date:"April 2025" },
+              { name:"Biscuit", outcome:"6-year-old beagle hours from deadline. Foster stepped up same day.", shelters:"Austin Animal Center + Foster Network", img:"https://i.imgur.com/9y1Muh4.png", date:"March 2025" },
             ].map((s,i)=>(
               <div key={s.name} className="fade-up" style={{ animationDelay:`${i*0.08}s`, background:"#ffffff", borderRadius:14, border:"1px solid #e8e8e6", padding:22, boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
-                <div style={{ fontSize:34, marginBottom:10 }}>{s.emoji}</div>
+                <div style={{ width:56, height:56, borderRadius:12, overflow:"hidden", marginBottom:12 }}><img src={s.img} style={{ width:"100%", height:"100%", objectFit:"cover" }}/></div>
                 <h3 style={{ fontSize:16, fontWeight:700, marginBottom:6 }}>{s.name}</h3>
                 <p style={{ fontSize:13, color:"#1a1c18", lineHeight:1.65, marginBottom:10 }}>"{s.outcome}"</p>
                 <div style={{ fontSize:11, color:"#9a9e95", marginBottom:2 }}>🔗 {s.shelters}</div>
@@ -1722,13 +1726,13 @@ export default function RescuPawLink() {
             {isLoggedIn && (
               <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))", gap:14, marginBottom:22 }}>
                 {[
-                  { label:"Shelters Online", value:shelters.length, color:"#6b8f71", icon:"🏠" },
-                  { label:"Need Help Now",   value:shelters.filter(s=>s.needsHelp).length, color:"#dc2626", icon:"⚠️" },
-                  { label:"Have Open Space", value:shelters.filter(s=>(s.availableSpace||s.available_space||0)>0).length, color:"#16a34a", icon:"✅" },
-                  { label:"Total Open Spots", value:shelters.reduce((sum,s)=>sum+(s.availableSpace||s.available_space||0),0), color:"#2563eb", icon:"📊" },
+                  { label:"Shelters Online", value:shelters.length,                                                                   color:"#6b8f71",  icon:I.home },
+                  { label:"Need Help Now",   value:shelters.filter(s=>s.needsHelp||s.needs_help).length,                             color:"#c85a35",  icon:I.alert },
+                  { label:"Have Open Space", value:shelters.filter(s=>(s.availableSpace||s.available_space||0)>0).length,            color:"#6b8f71",  icon:I.check },
+                  { label:"Total Open Spots",value:shelters.reduce((sum,s)=>sum+(s.availableSpace||s.available_space||0),0),         color:"#6b8f71",  icon:I.capacity },
                 ].map(st=>(
                   <div key={st.label} className="card" style={{ padding:"14px 18px", display:"flex", alignItems:"center", gap:12 }}>
-                    <span style={{ fontSize:22 }}>{st.icon}</span>
+                    <div style={{ width:36, height:36, borderRadius:10, background:"#eef4ef", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{st.icon}</div>
                     <div>
                       <div style={{ fontFamily:"'Inter',sans-serif", fontSize:22, fontWeight:700, color:st.color, lineHeight:1 }}>{st.value}</div>
                       <div style={{ fontSize:12, color:"#4e5449", marginTop:2 }}>{st.label}</div>
@@ -1773,7 +1777,7 @@ export default function RescuPawLink() {
 
                       {/* Avatar */}
                       <div style={{ width:48, height:48, borderRadius:12, background:s.needsHelp?"#fdf0eb":"#eef4ef", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>
-                        {s.needsHelp?"⚠️":"🏠"}
+                        {s.needsHelp?'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c85a35" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3H20.5a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r=".5" fill="#c85a35"/></svg>':'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b8f71" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21v-8h6v8"/></svg>'}
                       </div>
 
                       {/* Info */}
@@ -2101,15 +2105,15 @@ export default function RescuPawLink() {
             {/* Stats row */}
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))", gap:14, marginBottom:24 }}>
               {[
-                { label:"Your Animals Listed", value:myAnimals.length,                                    icon:"🐾", color:"#6b8f71",  action:()=>document.getElementById("my-animals")?.scrollIntoView({behavior:"smooth"}) },
-                { label:"Critical (≤2 days)",  value:myAnimals.filter(a=>a.status==="critical").length,   icon:"⚠️", color:"#dc2626",      action:null },
-                { label:"Your Open Spaces",    value:userShelter?.availableSpace||0,                      icon:"🏠", color:"#2563eb",      action:()=>document.getElementById("capacity-form")?.scrollIntoView({behavior:"smooth"}) },
-                { label:"Network Partners",    value:shelters.length-1,                                   icon:"🤝", color:"#7c3aed",      action:()=>setTab("network") },
+                { label:"Your Animals Listed", value:myAnimals.length,                                    icon:I.paw,      color:"#6b8f71", action:()=>document.getElementById("my-animals")?.scrollIntoView({behavior:"smooth"}) },
+                { label:"Critical (≤2 days)",  value:myAnimals.filter(a=>a.status==="critical").length,   icon:I.alert,    color:"#c85a35", action:null },
+                { label:"Your Open Spaces",    value:userShelter?.availableSpace||0,                      icon:I.home,     color:"#6b8f71", action:()=>document.getElementById("capacity-form")?.scrollIntoView({behavior:"smooth"}) },
+                { label:"Network Partners",    value:shelters.length-1,                                   icon:I.network,  color:"#6b8f71", action:()=>setTab("network") },
               ].map(s=>(
                 <div key={s.label} className="stat-card fade-up" onClick={s.action||undefined} style={{ cursor:s.action?"pointer":"default", transition:"box-shadow 0.18s" }}
                   onMouseEnter={e=>{ if(s.action) e.currentTarget.style.boxShadow="var(--shadow-md)"; }}
                   onMouseLeave={e=>e.currentTarget.style.boxShadow="var(--shadow-sm)"}>
-                  <div className="stat-icon" style={{ background:"#f8f8f6" }}>{s.icon}</div>
+                  <div className="stat-icon" style={{ background:"#eef4ef", color:"#6b8f71" }}>{s.icon}</div>
                   <div>
                     <div style={{ fontFamily:"'Inter',sans-serif", fontSize:28, fontWeight:700, color:s.color, lineHeight:1 }}>{s.value}</div>
                     <div style={{ fontSize:12, color:"#4e5449", marginTop:3 }}>{s.label}</div>
@@ -2278,7 +2282,7 @@ export default function RescuPawLink() {
           <div className="modal" style={{ width:"100%", maxWidth:620 }} onClick={e=>e.stopPropagation()}>
             {/* Photo hero */}
             <div style={{ height:340, background:selectedAnimal.photos?.[0]?"transparent":`linear-gradient(135deg,${selectedAnimal.status==="critical"?"#fef2f2,var(--coral-light)":"#fffbeb,#fef3c7"})`, overflow:"hidden", borderRadius:"20px 20px 0 0", position:"relative" }}>
-              {selectedAnimal.photos?.[0] ? <img src={selectedAnimal.photos[0]} alt={selectedAnimal.name} style={{ width:"100%", height:"100%", objectFit:"contain", objectPosition:"center", background:"#f5f5f3" }}/> : <div style={{ height:"100%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:100 }}>{selectedAnimal.species==="Dog"?"🐕":selectedAnimal.species==="Cat"?"🐈":"🐾"}</div>}
+              {selectedAnimal.photos?.[0] ? <img src={selectedAnimal.photos[0]} alt={selectedAnimal.name} style={{ width:"100%", height:"100%", objectFit:"contain", objectPosition:"center", background:"#f5f5f3" }}/> : <div style={{ height:"100%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:100 }}>{selectedAnimal.species==="Dog"?"🐕":selectedAnimal.species==="Cat"?"🐈":I.paw}</div>}
               <button onClick={()=>setSelectedAnimal(null)} style={{ position:"absolute", top:14, right:14, background:"rgba(0,0,0,0.45)", border:"none", borderRadius:"50%", width:34, height:34, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", color:"#fff" }}>{I.x}</button>
               <div style={{ position:"absolute", top:14, left:14 }}><span className={`badge ${stateBadgeColor(selectedAnimal.status)}`}>{selectedAnimal.status==="critical"?"⚠ Critical":"⏱ Urgent"}</span></div>
               <div style={{ position:"absolute", bottom:14, right:14, background:"rgba(0,0,0,0.52)", color:"#fff", borderRadius:9, padding:"5px 13px", fontSize:13, fontWeight:700 }}>⏱ {selectedAnimal.daysLeft} day{selectedAnimal.daysLeft!==1?"s":""} left</div>
@@ -2326,7 +2330,7 @@ export default function RescuPawLink() {
               </div>
 
               <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:10 }}>
-                <button className="btn btn-primary btn-md" style={{ padding:13 }} onClick={()=>{setApplyTarget(selectedAnimal);setApplyF(p=>({...p,type:"adopt"}));}}>🏠 Apply to Adopt</button>
+                <button className="btn btn-primary btn-md" style={{ padding:13 }} onClick={()=>{setApplyTarget(selectedAnimal);setApplyF(p=>({...p,type:"adopt"}));}}>Apply to Adopt</button>
                 <button className="btn btn-secondary btn-md" style={{ padding:13 }} onClick={()=>{setApplyTarget(selectedAnimal);setApplyF(p=>({...p,type:"foster"}));}}>💚 Offer to Foster</button>
               </div>
               {isLoggedIn && (
@@ -2348,7 +2352,7 @@ export default function RescuPawLink() {
             {/* Header */}
             <div style={{ marginBottom:22 }}>
               <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:applyF.type==="adopt"?"#eef4ef":"#fdf4ff", border:`1px solid ${applyF.type==="adopt"?"#c7dfc9":"#e9d5ff"}`, borderRadius:20, padding:"4px 12px", fontSize:11, fontWeight:700, color:applyF.type==="adopt"?"#4a6b50":"#7e22ce", marginBottom:10, textTransform:"uppercase", letterSpacing:"0.05em" }}>
-                {applyF.type==="adopt"?"🏠 Adoption Application":"💚 Foster Application"}
+                {applyF.type==="adopt"?"Adoption Application":"Foster Application"}
               </div>
               <h2 style={{ fontSize:22, fontWeight:800, marginBottom:4 }}>{applyTarget.name}</h2>
               <p style={{ color:"var(--muted)", fontSize:14 }}>{applyTarget.breed} · {applyTarget.age} · <strong>{applyTarget.shelterName}</strong> — {applyTarget.shelterCity}, {applyTarget.shelterState}</p>
@@ -2359,7 +2363,7 @@ export default function RescuPawLink() {
               {["adopt","foster"].map(t=>(
                 <button key={t} onClick={()=>setApplyF(p=>({...p,type:t}))}
                   style={{ flex:1, padding:"9px", border:`1.5px solid ${applyF.type===t?"#6b8f71":"#e4e4e2"}`, borderRadius:9, background:applyF.type===t?"#eef4ef":"#fff", color:applyF.type===t?"#4a6b50":"var(--muted)", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }}>
-                  {t==="adopt"?"🏠 Adopt":"💚 Foster"}
+                  {t==="adopt"?"Adopt":"Foster"}
                 </button>
               ))}
             </div>
