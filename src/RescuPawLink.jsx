@@ -1087,7 +1087,7 @@ export default function RescuPawLink() {
 
       {/* ── 4 FEATURE TILES with descriptions ── */}
       <div style={{ maxWidth:1400, margin:"0 auto", padding:"32px clamp(16px,4vw,48px) 24px" }}>
-        <div className="rpl-grid-4" style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14 }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))", gap:12 }}>
           {[
             {
               icon:<img src="https://i.imgur.com/CTeO1wb.png" style={{ width:40, height:40, objectFit:"cover", borderRadius:8 }}/>,
@@ -1134,7 +1134,7 @@ export default function RescuPawLink() {
 
       {/* ── URGENCY STRIP — 2 cards only, no duplicate of feature tiles ── */}
       <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 clamp(16px,4vw,48px) 40px" }}>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:16 }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))", gap:16 }}>
           <div style={{ background:"#ffffff", border:"1px solid #e8e8e6", borderRadius:14, padding:"24px 28px", cursor:"pointer" }} onClick={()=>{setPage("app");setTab("adopt");}}>
             <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:10 }}>
               <div style={{ width:8, height:8, borderRadius:"50%", background:"var(--coral)", animation:"pulse 1.5s ease-in-out infinite" }}/>
@@ -1156,19 +1156,59 @@ export default function RescuPawLink() {
         </div>
       </div>
 
+      {/* ── FEATURED ANIMALS ── */}
+      <div style={{ maxWidth:1400, margin:"0 auto", padding:"clamp(48px,6vw,72px) clamp(16px,4vw,48px)" }}>
+        <div style={{ marginBottom:24 }}>
+          <div>
+            <div style={{ fontSize:11, fontWeight:800, color:"var(--coral)", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>⚠ Needs You Now</div>
+            <h2 style={{ fontSize:26, fontWeight:800 }}>Animals Running Out of Time</h2>
+          </div>
+          <button onClick={()=>{setPage("app");setTab("adopt");}} style={{ fontSize:13, fontWeight:700, color:"var(--sage)", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit", padding:0 }}>See All →</button>
+        </div>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:20 }}>
+          {featuredAnimals.map((a,i)=>(
+            <div key={a.id} className="fade-up" style={{ animationDelay:`${i*0.08}s`, background:"#ffffff", borderRadius:16, overflow:"hidden", cursor:"pointer", border:"1px solid #e8e8e6", transition:"all 0.2s" }}
+              onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
+              onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 12px 32px rgba(0,0,0,0.1)"; }}
+              onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="none"; }}>
+              <div style={{ height:200, background:a.photos?.[0]?"transparent":`linear-gradient(135deg,${a.status==="critical"?"#fef2f2,#fee2e2":"#fffbeb,#fef3c7"})`, overflow:"hidden", position:"relative", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                {a.photos?.[0]
+                  ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                  : <img src={a.species==="Dog"?"https://i.imgur.com/9y1Muh4.png":"https://i.imgur.com/gy1SBr3.png"} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                }
+                <div style={{ position:"absolute", top:10, left:10 }}><span className={`badge ${stateBadgeColor(a.status)}`}>{a.status==="critical"?"⚠ Critical":"⏱ Urgent"}</span></div>
+                <div style={{ position:"absolute", bottom:10, right:10, background:"rgba(0,0,0,0.55)", backdropFilter:"blur(4px)", color:"#fff", borderRadius:7, padding:"4px 10px", fontSize:11, fontWeight:700 }}>{a.daysLeft}d left</div>
+              </div>
+              <div style={{ padding:16 }}>
+                <div style={{ marginBottom:4 }}>
+                  <h3 style={{ fontSize:17, fontWeight:700, marginBottom:2 }}>{a.name}</h3>
+                  <div style={{ fontSize:12, color:"var(--slate-mid)" }}>{a.breed} · {a.sex} · {a.age}</div>
+                </div>
+                <p style={{ fontSize:13, color:"var(--slate)", lineHeight:1.55, marginBottom:10, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{a.description}</p>
+                <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", paddingTop:10, borderTop:"1px solid #f0ece4" }}>
+                  <div><div style={{ fontSize:12, fontWeight:600 }}>{a.shelterName}</div><span style={{ fontSize:11, color:"var(--slate-light)" }}>📍 {a.shelterCity}, {a.shelterState}</span></div>
+                  <button className="btn btn-primary btn-sm" onClick={e=>{e.stopPropagation();setPage("app");setTab("adopt");setSelectedAnimal(a);}}>View</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ height:1, background:"#e8e8e6", margin:"8px 32px" }}/>
       {/* ── ADOPTABLE PETS — compact row ── */}
-      <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 clamp(16px,4vw,48px) 48px" }}>
+      <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 clamp(16px,4vw,48px) 56px" }}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
           <h2 style={{ fontSize:18, fontWeight:800, color:"var(--slate)" }}>Adoptable Pets</h2>
-          <button onClick={()=>{setPage("app");setTab("adopt");}} style={{ fontSize:13, fontWeight:700, color:"var(--sage)", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit" }}>See All →</button>
+          <button onClick={()=>{setPage("app");setTab("adopt");}} className="btn btn-secondary btn-sm">See All →</button>
         </div>
-        <div className="rpl-grid-6" style={{ display:"grid", gridTemplateColumns:"repeat(6,1fr)", gap:14 }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))", gap:14 }}>
           {animals.slice(0,6).map((a,i)=>(
             <div key={a.id} style={{ background:"#fff", borderRadius:12, overflow:"hidden", cursor:"pointer", border:"1px solid #e8e0d4", transition:"all 0.18s" }}
               onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
               onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-3px)"; e.currentTarget.style.boxShadow="0 6px 20px rgba(0,0,0,0.1)"; }}
               onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="none"; }}>
-              <div style={{ height:110, background:a.status==="critical"?"linear-gradient(135deg,#fef2f2,#fee2e2)":"linear-gradient(135deg,#fffbeb,#fef3c7)", display:"flex", alignItems:"center", justifyContent:"center", position:"relative" }}>
+              <div style={{ height:130, background:a.status==="critical"?"linear-gradient(135deg,#fef2f2,#fee2e2)":"linear-gradient(135deg,#fffbeb,#fef3c7)", display:"flex", alignItems:"center", justifyContent:"center", position:"relative" }}>
                 {a.photos?.[0]
                   ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
                   : <div style={{ color:a.status==="critical"?"var(--coral)":"var(--amber)" }}>
@@ -1182,7 +1222,7 @@ export default function RescuPawLink() {
                   <span style={{ background:a.status==="critical"?"var(--coral)":"var(--amber)", color:"#fff", fontSize:9, fontWeight:800, padding:"2px 7px", borderRadius:20, textTransform:"uppercase" }}>{a.daysLeft}d</span>
                 </div>
               </div>
-              <div style={{ padding:"9px 11px" }}>
+              <div style={{ padding:"10px 12px" }}>
                 <div style={{ fontSize:13, fontWeight:700, color:"var(--slate)", marginBottom:1 }}>{a.name}</div>
                 <div style={{ fontSize:11, color:"var(--slate-mid)" }}>{a.breed}</div>
                 <div style={{ fontSize:10, color:"var(--slate-light)", marginTop:2 }}>{a.shelterCity}, {a.shelterState}</div>
@@ -1192,47 +1232,6 @@ export default function RescuPawLink() {
         </div>
       </div>
 
-      <div style={{ height:1, background:"#e8e8e6", margin:"8px 32px" }}/>
-
-      {/* ── FEATURED ANIMALS ── */}
-      <div style={{ maxWidth:1400, margin:"0 auto", padding:"clamp(48px,6vw,72px) clamp(16px,4vw,48px)" }}>
-        <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:24, flexWrap:"wrap", gap:12 }}>
-          <div>
-            <div style={{ fontSize:11, fontWeight:800, color:"var(--coral)", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>⚠ Needs You Now</div>
-            <h2 style={{ fontSize:26, fontWeight:800 }}>Animals Running Out of Time</h2>
-          </div>
-          <button className="btn btn-secondary btn-md" style={{ borderColor:"#e0e0de" }} onClick={()=>{setPage("app");setTab("adopt");}}>See All →</button>
-        </div>
-        <div className="rpl-grid-stories" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:20 }}>
-          {featuredAnimals.map((a,i)=>(
-            <div key={a.id} className="fade-up" style={{ animationDelay:`${i*0.08}s`, background:"#ffffff", borderRadius:16, overflow:"hidden", cursor:"pointer", border:"1px solid #e8e8e6", transition:"all 0.2s" }}
-              onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
-              onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 12px 32px rgba(0,0,0,0.1)"; }}
-              onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="none"; }}>
-              <div style={{ height:195, background:a.photos?.[0]?"transparent":`linear-gradient(135deg,${a.status==="critical"?"#fef2f2,#fee2e2":"#fffbeb,#fef3c7"})`, overflow:"hidden", position:"relative", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                {a.photos?.[0]
-                  ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
-                  : <img src={a.species==="Dog"?"https://i.imgur.com/9y1Muh4.png":"https://i.imgur.com/gy1SBr3.png"} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
-                }
-                <div style={{ position:"absolute", top:10, left:10 }}><span className={`badge ${stateBadgeColor(a.status)}`}>{a.status==="critical"?"⚠ Critical":"⏱ Urgent"}</span></div>
-                <div style={{ position:"absolute", bottom:10, right:10, background:"rgba(0,0,0,0.55)", backdropFilter:"blur(4px)", color:"#fff", borderRadius:7, padding:"4px 10px", fontSize:11, fontWeight:700 }}>{a.daysLeft}d left</div>
-              </div>
-              <div style={{ padding:16 }}>
-                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:4 }}>
-                  <h3 style={{ fontSize:17, fontWeight:700 }}>{a.name}</h3>
-                  <span style={{ fontSize:11, color:"var(--slate-mid)", background:"#ffffff", padding:"3px 9px", borderRadius:6, border:"1px solid #e8e8e6" }}>{a.sex} · {a.age}</span>
-                </div>
-                <div style={{ fontSize:12, color:"var(--slate-mid)", marginBottom:7 }}>{a.breed}</div>
-                <p style={{ fontSize:13, color:"var(--slate)", lineHeight:1.55, marginBottom:10, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{a.description}</p>
-                <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", paddingTop:10, borderTop:"1px solid #f0ece4" }}>
-                  <div><div style={{ fontSize:12, fontWeight:600 }}>{a.shelterName}</div><span style={{ fontSize:11, color:"var(--slate-light)" }}>📍 {a.shelterCity}, {a.shelterState}</span></div>
-                  <button className="btn btn-primary btn-sm" onClick={e=>{e.stopPropagation();setPage("app");setTab("adopt");setSelectedAnimal(a);}}>View</button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
 
 
       {/* ── FOR SHELTERS ── */}
@@ -1240,10 +1239,10 @@ export default function RescuPawLink() {
         <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 clamp(16px,4vw,48px)" }}>
           <div style={{ textAlign:"center", marginBottom:36 }}>
             <div style={{ fontSize:11, fontWeight:700, color:"var(--sage)", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:8 }}>For Shelters & Rescues</div>
-            <h2 style={{ fontSize:28, color:"var(--slate)", marginBottom:10 }}>Your Network Is Stronger Together</h2>
+            <h2 style={{ fontSize:"clamp(22px,4vw,28px)", color:"var(--slate)", marginBottom:10 }}>Your Network Is Stronger Together</h2>
             <p style={{ color:"var(--slate-mid)", fontSize:15, maxWidth:480, margin:"0 auto", lineHeight:1.65 }}>When one shelter is full, another has space. RescuPawLink makes that connection instant.</p>
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16, marginBottom:36 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))", gap:16, marginBottom:36 }}>
             {[
               { icon:"📊", title:"Live Capacity Board", desc:"See who has space right now — updated in real time." },
               { icon:"💬", title:"Direct Coordinator Chat", desc:"Message other shelter staff instantly." },
@@ -1273,7 +1272,7 @@ export default function RescuPawLink() {
             <div style={{ fontSize:11, fontWeight:700, color:"var(--sage)", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:6 }}>Real Impact</div>
             <h2 style={{ fontSize:26, fontWeight:800 }}>Lives Saved Through the Network</h2>
           </div>
-          <div className="rpl-grid-stories" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:20 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:20 }}>
             {[
               { name:"Max & Daisy", outcome:"Transferred from Dallas to Houston — both adopted within 48 hours", shelters:"Dallas Animal Services → Houston SPCA", emoji:"🐕🐕", date:"May 2025" },
               { name:"The Tuxedo Trio", outcome:"3 bonded cats moved to Denver when LA hit capacity. All 3 found one home.", shelters:"LA Animal Services → Denver Dumb Friends League", emoji:"🐈🐈🐈", date:"April 2025" },
@@ -1296,7 +1295,7 @@ export default function RescuPawLink() {
         <div style={{ maxWidth:900, margin:"0 auto", textAlign:"center" }}>
           <h2 style={{ fontSize:26, fontWeight:800, marginBottom:6 }}>How It Works</h2>
           <p style={{ color:"var(--slate-mid)", marginBottom:36, fontSize:14 }}>For shelters, rescues, adopters, and fosters</p>
-          <div className="rpl-grid-how" style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:28 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))", gap:28 }}>
             {[
               { icon:"🏠", step:"01", title:"Register Free", desc:"Create your account in minutes. No fees, no commitment." },
               { icon:"📊", step:"02", title:"Share Capacity", desc:"Update your space live. Flag when you're over capacity." },
@@ -1506,7 +1505,7 @@ export default function RescuPawLink() {
                       onMouseEnter={e=>e.currentTarget.style.boxShadow="0 2px 10px rgba(220,38,38,0.12)"}
                       onMouseLeave={e=>e.currentTarget.style.boxShadow="none"}>
                       <div style={{ width:36, height:36, borderRadius:8, overflow:"hidden", background:"#f2f2f0", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                        {a.photos?.[0] ? <img src={a.photos[0]} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> : <span style={{ fontSize:22 }}>{a.species==="Dog"?<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>:<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>}</span>}
+                        {a.photos?.[0] ? <img src={a.photos[0]} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> : <img src={a.species==="Dog"?"https://i.imgur.com/9y1Muh4.png":"https://i.imgur.com/gy1SBr3.png"} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>}
                       </div>
                       <div>
                         <div style={{ fontWeight:700, fontSize:13 }}>{a.name}</div>
@@ -1775,7 +1774,7 @@ export default function RescuPawLink() {
                           <div key={a.id} onClick={()=>setSelectedAnimal(a)} style={{ display:"flex", alignItems:"center", gap:7, background:"#f8f8f6", border:"1px solid var(--border)", borderRadius:9, padding:"5px 11px", cursor:"pointer", transition:"box-shadow 0.15s", fontSize:13 }}
                             onMouseEnter={e=>e.currentTarget.style.boxShadow="var(--shadow-sm)"}
                             onMouseLeave={e=>e.currentTarget.style.boxShadow="none"}>
-                            {a.photos?.[0] ? <img src={a.photos[0]} style={{ width:26, height:26, borderRadius:6, objectFit:"cover" }}/> : <span style={{ fontSize:16 }}>{a.species==="Dog"?<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>:<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>}</span>}
+                            {a.photos?.[0] ? <img src={a.photos[0]} style={{ width:26, height:26, borderRadius:6, objectFit:"cover" }}/> : <img src={a.species==="Dog"?"https://i.imgur.com/9y1Muh4.png":"https://i.imgur.com/gy1SBr3.png"} style={{ width:26, height:26, borderRadius:4, objectFit:"cover" }}/>}
                             <span style={{ fontWeight:500 }}>{a.name}</span>
                             <span className={`badge ${stateBadgeColor(a.status)}`} style={{ fontSize:10 }}>{a.daysLeft}d</span>
                           </div>
@@ -2006,7 +2005,7 @@ export default function RescuPawLink() {
                       onMouseEnter={e=>e.currentTarget.style.boxShadow="0 2px 10px rgba(220,38,38,0.15)"}
                       onMouseLeave={e=>e.currentTarget.style.boxShadow="none"}>
                       <div style={{ width:34, height:34, borderRadius:8, overflow:"hidden", background:"#f2f2f0", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                        {a.photos?.[0] ? <img src={a.photos[0]} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> : <span style={{ fontSize:20 }}>{a.species==="Dog"?<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>:<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>}</span>}
+                        {a.photos?.[0] ? <img src={a.photos[0]} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> : <img src={a.species==="Dog"?"https://i.imgur.com/9y1Muh4.png":"https://i.imgur.com/gy1SBr3.png"} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>}
                       </div>
                       <div>
                         <div style={{ fontWeight:700, fontSize:13, color:"var(--slate)" }}>{a.name}</div>
@@ -2170,7 +2169,7 @@ export default function RescuPawLink() {
                   {myAnimals.map(a=>(
                     <div key={a.id} style={{ display:"flex", gap:14, alignItems:"center", padding:"14px 16px", background:a.status==="critical"?"var(--coral-light)":"var(--cream)", borderRadius:12, border:`1px solid ${a.status==="critical"?"#f0c4b4":"var(--border)"}` }}>
                       <div style={{ width:56, height:56, borderRadius:10, overflow:"hidden", background:"#f2f2f0", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                        {a.photos?.[0] ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> : <span style={{ fontSize:26 }}>{a.species==="Dog"?<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>:<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>}</span>}
+                        {a.photos?.[0] ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> : <img src={a.species==="Dog"?"https://i.imgur.com/9y1Muh4.png":"https://i.imgur.com/gy1SBr3.png"} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>}
                       </div>
                       <div style={{ flex:1 }}>
                         <div style={{ fontWeight:700, marginBottom:2, fontSize:15 }}>{a.name}</div>
