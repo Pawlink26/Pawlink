@@ -1050,8 +1050,8 @@ export default function RescuPawLink() {
       })() }
 
       {/* ── HERO — full width on desktop, padded on mobile ── */}
-      <div style={{ padding:"clamp(12px,2vw,20px) clamp(12px,3vw,32px) 0" }}>
-        <div style={{ position:"relative", borderRadius:"clamp(12px,2vw,22px)", overflow:"hidden", height:"clamp(320px,52vh,560px)" }}>
+      <div style={{ padding:"clamp(16px,2vw,24px) clamp(16px,3vw,32px) 0" }}>
+        <div style={{ position:"relative", borderRadius:"clamp(12px,2vw,22px)", overflow:"hidden", height:"clamp(420px,65vh,680px)" }}>
           <img src="https://i.imgur.com/VxvRJfd.png" alt="Dog and cat"
             style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"55% center" }}
             onError={e=>e.target.style.display="none"}
@@ -1086,11 +1086,11 @@ export default function RescuPawLink() {
       </div>
 
       {/* ── 4 FEATURE TILES with descriptions ── */}
-      <div style={{ maxWidth:1400, margin:"0 auto", padding:"20px clamp(16px,4vw,48px)" }}>
+      <div style={{ maxWidth:1400, margin:"0 auto", padding:"32px clamp(16px,4vw,48px) 24px" }}>
         <div className="rpl-grid-4" style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14 }}>
           {[
             {
-              icon:<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+              icon:<img src="https://i.imgur.com/CTeO1wb.png" style={{ width:40, height:40, objectFit:"cover", borderRadius:8 }}/>,
               label:"SHELTER NETWORK",
               desc:"Find shelter networks, maps, and shelter coordinators.",
               fn:()=>{setPage("app");setTab("network");},
@@ -1132,37 +1132,32 @@ export default function RescuPawLink() {
         </div>
       </div>
 
-      {/* ── URGENCY STRIP ── */}
-      <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 clamp(16px,4vw,48px) 20px" }}>
-        <div className="rpl-grid-3" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16 }}>
-          <div style={{ background:"var(--sage)", borderRadius:14, padding:"20px 22px", cursor:"pointer" }} onClick={()=>{setPage("app");setTab("network");}}>
-            <h3 style={{ fontSize:17, fontWeight:800, color:"#fff", marginBottom:6 }}>Shelter Network</h3>
-            <p style={{ fontSize:12, color:"rgba(255,255,255,0.75)", lineHeight:1.6, marginBottom:10 }}>Connect with partner shelters nationwide. Share capacity and coordinate transfers.</p>
-            <div style={{ fontSize:12, fontWeight:700, color:"rgba(255,255,255,0.9)", display:"flex", alignItems:"center", gap:4 }}>View Network {I.arrow}</div>
-          </div>
-          <div style={{ background:"#ffffff", border:"1px solid #e8e8e6", borderRadius:14, padding:"20px 22px", cursor:"pointer" }} onClick={()=>{setPage("app");setTab("adopt");}}>
-            <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:7 }}>
+      {/* ── URGENCY STRIP — 2 cards only, no duplicate of feature tiles ── */}
+      <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 clamp(16px,4vw,48px) 40px" }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:16 }}>
+          <div style={{ background:"#ffffff", border:"1px solid #e8e8e6", borderRadius:14, padding:"24px 28px", cursor:"pointer" }} onClick={()=>{setPage("app");setTab("adopt");}}>
+            <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:10 }}>
               <div style={{ width:8, height:8, borderRadius:"50%", background:"var(--coral)", animation:"pulse 1.5s ease-in-out infinite" }}/>
               <span style={{ fontSize:10, fontWeight:800, color:"var(--coral)", textTransform:"uppercase", letterSpacing:"0.08em" }}>Live</span>
             </div>
-            <h3 style={{ fontSize:17, fontWeight:800, color:"var(--slate)", marginBottom:6 }}>Urgent Capacity</h3>
-            <p style={{ fontSize:12, color:"var(--slate-mid)", lineHeight:1.6, marginBottom:10 }}>
+            <h3 style={{ fontSize:18, fontWeight:800, color:"var(--slate)", marginBottom:8 }}>Urgent Capacity</h3>
+            <p style={{ fontSize:14, color:"var(--slate-mid)", lineHeight:1.65, marginBottom:14 }}>
               {animals.filter(a=>a.status==="critical").length > 0
-                ? `${animals.filter(a=>a.status==="critical").length} animals are critical right now. Every hour counts.`
+                ? `${animals.filter(a=>a.status==="critical").length} animals are at critical status right now across the network. Every hour counts.`
                 : "Monitor animals that need immediate placement across the network."}
             </p>
-            <div style={{ fontSize:12, fontWeight:700, color:"var(--coral)", display:"flex", alignItems:"center", gap:4 }}>View Urgent {I.arrow}</div>
+            <div style={{ fontSize:13, fontWeight:700, color:"var(--coral)", display:"flex", alignItems:"center", gap:4 }}>View Urgent Animals {I.arrow}</div>
           </div>
-          <div style={{ background:"#ffffff", border:"1px solid #e8e8e6", borderRadius:14, padding:"20px 22px", cursor:"pointer" }} onClick={()=>{setPage("app");setTab("chat");}}>
-            <h3 style={{ fontSize:17, fontWeight:800, color:"var(--slate)", marginBottom:6 }}>Resources</h3>
-            <p style={{ fontSize:12, color:"var(--slate-mid)", lineHeight:1.6, marginBottom:10 }}>Coordinator chat, transport boards, medical support and network-wide announcements.</p>
-            <div style={{ fontSize:12, fontWeight:700, color:"var(--sage)", display:"flex", alignItems:"center", gap:4 }}>Open Resources {I.arrow}</div>
+          <div style={{ background:"#ffffff", border:"1px solid #e8e8e6", borderRadius:14, padding:"24px 28px", cursor:"pointer" }} onClick={()=>{setPage("app");setTab("chat");}}>
+            <h3 style={{ fontSize:18, fontWeight:800, color:"var(--slate)", marginBottom:8 }}>Resources</h3>
+            <p style={{ fontSize:14, color:"var(--slate-mid)", lineHeight:1.65, marginBottom:14 }}>Coordinator chat, transport boards, medical support channels, and network-wide announcements — all in one place.</p>
+            <div style={{ fontSize:13, fontWeight:700, color:"var(--sage)", display:"flex", alignItems:"center", gap:4 }}>Open Resources {I.arrow}</div>
           </div>
         </div>
       </div>
 
       {/* ── ADOPTABLE PETS — compact row ── */}
-      <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 clamp(16px,4vw,48px) 20px" }}>
+      <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 clamp(16px,4vw,48px) 48px" }}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
           <h2 style={{ fontSize:18, fontWeight:800, color:"var(--slate)" }}>Adoptable Pets</h2>
           <button onClick={()=>{setPage("app");setTab("adopt");}} style={{ fontSize:13, fontWeight:700, color:"var(--sage)", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit" }}>See All →</button>
@@ -1178,8 +1173,8 @@ export default function RescuPawLink() {
                   ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
                   : <div style={{ color:a.status==="critical"?"var(--coral)":"var(--amber)" }}>
                       {a.species==="Dog"
-                        ? <svg viewBox="0 0 100 100" width="62" height="62" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z"/></svg>
-                        : <svg viewBox="0 0 100 100" width="62" height="62" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51"/></svg>
+                        ? <img src="https://i.imgur.com/9y1Muh4.png" alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                        : <img src="https://i.imgur.com/gy1SBr3.png" alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
                       }
                     </div>
                 }
@@ -1200,7 +1195,7 @@ export default function RescuPawLink() {
       <div style={{ height:1, background:"#e8e8e6", margin:"8px 32px" }}/>
 
       {/* ── FEATURED ANIMALS ── */}
-      <div style={{ maxWidth:1400, margin:"0 auto", padding:"clamp(32px,5vw,52px) clamp(16px,4vw,48px)" }}>
+      <div style={{ maxWidth:1400, margin:"0 auto", padding:"clamp(48px,6vw,72px) clamp(16px,4vw,48px)" }}>
         <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:24, flexWrap:"wrap", gap:12 }}>
           <div>
             <div style={{ fontSize:11, fontWeight:800, color:"var(--coral)", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>⚠ Needs You Now</div>
@@ -1217,7 +1212,7 @@ export default function RescuPawLink() {
               <div style={{ height:195, background:a.photos?.[0]?"transparent":`linear-gradient(135deg,${a.status==="critical"?"#fef2f2,#fee2e2":"#fffbeb,#fef3c7"})`, overflow:"hidden", position:"relative", display:"flex", alignItems:"center", justifyContent:"center" }}>
                 {a.photos?.[0]
                   ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
-                  : <div style={{ color:a.status==="critical"?"var(--coral)":"var(--amber)" }}>{a.species==="Dog"?<svg viewBox="0 0 100 100" width="90" height="90" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z"/></svg>:<svg viewBox="0 0 100 100" width="90" height="90" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51"/></svg>}</div>
+                  : <img src={a.species==="Dog"?"https://i.imgur.com/9y1Muh4.png":"https://i.imgur.com/gy1SBr3.png"} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
                 }
                 <div style={{ position:"absolute", top:10, left:10 }}><span className={`badge ${stateBadgeColor(a.status)}`}>{a.status==="critical"?"⚠ Critical":"⏱ Urgent"}</span></div>
                 <div style={{ position:"absolute", bottom:10, right:10, background:"rgba(0,0,0,0.55)", backdropFilter:"blur(4px)", color:"#fff", borderRadius:7, padding:"4px 10px", fontSize:11, fontWeight:700 }}>{a.daysLeft}d left</div>
@@ -1320,7 +1315,7 @@ export default function RescuPawLink() {
       </div>
 
       {/* ── CTA ── */}
-      <div style={{ background:"var(--sage)", padding:"clamp(32px,5vw,52px) clamp(16px,4vw,48px)", textAlign:"center" }}>
+      <div style={{ background:"var(--sage)", padding:"clamp(48px,6vw,72px) clamp(16px,4vw,48px)", textAlign:"center" }}>
         <h2 style={{ fontSize:26, fontWeight:800, color:"var(--slate)", marginBottom:8 }}>Together, we save more lives.</h2>
         <p style={{ color:"var(--slate-mid)", marginBottom:24, fontSize:15, maxWidth:400, margin:"0 auto 24px", lineHeight:1.6 }}>Join hundreds of shelters using RescuPawLink to coordinate and save animals.</p>
         <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
@@ -1579,7 +1574,7 @@ export default function RescuPawLink() {
                     <div className="animal-card-img" style={{ height:220, background:a.photos?.[0]?"transparent":`linear-gradient(135deg,${a.status==="critical"?"var(--coral-light),#f9e0d8":a.status==="urgent"?"var(--amber-light),#f5e8cc":"var(--sage-light),#e4eed6"})` }}>
                       {a.photos?.[0]
                         ? <img src={a.photos[0]} alt={a.name} />
-                        : <div style={{ height:"100%", display:"flex", alignItems:"center", justifyContent:"center" }}>{a.species==="Dog"?<svg viewBox="0 0 100 100" width="88" height="88" fill="none" stroke={a.status==="critical"?"var(--coral)":"var(--amber)"} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z"/></svg>:a.species==="Cat"?<svg viewBox="0 0 100 100" width="88" height="88" fill="none" stroke="var(--sage)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51"/></svg>:<span style={{fontSize:70}}>🐾</span>}</div>
+                        : <img src="https://i.imgur.com/gy1SBr3.png" alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center" }}/>
                       }
                       {/* Status badge */}
                       <div style={{ position:"absolute", top:12, left:12 }}>
