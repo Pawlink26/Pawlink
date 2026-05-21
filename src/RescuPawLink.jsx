@@ -983,18 +983,13 @@ export default function RescuPawLink() {
 
       {/* ── NAV ── */}
       { (() => {
-        const NAV_LINKS = [["Pet Search",()=>{setPage("app");setTab("adopt");setMobileOpen(false);}],["Shelters",()=>{setPage("app");setTab("network");setMobileOpen(false);}],["Community",()=>{setPage("app");setTab("chat");setMobileOpen(false);}],["About",null],["Resources",null],["Contact",null]];
+        const NAV_LINKS = [["Pet Search",()=>{setPage("app");setTab("adopt");setMobileOpen(false);}],["Shelters",()=>{setPage("app");setTab("network");setMobileOpen(false);}],["About",null],["Resources",null],["Contact",null]];
         return (
           <nav style={{ background:"#f5f0e8", borderBottom:"1px solid #e0d8cc", position:"sticky", top:0, zIndex:100 }}>
             <div style={{ maxWidth:1160, margin:"0 auto", padding:"0 clamp(14px,3vw,20px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
 
               {/* Logo */}
-              <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:10, padding:0 }}>
-                <div style={{ width:34, height:34, background:"var(--sage)", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                  <svg viewBox="0 0 100 100" width="19" height="19" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z"/>
-                  </svg>
-                </div>
+              <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", padding:0 }}>
                 <span style={{ fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"var(--slate)", letterSpacing:"-0.4px" }}>
                   <span style={{ color:"var(--sage)" }}>Rescu</span>PawLink
                 </span>
@@ -1046,9 +1041,9 @@ export default function RescuPawLink() {
         );
       })() }
 
-      {/* ── HERO — rounded card photo ── */}
-      <div style={{ maxWidth:1160, margin:"0 auto", padding:"clamp(12px,3vw,28px) clamp(12px,3vw,32px) 0" }}>
-        <div style={{ position:"relative", borderRadius:22, overflow:"hidden", height:"clamp(320px,52vh,560px)" }}>
+      {/* ── HERO — full width on desktop, padded on mobile ── */}
+      <div style={{ padding:"clamp(12px,2vw,20px) clamp(12px,3vw,32px) 0" }}>
+        <div style={{ position:"relative", borderRadius:"clamp(12px,2vw,22px)", overflow:"hidden", height:"clamp(320px,52vh,560px)" }}>
           <img src="https://i.imgur.com/VxvRJfd.png" alt="Dog and cat"
             style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"55% center" }}
             onError={e=>e.target.style.display="none"}
@@ -1063,14 +1058,19 @@ export default function RescuPawLink() {
             <p className="fade-up-1" style={{ fontSize:"clamp(13px,1.6vw,16px)", color:"rgba(255,255,255,0.88)", textAlign:"center", marginBottom:18, textShadow:"0 1px 8px rgba(0,0,0,0.3)", maxWidth:520 }}>
               Share capacity, coordinate transfers, and get animals placed — before time runs out. Free for every shelter and rescue.
             </p>
-            <div className="fade-up-1" style={{ background:"rgba(255,255,255,0.96)", backdropFilter:"blur(12px)", borderRadius:10, display:"flex", alignItems:"center", maxWidth:580, width:"100%", boxShadow:"0 4px 24px rgba(0,0,0,0.18)", overflow:"hidden" }}>
-              <div style={{ display:"flex", alignItems:"center", gap:8, flex:1, padding:"0 16px" }}>
-                {I.search}
-                <input placeholder="Search..." value={fSearch} onChange={e=>setFSearch(e.target.value)}
-                  style={{ border:"none", outline:"none", fontFamily:"inherit", fontSize:14, color:"var(--slate)", background:"transparent", width:"100%", padding:"13px 0" }}/>
-              </div>
-              <button className="btn btn-primary" style={{ margin:5, borderRadius:8, padding:"10px 20px", fontSize:14, fontWeight:700, flexShrink:0 }} onClick={()=>{setPage("app");setTab("adopt");}}>
-                Search
+            {/* Two transparent CTA buttons */}
+            <div className="fade-up-1" style={{ display:"flex", gap:12, flexWrap:"wrap", justifyContent:"center" }}>
+              <button style={{ padding:"14px 28px", borderRadius:10, border:"2px solid rgba(255,255,255,0.6)", background:"rgba(255,255,255,0.15)", backdropFilter:"blur(12px)", color:"#fff", fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all 0.2s", letterSpacing:"0.01em" }}
+                onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"}
+                onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}
+                onClick={()=>{setAuthMode("register");setPage("login");}}>
+                Register Your Shelter
+              </button>
+              <button style={{ padding:"14px 28px", borderRadius:10, border:"2px solid rgba(255,255,255,0.6)", background:"rgba(255,255,255,0.15)", backdropFilter:"blur(12px)", color:"#fff", fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all 0.2s", letterSpacing:"0.01em" }}
+                onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"}
+                onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}
+                onClick={()=>{setPage("app");setTab("adopt");}}>
+                Adoptable Pets
               </button>
             </div>
           </div>
@@ -1387,7 +1387,7 @@ export default function RescuPawLink() {
               <div style={{ fontSize:12, color:"rgba(255,255,255,0.38)" }}>Every animal deserves a second chance.</div>
             </div>
             <div style={{ display:"flex", gap:0, alignItems:"center", fontSize:12, color:"rgba(255,255,255,0.45)" }}>
-              {[["About",null],["Resources",null],["Pet Search",()=>{setPage("app");setTab("adopt");}],["Shelters",()=>{setPage("app");setTab("network");}],["Community",()=>{setPage("app");setTab("chat");}],["Contact",null]].map(([l,fn],i,arr)=>(
+              {[["About",null],["Resources",null],["Pet Search",()=>{setPage("app");setTab("adopt");}],["Shelters",()=>{setPage("app");setTab("network");}],["Contact",null]].map(([l,fn],i,arr)=>(
                 <span key={l} style={{ display:"flex", alignItems:"center" }}>
                   <button onClick={fn||undefined} style={{ background:"none", border:"none", color:"rgba(255,255,255,0.45)", cursor:fn?"pointer":"default", fontFamily:"inherit", fontSize:12, padding:"4px 10px" }}
                     onMouseEnter={e=>{ if(fn) e.currentTarget.style.color="#fff"; }}
@@ -1413,10 +1413,7 @@ export default function RescuPawLink() {
       {/* Auth Nav */}
       <nav style={{ background:"var(--cream)", borderBottom:"1px solid var(--border)", padding:"0 32px", height:64, display:"flex", alignItems:"center", justifyContent:"space-between", boxShadow:"0 1px 6px rgba(0,0,0,0.04)" }}>
         <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:9 }}>
-          <div style={{ width:34, height:34, background:"var(--sage)", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center" }}>
-            <svg viewBox="0 0 100 100" width="19" height="19" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z"/></svg>
-          </div>
-          <span style={{ fontFamily:"'Inter',sans-serif", fontSize:17, fontWeight:800, color:"var(--slate)", letterSpacing:"-0.4px" }}>RescuPawLink.com</span>
+          <span style={{ fontFamily:"'Inter',sans-serif", fontSize:17, fontWeight:800, color:"var(--slate)", letterSpacing:"-0.4px" }}><span style={{ color:"var(--sage)" }}>Rescu</span>PawLink</span>
         </button>
         <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", color:"var(--slate-mid)", cursor:"pointer", fontSize:13, fontFamily:"inherit", display:"flex", alignItems:"center", gap:5 }}>← Back to site</button>
       </nav>
@@ -1487,12 +1484,19 @@ export default function RescuPawLink() {
       {/* Header */}
       <header style={{ background:"var(--cream)", borderBottom:"1px solid var(--border)", position:"sticky", top:0, zIndex:100, boxShadow:"0 1px 4px rgba(26,28,24,0.05)" }}>
         <div style={{ maxWidth:1160, margin:"0 auto", padding:"0 clamp(14px,3vw,32px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", gap:8 }}>
-          <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", gap:9 }}>
-            <div style={{ width:34, height:34, background:"var(--sage)", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center" }}>
-              <svg viewBox="0 0 100 100" width="19" height="19" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z"/></svg>
-            </div>
-            <div style={{ fontFamily:"'Inter',sans-serif", fontSize:17, fontWeight:800, color:"var(--slate)", letterSpacing:"-0.4px" }}>RescuPawLink.com</div>
-          </button>
+          <div style={{ display:"flex", alignItems:"center", gap:4, flexShrink:0 }}>
+            {/* Back button */}
+            <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:5, color:"var(--slate-mid)", fontFamily:"inherit", fontSize:13, fontWeight:500, padding:"7px 10px", borderRadius:8, transition:"all 0.18s" }}
+              onMouseEnter={e=>{ e.currentTarget.style.background="var(--sand)"; e.currentTarget.style.color="var(--slate)"; }}
+              onMouseLeave={e=>{ e.currentTarget.style.background="transparent"; e.currentTarget.style.color="var(--slate-mid)"; }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              <span className="hide-mobile">Home</span>
+            </button>
+            <div style={{ width:1, height:18, background:"var(--border)", margin:"0 4px" }}/>
+            <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", padding:0 }}>
+              <div style={{ fontFamily:"'Inter',sans-serif", fontSize:17, fontWeight:800, color:"var(--slate)", letterSpacing:"-0.4px" }}><span style={{ color:"var(--sage)" }}>Rescu</span>PawLink</div>
+            </button>
+          </div>
 
           <nav style={{ display:"flex", gap:2, flexWrap:"wrap" }}>
             {[
