@@ -302,6 +302,8 @@ const SEED_ANIMALS = [
   { id:"a4", name:"Luna", species:"Cat", breed:"Siamese Mix", age:"1 year", sex:"Female", weight:"7 lbs", color:"Seal Point", shelterId:"s1", shelterName:"Austin Animal Center", shelterCity:"Austin", shelterState:"TX", shelterPhone:"(512) 978-0500", shelterEmail:"intake@austinanimals.org", daysLeft:4, status:"urgent", description:"Luna is playful, social, and incredibly chatty — a true Siamese personality. She loves interactive toys and would thrive with another cat for companionship.", photos:[], vaccinated:true, neutered:true, goodWithKids:true, goodWithDogs:false, goodWithCats:true, fee:"$50", id_num:"AAC-2024-9001" },
   { id:"a5", name:"Biscuit", species:"Dog", breed:"Beagle", age:"6 years", sex:"Male", weight:"28 lbs", color:"Tricolor", shelterId:"s5", shelterName:"LA Animal Services", shelterCity:"Los Angeles", shelterState:"CA", shelterPhone:"(888) 452-7381", shelterEmail:"info@laanimalservices.com", daysLeft:3, status:"critical", description:"Biscuit is a calm, loving senior who just wants a couch to call his own. House trained, great with kids, and perfectly content with short daily walks.", photos:[], vaccinated:true, neutered:true, goodWithKids:true, goodWithDogs:true, goodWithCats:true, fee:"$25", id_num:"LAAS-2024-1122" },
   { id:"a6", name:"Shadow", species:"Cat", breed:"Domestic Longhair", age:"3 years", sex:"Male", weight:"11 lbs", color:"Black", shelterId:"s5", shelterName:"LA Animal Services", shelterCity:"Los Angeles", shelterState:"CA", shelterPhone:"(888) 452-7381", shelterEmail:"info@laanimalservices.com", daysLeft:3, status:"critical", description:"Shadow is a stunning black longhair who is shy at first but becomes incredibly affectionate once he trusts you. Loves windows, bird watching, and chin scratches.", photos:[], vaccinated:true, neutered:true, goodWithKids:false, goodWithDogs:false, goodWithCats:true, fee:"$35", id_num:"LAAS-2024-1130" },
+  { id:"a7", name:"Pepper", species:"Dog", breed:"Beagle Mix", age:"4 years", sex:"Female", weight:"28 lbs", color:"Tri-color", shelterId:"s1", shelterName:"Austin Animal Center", shelterCity:"Austin", shelterState:"TX", shelterPhone:"(512) 978-0500", shelterEmail:"intake@austinanimals.org", daysLeft:10, status:"urgent", description:"Pepper is gentle, house-trained, and great with kids. She needs a temporary foster home while we prepare for her adoption. A quiet home preferred.", photos:[], vaccinated:true, neutered:true, goodWithKids:true, goodWithDogs:false, goodWithCats:true, fee:"No fee", id_num:"AAC-2024-0077", listingType:"foster" },
+  { id:"a8", name:"Oliver", species:"Cat", breed:"Tabby Mix", age:"1 year", sex:"Male", weight:"9 lbs", color:"Orange", shelterId:"s2", shelterName:"Houston SPCA", shelterCity:"Houston", shelterState:"TX", shelterPhone:"(713) 869-7722", shelterEmail:"info@houstonspca.org", daysLeft:14, status:"good", description:"Oliver is a playful, energetic kitten who loves toys and cuddles. Looking for a foster home while we find his forever family. Great with other cats.", photos:[], vaccinated:true, neutered:false, goodWithKids:true, goodWithDogs:false, goodWithCats:true, fee:"No fee", id_num:"HSPCA-2024-0522", listingType:"foster" },
 ];
 
 const MSGS_SEED = [
@@ -814,7 +816,7 @@ export default function RescuPawLink() {
   // Forms
   const [loginF,  setLoginF]  = useState({ email:"", password:"" });
   const [regF,    setRegF]    = useState({ orgName:"", type:"", city:"", state:"", email:"", phone:"", password:"", confirm:"" });
-  const [postF,   setPostF]   = useState({ name:"", species:"Dog", breed:"", age:"", sex:"", weight:"", color:"", description:"", daysLeft:7, vaccinated:false, neutered:false, goodWithKids:false, goodWithDogs:false, goodWithCats:false, fee:"", photos:[] });
+  const [postF,   setPostF]   = useState({ name:"", species:"Dog", breed:"", age:"", sex:"", weight:"", color:"", description:"", daysLeft:7, vaccinated:false, neutered:false, goodWithKids:false, goodWithDogs:false, goodWithCats:false, fee:"", photos:[], listingType:"adopt" });
   const [capF,    setCapF]    = useState({ total:"", available:"", needsHelp:false, canTakeDogs:false, canTakeCats:false, canTakeSmall:false, overflow:"" });
   const [msgText, setMsgText] = useState("");
   const [dmTarget, setDmTarget] = useState(null); // shelter id for active DM
@@ -982,7 +984,7 @@ export default function RescuPawLink() {
           days_left: postF.daysLeft, vaccinated: postF.vaccinated,
           neutered: postF.neutered, good_with_kids: postF.goodWithKids,
           good_with_dogs: postF.goodWithDogs, good_with_cats: postF.goodWithCats,
-          fee: postF.fee, photos: postF.photos,
+          fee: postF.fee, photos: postF.photos, listing_type: postF.listingType||"adopt",
           shelter_id: user.id, shelter_name: user.name,
           shelter_city: user.city, shelter_state: user.state,
           shelter_phone: user.phone, shelter_email: user.email,
@@ -1029,10 +1031,12 @@ export default function RescuPawLink() {
   const userShelter = shelters.find(s => s.id === user?.id);
 
   const filteredAnimals = animals.filter(a => {
-    if (fSpecies !== "All" && a.species !== fSpecies) return false;
-    if (fState   && a.shelterState !== fState)        return false;
-    if (fCity    && !a.shelterCity.toLowerCase().includes(fCity.toLowerCase())) return false;
-    if (fSearch  && !a.name.toLowerCase().includes(fSearch.toLowerCase()) && !a.breed.toLowerCase().includes(fSearch.toLowerCase())) return false;
+    const lt = a.listingType || a.listing_type || "adopt";
+    if (fSpecies === "Foster") { if (lt !== "foster" && lt !== "both") return false; }
+    else if (fSpecies !== "All" && a.species !== fSpecies) return false;
+    if (fState  && a.shelterState !== fState) return false;
+    if (fCity   && !a.shelterCity.toLowerCase().includes(fCity.toLowerCase())) return false;
+    if (fSearch && !a.name.toLowerCase().includes(fSearch.toLowerCase()) && !a.breed.toLowerCase().includes(fSearch.toLowerCase())) return false;
     return true;
   }).sort((a,b) => a.daysLeft - b.daysLeft);
 
@@ -1917,7 +1921,7 @@ export default function RescuPawLink() {
           <div className="fade-in">
             <div className="section-header">
               <div>
-                <h1 style={{ fontSize:26, marginBottom:5, fontFamily:"'Inter',sans-serif", fontWeight:800, letterSpacing:"-0.5px" }}>Adoptable Animals</h1>
+                <h1 style={{ fontSize:26, marginBottom:5, fontFamily:"'Inter',sans-serif", fontWeight:800, letterSpacing:"-0.5px" }}>{fSpecies==="Foster"?"Animals Needing Foster":"Adoptable Animals"}</h1>
                 <p style={{ color:"#4e5449", fontSize:14 }}>Real listings from verified shelters — sorted by urgency. Apply directly from any listing.</p>
               </div>
               <div style={{ fontSize:13, color:"#4e5449", background:"#ffffff", border:"1px solid var(--border)", borderRadius:10, padding:"8px 14px" }}>
@@ -1926,7 +1930,7 @@ export default function RescuPawLink() {
             </div>
 
             {/* Critical banner — always visible to everyone */}
-            {animals.filter(a=>a.status==="critical" && (fSpecies==="All"||a.species===fSpecies)).length > 0 && !fState && !fCity && !fSearch && (
+            {animals.filter(a=>a.status==="critical" && (fSpecies==="Foster"?(a.listingType==="foster"||a.listing_type==="foster"||a.listingType==="both"||a.listing_type==="both"):(fSpecies==="All"||a.species===fSpecies))).length > 0 && !fState && !fCity && !fSearch && (
               <div style={{ background:"linear-gradient(135deg,#fff1f2,var(--coral-light))", border:"1.5px solid #f0c4b4", borderRadius:14, padding:"18px 22px", marginBottom:22 }}>
                 <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
                   <span style={{ fontSize:20 }}>⚠️</span>
@@ -1936,7 +1940,7 @@ export default function RescuPawLink() {
                   </div>
                 </div>
                 <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
-                  {animals.filter(a=>a.status==="critical" && (fSpecies==="All"||a.species===fSpecies)).map(a=>(
+                  {animals.filter(a=>a.status==="critical" && (fSpecies==="Foster"?(a.listingType==="foster"||a.listing_type==="foster"||a.listingType==="both"||a.listing_type==="both"):(fSpecies==="All"||a.species===fSpecies))).map(a=>(
                     <div key={a.id} onClick={()=>setSelectedAnimal(a)} style={{ display:"flex", alignItems:"center", gap:9, background:"#fff", border:"1px solid #f0c4b4", borderRadius:10, padding:"8px 14px", cursor:"pointer", transition:"box-shadow 0.15s" }}
                       onMouseEnter={e=>e.currentTarget.style.boxShadow="0 2px 10px rgba(220,38,38,0.12)"}
                       onMouseLeave={e=>e.currentTarget.style.boxShadow="none"}>
@@ -1981,9 +1985,9 @@ export default function RescuPawLink() {
                 <div>
                   <label className="label">Species</label>
                   <div style={{ display:"flex", gap:6 }}>
-                    {["All","Dog","Cat","Other"].map(sp=>(
+                    {["All","Dog","Cat","Other","Foster"].map(sp=>(
                       <button key={sp} className={`filter-chip ${fSpecies===sp?"active":""}`} onClick={()=>setFSpecies(sp)}>
-                        {sp==="Dog"?<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>:sp==="Cat"?<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>:sp==="Other"?<span>🐾</span>:null} {sp}
+                        {sp==="Foster"?<span style={{fontSize:16}}>💚</span>:sp==="Dog"?<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>:sp==="Cat"?<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>:sp==="Other"?<span>🐾</span>:null} {sp}
                       </button>
                     ))}
                   </div>
@@ -2257,6 +2261,25 @@ export default function RescuPawLink() {
               {/* Step 1 */}
               {postStep === 1 && (
                 <div className="card fade-in" style={{ padding:28 }}>
+
+                  {/* Listing Type */}
+                  <div style={{ marginBottom:20 }}>
+                    <label className="label">Listing Type *</label>
+                    <div style={{ display:"flex", gap:10 }}>
+                      {[["adopt","🏡 For Adoption"],["foster","💚 Foster Needed"],["both","Both"]].map(([v,l])=>(
+                        <button key={v} type="button" onClick={()=>setPostF(p=>({...p,listingType:v}))}
+                          style={{ flex:1, padding:"12px 8px", borderRadius:10, border:`2px solid ${postF.listingType===v?"#6b8f71":"#e4e4e2"}`, background:postF.listingType===v?"#eef4ef":"#fff", color:postF.listingType===v?"#4a6b50":"#4e5449", fontWeight:postF.listingType===v?700:500, fontSize:13, cursor:"pointer", fontFamily:"inherit", transition:"all 0.18s" }}>
+                          {l}
+                        </button>
+                      ))}
+                    </div>
+                    {postF.listingType==="foster" && (
+                      <div style={{ marginTop:10, background:"#f0fdf4", border:"1px solid #86efac", borderRadius:10, padding:"10px 14px", fontSize:13, color:"#166534" }}>
+                        💚 Foster listings connect animals with temporary homes. The shelter remains responsible for the animal.
+                      </div>
+                    )}
+                  </div>
+
                   <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))", gap:15, marginBottom:15 }}>
                     <div><label className="label">Name *</label><input className="input" required placeholder="e.g. Buddy" value={postF.name} onChange={e=>setPostF(p=>({...p,name:e.target.value}))} /></div>
                     <div><label className="label">Species *</label>
@@ -2273,7 +2296,7 @@ export default function RescuPawLink() {
                     </div>
                     <div><label className="label">Weight</label><input className="input" placeholder="e.g. 45 lbs" value={postF.weight} onChange={e=>setPostF(p=>({...p,weight:e.target.value}))} /></div>
                     <div><label className="label">Color / Markings</label><input className="input" placeholder="e.g. Black & White" value={postF.color} onChange={e=>setPostF(p=>({...p,color:e.target.value}))} /></div>
-                    <div><label className="label">Adoption Fee</label><input className="input" placeholder="e.g. $50 or Waived" value={postF.fee} onChange={e=>setPostF(p=>({...p,fee:e.target.value}))} /></div>
+                    <div><label className="label">{postF.listingType==="foster"?"Foster Stipend (optional)":"Adoption Fee"}</label><input className="input" placeholder={postF.listingType==="foster"?"e.g. $25/week or None":"e.g. $50 or Waived"} value={postF.fee} onChange={e=>setPostF(p=>({...p,fee:e.target.value}))} /></div>
                     <div style={{ gridColumn:"span 2" }}>
                       <label className="label">Days Until Deadline *</label>
                       <input className="input" type="number" min={1} max={60} required value={postF.daysLeft} onChange={e=>setPostF(p=>({...p,daysLeft:+e.target.value}))} />
@@ -2994,7 +3017,7 @@ Message: ${lfInqMsg.message || "No additional message."}`,
             {/* Header */}
             <div style={{ marginBottom:22 }}>
               <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:applyF.type==="adopt"?"#eef4ef":"#fdf4ff", border:`1px solid ${applyF.type==="adopt"?"#c7dfc9":"#e9d5ff"}`, borderRadius:20, padding:"4px 12px", fontSize:11, fontWeight:700, color:applyF.type==="adopt"?"#4a6b50":"#7e22ce", marginBottom:10, textTransform:"uppercase", letterSpacing:"0.05em" }}>
-                {applyF.type==="adopt"?"Adoption Application":"Foster Application"}
+                {selectedAnimal?.listingType==="foster"||selectedAnimal?.listing_type==="foster"?"Foster Application":applyF.type==="adopt"?"Adoption Application":"Foster Application"}
               </div>
               <h2 style={{ fontSize:22, fontWeight:800, marginBottom:4 }}>{applyTarget.name}</h2>
               <p style={{ color:"var(--muted)", fontSize:14 }}>{applyTarget.breed} · {applyTarget.age} · <strong>{applyTarget.shelterName}</strong> — {applyTarget.shelterCity}, {applyTarget.shelterState}</p>
