@@ -1344,7 +1344,6 @@ export default function RescuPawLink() {
               { icon:I.alert,    title:"Overflow Alerts",          desc:"Flag when you're over capacity and the whole network sees it instantly." },
               { icon:I.transfer, title:"Transfer Requests",        desc:"Request space at a partner shelter in one click. They get notified immediately." },
               { icon:I.paw,      title:"Animal Listings",          desc:"Post animals with photos, health info, and live urgency timers." },
-              { icon:I.network,  title:"Network Reach",            desc:"Your listings reach adopters and fosters across all 38 states." },
             ].map((b,i)=>(
               <div key={b.title} className="fade-up" style={{ animationDelay:`${i*0.06}s`, background:"#ffffff", border:"1px solid #e8e8e6", borderRadius:14, padding:"20px 22px", boxShadow:"0 1px 4px rgba(0,0,0,0.04)", display:"flex", flexDirection:"column", gap:10 }}>
                 <div style={{ color:"#6b8f71", display:"flex" }}>{b.icon}</div>
