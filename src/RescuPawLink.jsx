@@ -457,7 +457,7 @@ function Toast({ msg }) {
 }
 
 // ── ChatSystem Component ──────────────────────────────────
-const CHANNELS = [
+const BASE_CHANNELS = [
   { id:"general",  label:"All Shelters",     icon:"chat",     desc:"Network-wide announcements and coordination" },
   { id:"urgent",   label:"Urgent Transfers",  icon:"alert",    desc:"Animals that need placement in under 72 hours" },
   { id:"transport",label:"Transport Board",   icon:"transfer", desc:"Volunteer drivers and transport coordination" },
@@ -465,6 +465,12 @@ const CHANNELS = [
   { id:"dogs",     label:"Dog Network",       icon:"dog",      desc:"Dog-specific placement and breed rescue" },
   { id:"cats",     label:"Cat Network",       icon:"cat",      desc:"Cat-specific placement and rescue coordination" },
 ];
+// Build CHANNELS dynamically — inject state channel at top if shelter has a state
+function buildChannels(userState) {
+  if (!userState || userState === "all") return BASE_CHANNELS;
+  const stateChannel = { id:`state_${userState}`, label:`${userState} Shelters`, icon:"network", desc:`Local coordination for ${userState} shelters` };
+  return [stateChannel, ...BASE_CHANNELS];
+}
 
 const CHANNEL_SEED = {
   all:       [{ id:1, from:"Dallas Animal Services", fromId:"s3", time:"10:32 AM", text:"We're at critical capacity — can anyone take 3 dogs? Two pit mixes and a shepherd. All vaccinated." }, { id:2, from:"Houston SPCA", fromId:"s2", time:"10:45 AM", text:"Yes! We can take up to 5 dogs. Can you arrange transport by Thursday?" }, { id:3, from:"Dallas Animal Services", fromId:"s3", time:"11:00 AM", text:"Thursday works. Sending health records today. Thank you 🙏" }, { id:4, from:"Denver Dumb Friends League", fromId:"s4", time:"11:14 AM", text:"We can also take 2 small dogs if needed. Just DM us." }],
@@ -476,8 +482,10 @@ const CHANNEL_SEED = {
 };
 
 function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText, msgEndRef, sendMsg, isLoggedIn, onLogin, dmTarget, setDmTarget }) {
+  const CHANNELS = buildChannels(user?.state);
   const [activeChannel, setActiveChannel] = useState("all");
   const [view, setView] = useState("channels"); // channels | dms
+  const [chatStateFilter, setChatStateFilter] = useState(user?.state || "all");
   const [channelMsgs, setChannelMsgs] = useState(CHANNEL_SEED);
   const [dmMsgs, setDmMsgs] = useState({
     "s1-s3": [{ id:1, from:"Austin Animal Center", fromId:"s1", time:"9:15 AM", text:"Hey Dallas — we have a few dogs we're trying to place. Any foster connections in your area?" }],
@@ -594,7 +602,9 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
           {view === "channels" && (
             <div style={{ flex:1, overflowY:"auto", padding:"10px 10px" }}>
               <div style={{ fontSize:11, fontWeight:700, color:"#9a9e95", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:8, padding:"0 4px" }}>Channels</div>
-              {CHANNELS.map(ch => {
+              {CHANNELS
+                .filter(ch => chatStateFilter === "all" ? true : ch.id === `state_${chatStateFilter}` || ch.id !== `state_${user?.state}` || ch.id === `state_${chatStateFilter}`)
+                .map(ch => {
                 const hasUnread = !!unread[ch.id];
                 const isActive = activeChannel === ch.id && view === "channels";
                 return (
@@ -704,7 +714,7 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
               </div>
               <div style={{ display:"flex", gap:8 }}>
                 {activeDmShelter.phone && <a href={`tel:${activeDmShelter.phone}`} style={{ fontSize:12, color:"#6b8f71", textDecoration:"none", background:"#eef4ef", border:"1px solid #c7dfc9", borderRadius:8, padding:"5px 11px", fontWeight:600 }}>📞 Call</a>}
-                {activeDmShelter.email && <a href={`mailto:${activeDmShelter.email}`} style={{ fontSize:12, color:"#6b8f71", textDecoration:"none", background:"#eef4ef", border:"1px solid #c7dfc9", borderRadius:8, padding:"5px 11px", fontWeight:600 }}>✉️ Email</a>}
+                {/* email hidden — use DM instead */}
               </div>
             </div>
           )}
@@ -749,8 +759,7 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
                       />
                       <div style={{ fontSize:11, color:"#9a9e95", marginTop:4 }}>Press Enter to send · Shift+Enter for new line</div>
                     </div>
-                    <button className="btn btn-primary btn-md" style={{ padding:"12px 20px", flexShrink:0 }}
-                      style={{ background:"rgba(107,143,113,0.88)", border:"2px solid rgba(107,143,113,0.6)", borderRadius:10, padding:"0 16px", cursor:"pointer", backdropFilter:"blur(8px)", display:"flex", alignItems:"center" }} onClick={view==="channels"?sendChannelMsg:sendDmMsg}>
+                    <button style={{ background:"rgba(107,143,113,0.88)", border:"2px solid rgba(107,143,113,0.6)", borderRadius:10, padding:"0 16px", cursor:"pointer", backdropFilter:"blur(8px)", display:"flex", alignItems:"center", flexShrink:0, minHeight:44 }} onClick={view==="channels"?sendChannelMsg:sendDmMsg}>
                       Send
                     </button>
                   </div>
@@ -811,6 +820,7 @@ export default function RescuPawLink() {
   });
   const [applyF,  setApplyF]  = useState({ name:"", email:"", phone:"", message:"", type:"adopt" });
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [crisis, setCrisis] = useState(false);
 
   const fileRef = useRef();
 
@@ -917,6 +927,12 @@ export default function RescuPawLink() {
       showToast(`Welcome to RescuPawLink, ${regF.orgName}!`);
     }
     setLoading(false);
+  }
+
+  async function toggleCrisis(val) {
+    setCrisis(val);
+    try { await sbFetch(`shelters?id=eq.${user?.id}`, { method:"PATCH", body:JSON.stringify({ needs_help:val }) }); } catch(e){}
+    setToast(val ? "⚠️ Emergency status ON — network notified" : "✅ Emergency status cleared");
   }
 
   function handleSignOut() {
@@ -1047,69 +1063,63 @@ export default function RescuPawLink() {
     { icon:I.network,  title:"Network Reach",           desc:"Your listings reach beyond your local area — 38 states and growing." },
   ];
 
+  const NAV_LINKS = [
+    ["Pet Search", ()=>{setPage("app");setTab("adopt");setMobileOpen(false);}],
+    ["Shelters",   ()=>{setPage("app");setTab("network");setMobileOpen(false);}],
+    ["About",      null],
+    ["Resources",  null],
+    ["Contact",    null],
+  ];
+
   if (page === "landing") return (
     <div style={{ fontFamily:"'DM Sans',sans-serif", color:"#1a1c18", background:"#ffffff", minHeight:"100vh" }}>
       {toast && <Toast msg={toast}/>}
 
       {/* ── NAV ── */}
-      { (() => {
-        const NAV_LINKS = [["Pet Search",()=>{setPage("app");setTab("adopt");setMobileOpen(false);}],["Shelters",()=>{setPage("app");setTab("network");setMobileOpen(false);}],["About",null],["Resources",null],["Contact",null]];
-        return (
-          <nav style={{ background:"#ffffff", borderBottom:"1px solid #e8e8e6", position:"sticky", top:0, zIndex:100 }}>
-            <div style={{ maxWidth:"100%", margin:"0 auto", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-
-              {/* Logo */}
-              <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", padding:0 }}>
-                <span style={{ fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"#1a1c18", letterSpacing:"-0.4px" }}>
-                  <span style={{ color:"#6b8f71" }}>Rescu</span>PawLink
-                </span>
+      <nav style={{ background:"#ffffff", borderBottom:"1px solid #e8e8e6", position:"sticky", top:0, zIndex:100 }}>
+        <div style={{ maxWidth:"100%", margin:"0 auto", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+          <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", padding:0 }}>
+            <span style={{ fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"#1a1c18", letterSpacing:"-0.4px" }}>
+              <span style={{ color:"#6b8f71" }}>Rescu</span>PawLink
+            </span>
+          </button>
+          <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:0 }}>
+            {NAV_LINKS.map(([l,fn],i,arr)=>(
+              <span key={l} style={{ display:"flex", alignItems:"center" }}>
+                <button onClick={fn||undefined} style={{ background:"none", border:"none", cursor:fn?"pointer":"default", fontFamily:"inherit", fontSize:13, fontWeight:500, color:"#4e5449", padding:"6px 12px", borderRadius:6, transition:"color 0.15s" }}
+                  onMouseEnter={e=>{ if(fn) e.currentTarget.style.color="#1a1c18"; }}
+                  onMouseLeave={e=>e.currentTarget.style.color="#4e5449"}>{l}</button>
+                {i < arr.length-1 && <span style={{ color:"#d0c8bc", fontSize:12 }}>|</span>}
+              </span>
+            ))}
+          </div>
+          <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+            <button className="hide-mobile btn btn-ghost btn-sm" style={{ borderColor:"#e0e0de" }} onClick={()=>{setAuthMode("login");setPage("login");}}>Login</button>
+            <button className="hide-mobile btn btn-primary btn-sm" style={{ fontWeight:700 }} onClick={()=>{setAuthMode("register");setPage("login");}}>Register Your Shelter</button>
+            <button className="show-mobile-only" onClick={()=>setMobileOpen(o=>!o)}
+              style={{ background:"none", border:"1px solid #d0c8bc", borderRadius:8, padding:"7px 10px", cursor:"pointer", display:"none", alignItems:"center", justifyContent:"center" }}>
+              {mobileOpen
+                ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b8f71" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b8f71" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+              }
+            </button>
+          </div>
+        </div>
+        {mobileOpen && (
+          <div style={{ background:"#ffffff", borderTop:"1px solid #e8e8e6", padding:"12px 20px 20px", animation:"slideDown 0.2s ease" }}>
+            {NAV_LINKS.map(([l,fn])=>(
+              <button key={l} onClick={fn||undefined}
+                style={{ display:"block", width:"100%", textAlign:"left", background:"none", border:"none", fontFamily:"inherit", fontSize:15, fontWeight:500, color:fn?"#1a1c18":"#9a9e95", padding:"12px 4px", borderBottom:"1px solid #e8e2d8", cursor:fn?"pointer":"default" }}>
+                {l}
               </button>
-
-              {/* Desktop pipe links */}
-              <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:0 }}>
-                {NAV_LINKS.map(([l,fn],i,arr)=>(
-                  <span key={l} style={{ display:"flex", alignItems:"center" }}>
-                    <button onClick={fn||undefined} style={{ background:"none", border:"none", cursor:fn?"pointer":"default", fontFamily:"inherit", fontSize:13, fontWeight:500, color:"#4e5449", padding:"6px 12px", borderRadius:6, transition:"color 0.15s" }}
-                      onMouseEnter={e=>{ if(fn) e.currentTarget.style.color="#1a1c18"; }}
-                      onMouseLeave={e=>e.currentTarget.style.color="#4e5449"}>{l}</button>
-                    {i < arr.length-1 && <span style={{ color:"#d0c8bc", fontSize:12 }}>|</span>}
-                  </span>
-                ))}
-              </div>
-
-              {/* Desktop CTA + Mobile hamburger */}
-              <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-                <button className="hide-mobile btn btn-ghost btn-sm" style={{ borderColor:"#e0e0de" }} onClick={()=>{setAuthMode("login");setPage("login");}}>Login</button>
-                <button className="hide-mobile btn btn-primary btn-sm" style={{ fontWeight:700 }} onClick={()=>{setAuthMode("register");setPage("login");}}>Register Your Shelter</button>
-                {/* Hamburger — mobile only */}
-                <button className="show-mobile-only" onClick={()=>setMobileOpen(o=>!o)}
-                  style={{ background:"none", border:"1px solid #d0c8bc", borderRadius:8, padding:"7px 10px", cursor:"pointer", display:"none", flexDirection:"column", gap:5, alignItems:"center", justifyContent:"center" }}>
-                  {mobileOpen
-                    ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b8f71" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b8f71" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                  }
-                </button>
-              </div>
+            ))}
+            <div style={{ display:"flex", flexDirection:"column", gap:10, marginTop:16 }}>
+              <button className="btn btn-ghost btn-md" style={{ width:"100%", borderColor:"#e0e0de", justifyContent:"center" }} onClick={()=>{setAuthMode("login");setPage("login");setMobileOpen(false);}}>Login</button>
+              <button style={{ width:"100%", padding:"12px 22px", fontSize:14, fontWeight:700, borderRadius:10, border:"2px solid rgba(107,143,113,0.6)", background:"rgba(107,143,113,0.88)", color:"#fff", cursor:"pointer", fontFamily:"inherit" }} onClick={()=>{setAuthMode("register");setPage("login");setMobileOpen(false);}}>Register Your Shelter</button>
             </div>
-
-            {/* Mobile drawer */}
-            {mobileOpen && (
-              <div style={{ background:"#ffffff", borderTop:"1px solid #e8e8e6", padding:"12px 20px 20px", animation:"slideDown 0.2s ease" }}>
-                {NAV_LINKS.map(([l,fn])=>(
-                  <button key={l} onClick={fn||undefined}
-                    style={{ display:"block", width:"100%", textAlign:"left", background:"none", border:"none", fontFamily:"inherit", fontSize:15, fontWeight:500, color:fn?"#1a1c18":"#9a9e95", padding:"12px 4px", borderBottom:"1px solid #e8e2d8", cursor:fn?"pointer":"default" }}>
-                    {l}
-                  </button>
-                ))}
-                <div style={{ display:"flex", flexDirection:"column", gap:10, marginTop:16 }}>
-                  <button className="btn btn-ghost btn-md" style={{ width:"100%", borderColor:"#e0e0de", justifyContent:"center" }} onClick={()=>{setAuthMode("login");setPage("login");setMobileOpen(false);}}>Login</button>
-                  <button style={{ width:"100%", padding:"12px 22px", fontSize:14, fontWeight:700, borderRadius:10, border:"2px solid rgba(107,143,113,0.6)", background:"rgba(107,143,113,0.88)", backdropFilter:"blur(8px)", color:"#fff", cursor:"pointer", fontFamily:"inherit", transition:"all 0.22s", display:"flex", justifyContent:"center" }} onClick={()=>{setAuthMode("register");setPage("login");setMobileOpen(false);}}>Register Your Shelter</button>
-                </div>
-              </div>
-            )}
-          </nav>
-        );
-      })() }
+          </div>
+        )}
+      </nav>
 
       {/* ── HERO — full width on desktop, padded on mobile ── */}
       <div style={{ padding:"clamp(16px,2vw,24px) clamp(16px,3vw,32px) 0" }}>
@@ -1152,7 +1162,6 @@ export default function RescuPawLink() {
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))", gap:12 }}>
           {[
             {
-              icon:<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#6b8f71" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 11L12 3l9 8v9a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg>,
               icon:<img src="https://i.imgur.com/CTeO1wb.png" style={{ width:36, height:36, objectFit:"cover", borderRadius:8 }}/>,
               label:"SHELTER NETWORK",
               desc:"Find shelter networks, maps, and shelter coordinators.",
@@ -1432,6 +1441,7 @@ export default function RescuPawLink() {
 
   // AUTH
   // ─────────────────────────────────────────────────────────
+  const isLoggedIn = !!user;
   if (page === "login") return (
     <div style={{ minHeight:"100vh", background:"#f8f8f6", display:"flex", flexDirection:"column", fontFamily:"'DM Sans',sans-serif" }}>
       {/* Auth Nav */}
@@ -1499,20 +1509,20 @@ export default function RescuPawLink() {
   // ─────────────────────────────────────────────────────────
   // MAIN APP
   // ─────────────────────────────────────────────────────────
-  const isLoggedIn = !!user;
 
   return (
     <div style={{ fontFamily:"'Inter',sans-serif", color:"#1a1c18", background:"#f8f8f6", minHeight:"100vh" }}>
       {toast && <Toast msg={toast} />}
 
       {/* Header */}
-      <header style={{ background:"#f8f8f6", borderBottom:"1px solid var(--border)", position:"sticky", top:0, zIndex:100, boxShadow:"0 1px 4px rgba(26,28,24,0.05)" }}>
+      <header style={{ background:"#ffffff", borderBottom:"1px solid #e8e8e6", position:"sticky", top:0, zIndex:100, boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
         <div style={{ maxWidth:"100%", margin:"0 auto", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", gap:8 }}>
+
+          {/* Left — back + wordmark */}
           <div style={{ display:"flex", alignItems:"center", gap:4, flexShrink:0 }}>
-            {/* Back button */}
-            <button onClick={() => setPage("landing")} style={{ background:"rgba(255,255,255,0.12)", border:"2px solid rgba(0,0,0,0.1)", backdropFilter:"blur(8px)", cursor:"pointer", display:"flex", alignItems:"center", gap:5, color:"#4e5449", fontFamily:"inherit", fontSize:13, fontWeight:600, padding:"7px 12px", borderRadius:10, transition:"all 0.18s" }}
-              onMouseEnter={e=>{ e.currentTarget.style.background="#f0f0ee"; e.currentTarget.style.color="#1a1c18"; }}
-              onMouseLeave={e=>{ e.currentTarget.style.background="transparent"; e.currentTarget.style.color="#4e5449"; }}>
+            <button onClick={() => setPage("landing")} style={{ background:"transparent", border:"2px solid rgba(0,0,0,0.1)", backdropFilter:"blur(8px)", cursor:"pointer", display:"flex", alignItems:"center", gap:5, color:"#4e5449", fontFamily:"inherit", fontSize:13, fontWeight:600, padding:"7px 12px", borderRadius:10, transition:"all 0.18s" }}
+              onMouseEnter={e=>{ e.currentTarget.style.background="#f0f0ee"; }}
+              onMouseLeave={e=>{ e.currentTarget.style.background="transparent"; }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b8f71" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
               <span className="hide-mobile">Home</span>
             </button>
@@ -1522,7 +1532,8 @@ export default function RescuPawLink() {
             </button>
           </div>
 
-          <nav style={{ display:"flex", gap:2, flexWrap:"wrap" }}>
+          {/* Center — desktop tab links */}
+          <nav className="hide-mobile" style={{ display:"flex", gap:2 }}>
             {[
               { key:"adopt",   label:"Adoptable Animals", icon:I.heartPaw },
               { key:"network", label:"Shelter Network",   icon:I.network },
@@ -1533,25 +1544,70 @@ export default function RescuPawLink() {
               ] : []),
             ].map(t => (
               <button key={t.key} className={`nav-link ${tab===t.key?"active":""}`} onClick={() => setTab(t.key)}>
-                {t.icon}<span className="hide-mobile">{t.label}</span>
+                {t.icon}<span>{t.label}</span>
               </button>
             ))}
           </nav>
 
+          {/* Right — user info + sign out + mobile hamburger */}
           <div style={{ display:"flex", gap:8, alignItems:"center", flexShrink:0 }}>
             {isLoggedIn ? (
               <>
-                <span style={{ fontSize:13, color:"#4e5449", fontWeight:500 }} className="hide-mobile">{user.name}</span>
-                <button className="btn btn-ghost btn-sm" onClick={handleSignOut}>{I.logout} <span className="hide-mobile">Sign Out</span></button>
+                <span className="hide-mobile" style={{ fontSize:13, color:"#4e5449", fontWeight:500 }}>{user.name}</span>
+                <button className="hide-mobile btn btn-ghost btn-sm" onClick={handleSignOut}>{I.logout} <span>Sign Out</span></button>
               </>
             ) : (
-              <button className="btn btn-primary btn-sm" onClick={() => { setAuthMode("login"); setPage("login"); }}>Sign In</button>
+              <button className="hide-mobile btn btn-primary btn-sm" onClick={() => { setAuthMode("login"); setPage("login"); }}>Sign In</button>
             )}
+            {/* Hamburger — mobile only */}
+            <button className="show-mobile-only" onClick={()=>setMobileOpen(o=>!o)}
+              style={{ background:"none", border:"1px solid #e8e8e6", borderRadius:8, padding:"7px 10px", cursor:"pointer", display:"none", alignItems:"center", justifyContent:"center" }}>
+              {mobileOpen
+                ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b8f71" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b8f71" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+              }
+            </button>
           </div>
         </div>
+
+        {/* Mobile drawer */}
+        {mobileOpen && (
+          <div style={{ background:"#ffffff", borderTop:"1px solid #e8e8e6", padding:"12px 20px 20px", animation:"slideDown 0.2s ease" }}>
+            {[
+              { key:"adopt",   label:"Adoptable Animals" },
+              { key:"network", label:"Shelter Network" },
+              ...(isLoggedIn ? [
+                { key:"chat",      label:"Coordinator Chat" },
+                { key:"post",      label:"Post Animal" },
+                { key:"dashboard", label:"Dashboard" },
+              ] : []),
+            ].map(t=>(
+              <button key={t.key} onClick={()=>{ setTab(t.key); setMobileOpen(false); }}
+                style={{ display:"block", width:"100%", textAlign:"left", background:tab===t.key?"#eef4ef":"none", border:"none", fontFamily:"inherit", fontSize:15, fontWeight:tab===t.key?700:500, color:tab===t.key?"#4a6b50":"#1a1c18", padding:"13px 12px", borderBottom:"1px solid #f0f0ee", cursor:"pointer", borderRadius:tab===t.key?8:0, borderLeft:tab===t.key?"3px solid #6b8f71":"3px solid transparent" }}>
+                {t.label}
+              </button>
+            ))}
+            <div style={{ marginTop:14, display:"flex", flexDirection:"column", gap:10 }}>
+              {isLoggedIn ? (
+                <>
+                  <div style={{ fontSize:13, color:"#9a9e95", fontWeight:500, padding:"4px 4px" }}>Signed in as {user.name}</div>
+                  <button style={{ width:"100%", padding:"12px", fontSize:14, fontWeight:700, borderRadius:10, border:"2px solid rgba(0,0,0,0.12)", background:"rgba(255,255,255,0.12)", color:"#4e5449", cursor:"pointer", fontFamily:"inherit" }}
+                    onClick={()=>{ handleSignOut(); setMobileOpen(false); }}>Sign Out</button>
+                </>
+              ) : (
+                <>
+                  <button style={{ width:"100%", padding:"12px", fontSize:14, fontWeight:600, borderRadius:10, border:"2px solid rgba(0,0,0,0.12)", background:"transparent", color:"#4e5449", cursor:"pointer", fontFamily:"inherit" }}
+                    onClick={()=>{ setAuthMode("login"); setPage("login"); setMobileOpen(false); }}>Login</button>
+                  <button style={{ width:"100%", padding:"12px", fontSize:14, fontWeight:700, borderRadius:10, border:"2px solid rgba(107,143,113,0.6)", background:"rgba(107,143,113,0.88)", color:"#fff", cursor:"pointer", fontFamily:"inherit" }}
+                    onClick={()=>{ setAuthMode("register"); setPage("login"); setMobileOpen(false); }}>Register Your Shelter</button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </header>
 
-      <main style={{ maxWidth:1400, margin:"0 auto", padding:"0 clamp(16px,4vw,48px)", padding:"clamp(20px,3vw,32px) clamp(14px,3vw,32px)" }}>
+      <main style={{ maxWidth:1400, margin:"0 auto", padding:"clamp(20px,3vw,32px) clamp(14px,3vw,32px)" }}>
 
         {/* ══ ADOPTABLE ANIMALS ══════════════════════════════ */}
         {tab === "adopt" && (
@@ -1792,7 +1848,7 @@ export default function RescuPawLink() {
                         {isLoggedIn ? (
                           <div style={{ display:"flex", gap:14, flexWrap:"wrap" }}>
                             {s.phone && <span style={{ fontSize:12, color:"#4e5449", display:"flex", alignItems:"center", gap:4 }}>{I.phone} {s.phone}</span>}
-                            {s.email && <a href={`mailto:${s.email}`} style={{ fontSize:12, color:"#6b8f71", display:"flex", alignItems:"center", gap:4, textDecoration:"none", fontWeight:500 }}>{I.mail} {s.email}</a>}
+                            {/* shelter email hidden from public */}
                           </div>
                         ) : (
                           <div style={{ fontSize:12, color:"#9a9e95", display:"flex", alignItems:"center", gap:6, background:"#f8f8f6", border:"1px solid var(--border)", borderRadius:8, padding:"6px 12px", width:"fit-content" }}>
@@ -2167,12 +2223,15 @@ export default function RescuPawLink() {
               </div>
             </div>
 
-            {/* ── Capacity Manager ── */}
-            <div id="capacity-form" className="card" style={{ padding:24, marginBottom:20 }}>
+            {/* ── Capacity + Emergency row ── */}
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:16, marginBottom:20 }}>
+
+            {/* Capacity Management */}
+            <div id="capacity-form" className="card" style={{ padding:24 }}>
               <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:16, flexWrap:"wrap", gap:10 }}>
                 <div>
-                  <h2 style={{ fontSize:20, marginBottom:4 }}>Manage Your Capacity</h2>
-                  <p style={{ color:"#4e5449", fontSize:14 }}>Keeps the whole network informed. Update whenever your space changes.</p>
+                  <h2 style={{ fontSize:18, marginBottom:4, display:"flex", alignItems:"center", gap:8 }}>{I.capacity} Capacity Management</h2>
+                  <p style={{ color:"#4e5449", fontSize:13 }}>Keeps the whole network informed. Update whenever your space changes.</p>
                 </div>
                 {userShelter?.totalSpace > 0 && (
                   <div style={{ display:"flex", alignItems:"center", gap:8, background:"#f8f8f6", border:"1px solid var(--border)", borderRadius:10, padding:"8px 14px" }}>
@@ -2221,6 +2280,42 @@ export default function RescuPawLink() {
                 )}
                 <button type="submit" className="btn btn-primary btn-md">Save & Broadcast to Network</button>
               </form>
+            </div>
+
+            </div>{/* end capacity card */}
+
+            {/* Emergency Crisis Status Card */}
+
+                <div className="card" style={{ padding:24, border:crisis?"2px solid #f0c4b4":"1px solid #e4e4e2", background:crisis?"#fffaf9":"#fff" }}>
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
+                    <h2 style={{ fontSize:18, display:"flex", alignItems:"center", gap:8, color:crisis?"#c85a35":"#1a1c18" }}>
+                      {I.alert} Emergency Crisis Status
+                    </h2>
+                    {/* Toggle */}
+                    <button onClick={()=>toggleCrisis(!crisis)}
+                      style={{ width:56, height:28, borderRadius:14, border:"none", cursor:"pointer", position:"relative", background:crisis?"#c85a35":"#d1d5db", transition:"background 0.25s", flexShrink:0 }}>
+                      <div style={{ position:"absolute", top:3, left:crisis?30:3, width:22, height:22, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 4px rgba(0,0,0,0.2)", transition:"left 0.25s" }}/>
+                      <span style={{ position:"absolute", right:crisis?28:6, top:"50%", transform:"translateY(-50%)", fontSize:9, fontWeight:800, color:crisis?"#fff":"#9a9e95", letterSpacing:"0.05em" }}>{crisis?"ON":"OFF"}</span>
+                    </button>
+                  </div>
+                  <p style={{ fontSize:13, color:crisis?"#c85a35":"#4e5449", lineHeight:1.6, marginBottom:14 }}>
+                    {crisis
+                      ? "⚠️ Your shelter is in emergency status. The entire network can see you need urgent help. Coordinators will reach out."
+                      : "Toggle ON if your shelter is in crisis — over capacity, under-resourced, or needs immediate network support."
+                    }
+                  </p>
+                  {crisis && (
+                    <div style={{ background:"#fdf0eb", border:"1px solid #f0c4b4", borderRadius:10, padding:"10px 14px", fontSize:12, color:"#c85a35", lineHeight:1.5 }}>
+                      <strong>What happens now:</strong> Your shelter appears at the top of the network board, a live alert is sent to all coordinators, and your listing is flagged across the site.
+                    </div>
+                  )}
+                  {!crisis && (
+                    <div style={{ fontSize:12, color:"#9a9e95", lineHeight:1.5 }}>
+                      Verification typically takes 1–2 business days. Full networking features will unlock automatically.
+                    </div>
+                  )}
+                </div>
+
             </div>
 
             {/* ── My Animals ── */}
@@ -2322,7 +2417,7 @@ export default function RescuPawLink() {
                 <div style={{ display:"flex", gap:16, flexWrap:"wrap", fontSize:13, color:"#4e5449" }}>
                   <span style={{ display:"flex", alignItems:"center", gap:4 }}>{I.pin} {selectedAnimal.shelterCity}, {selectedAnimal.shelterState}</span>
                   {selectedAnimal.shelterPhone && <span style={{ display:"flex", alignItems:"center", gap:4 }}>{I.phone} {selectedAnimal.shelterPhone}</span>}
-                  {selectedAnimal.shelterEmail && <span style={{ display:"flex", alignItems:"center", gap:4 }}>{I.mail} {selectedAnimal.shelterEmail}</span>}
+                  {/* shelter email hidden from public */}
                 </div>
                 {selectedAnimal.id_num && <div style={{ fontSize:12, color:"#9a9e95", marginTop:8 }}>Animal ID: {selectedAnimal.id_num}</div>}
               </div>
@@ -2404,7 +2499,7 @@ export default function RescuPawLink() {
                   setApplyF({ name:"", email:"", phone:"", message:"", type:"adopt" });
                   showToast(ok
                     ? `✓ Application sent to ${applyTarget.shelterName}! They'll be in touch soon.`
-                    : `Application received! Contact ${applyTarget.shelterName} directly at ${applyTarget.shelterEmail}`
+                    : `Application received! ${applyTarget.shelterName} will be in touch with you soon.`
                   );
                 }}>
                 Submit Application
@@ -2453,7 +2548,7 @@ export default function RescuPawLink() {
                 setClaimTarget(null);
                 showToast(ok
                   ? `✓ Transfer request sent to ${claimTarget.name}!`
-                  : `Request logged! Contact ${claimTarget.name} directly at ${claimTarget.email}`
+                  : `Request logged! ${claimTarget.name} will be in touch with you soon.`
                 );
               }}>Send Request</button>
               <button className="btn btn-ghost btn-md" onClick={()=>setClaimTarget(null)}>Cancel</button>
