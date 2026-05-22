@@ -457,7 +457,9 @@ function Toast({ msg }) {
 }
 
 // ── ChatSystem Component ──────────────────────────────────
-const BASE_CHANNELS = [
+
+
+const CHANNELS = [
   { id:"general",  label:"All Shelters",     icon:"chat",     desc:"Network-wide announcements and coordination" },
   { id:"urgent",   label:"Urgent Transfers",  icon:"alert",    desc:"Animals that need placement in under 72 hours" },
   { id:"transport",label:"Transport Board",   icon:"transfer", desc:"Volunteer drivers and transport coordination" },
@@ -465,12 +467,6 @@ const BASE_CHANNELS = [
   { id:"dogs",     label:"Dog Network",       icon:"dog",      desc:"Dog-specific placement and breed rescue" },
   { id:"cats",     label:"Cat Network",       icon:"cat",      desc:"Cat-specific placement and rescue coordination" },
 ];
-// Build CHANNELS dynamically — inject state channel at top if shelter has a state
-function buildChannels(userState) {
-  if (!userState || userState === "all") return BASE_CHANNELS;
-  const stateChannel = { id:`state_${userState}`, label:`${userState} Shelters`, icon:"network", desc:`Local coordination for ${userState} shelters` };
-  return [stateChannel, ...BASE_CHANNELS];
-}
 
 const CHANNEL_SEED = {
   all:       [{ id:1, from:"Dallas Animal Services", fromId:"s3", time:"10:32 AM", text:"We're at critical capacity — can anyone take 3 dogs? Two pit mixes and a shepherd. All vaccinated." }, { id:2, from:"Houston SPCA", fromId:"s2", time:"10:45 AM", text:"Yes! We can take up to 5 dogs. Can you arrange transport by Thursday?" }, { id:3, from:"Dallas Animal Services", fromId:"s3", time:"11:00 AM", text:"Thursday works. Sending health records today. Thank you 🙏" }, { id:4, from:"Denver Dumb Friends League", fromId:"s4", time:"11:14 AM", text:"We can also take 2 small dogs if needed. Just DM us." }],
@@ -482,10 +478,8 @@ const CHANNEL_SEED = {
 };
 
 function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText, msgEndRef, sendMsg, isLoggedIn, onLogin, dmTarget, setDmTarget }) {
-  const CHANNELS = buildChannels(user?.state);
   const [activeChannel, setActiveChannel] = useState("all");
   const [view, setView] = useState("channels"); // channels | dms
-  const [chatStateFilter, setChatStateFilter] = useState(user?.state || "all");
   const [channelMsgs, setChannelMsgs] = useState(CHANNEL_SEED);
   const [dmMsgs, setDmMsgs] = useState({
     "s1-s3": [{ id:1, from:"Austin Animal Center", fromId:"s1", time:"9:15 AM", text:"Hey Dallas — we have a few dogs we're trying to place. Any foster connections in your area?" }],
@@ -602,9 +596,7 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
           {view === "channels" && (
             <div style={{ flex:1, overflowY:"auto", padding:"10px 10px" }}>
               <div style={{ fontSize:11, fontWeight:700, color:"#9a9e95", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:8, padding:"0 4px" }}>Channels</div>
-              {CHANNELS
-                .filter(ch => chatStateFilter === "all" ? true : ch.id === `state_${chatStateFilter}` || ch.id !== `state_${user?.state}` || ch.id === `state_${chatStateFilter}`)
-                .map(ch => {
+              {CHANNELS.map(ch => {
                 const hasUnread = !!unread[ch.id];
                 const isActive = activeChannel === ch.id && view === "channels";
                 return (
@@ -820,7 +812,6 @@ export default function RescuPawLink() {
   });
   const [applyF,  setApplyF]  = useState({ name:"", email:"", phone:"", message:"", type:"adopt" });
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [crisis, setCrisis] = useState(false);
 
   const fileRef = useRef();
 
@@ -927,12 +918,6 @@ export default function RescuPawLink() {
       showToast(`Welcome to RescuPawLink, ${regF.orgName}!`);
     }
     setLoading(false);
-  }
-
-  async function toggleCrisis(val) {
-    setCrisis(val);
-    try { await sbFetch(`shelters?id=eq.${user?.id}`, { method:"PATCH", body:JSON.stringify({ needs_help:val }) }); } catch(e){}
-    setToast(val ? "⚠️ Emergency status ON — network notified" : "✅ Emergency status cleared");
   }
 
   function handleSignOut() {
@@ -2223,11 +2208,8 @@ export default function RescuPawLink() {
               </div>
             </div>
 
-            {/* ── Capacity + Emergency row ── */}
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:16, marginBottom:20 }}>
-
-            {/* Capacity Management */}
-            <div id="capacity-form" className="card" style={{ padding:24 }}>
+            {/* ── Capacity Manager ── */}
+            <div id="capacity-form" className="card" style={{ padding:24, marginBottom:20 }}>
               <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:16, flexWrap:"wrap", gap:10 }}>
                 <div>
                   <h2 style={{ fontSize:18, marginBottom:4, display:"flex", alignItems:"center", gap:8 }}>{I.capacity} Capacity Management</h2>
@@ -2281,40 +2263,6 @@ export default function RescuPawLink() {
                 <button type="submit" className="btn btn-primary btn-md">Save & Broadcast to Network</button>
               </form>
             </div>
-
-            </div>{/* end capacity card */}
-
-            {/* Emergency Crisis Status Card */}
-
-                <div className="card" style={{ padding:24, border:crisis?"2px solid #f0c4b4":"1px solid #e4e4e2", background:crisis?"#fffaf9":"#fff" }}>
-                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
-                    <h2 style={{ fontSize:18, display:"flex", alignItems:"center", gap:8, color:crisis?"#c85a35":"#1a1c18" }}>
-                      {I.alert} Emergency Crisis Status
-                    </h2>
-                    {/* Toggle */}
-                    <button onClick={()=>toggleCrisis(!crisis)}
-                      style={{ width:56, height:28, borderRadius:14, border:"none", cursor:"pointer", position:"relative", background:crisis?"#c85a35":"#d1d5db", transition:"background 0.25s", flexShrink:0 }}>
-                      <div style={{ position:"absolute", top:3, left:crisis?30:3, width:22, height:22, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 4px rgba(0,0,0,0.2)", transition:"left 0.25s" }}/>
-                      <span style={{ position:"absolute", right:crisis?28:6, top:"50%", transform:"translateY(-50%)", fontSize:9, fontWeight:800, color:crisis?"#fff":"#9a9e95", letterSpacing:"0.05em" }}>{crisis?"ON":"OFF"}</span>
-                    </button>
-                  </div>
-                  <p style={{ fontSize:13, color:crisis?"#c85a35":"#4e5449", lineHeight:1.6, marginBottom:14 }}>
-                    {crisis
-                      ? "⚠️ Your shelter is in emergency status. The entire network can see you need urgent help. Coordinators will reach out."
-                      : "Toggle ON if your shelter is in crisis — over capacity, under-resourced, or needs immediate network support."
-                    }
-                  </p>
-                  {crisis && (
-                    <div style={{ background:"#fdf0eb", border:"1px solid #f0c4b4", borderRadius:10, padding:"10px 14px", fontSize:12, color:"#c85a35", lineHeight:1.5 }}>
-                      <strong>What happens now:</strong> Your shelter appears at the top of the network board, a live alert is sent to all coordinators, and your listing is flagged across the site.
-                    </div>
-                  )}
-                  {!crisis && (
-                    <div style={{ fontSize:12, color:"#9a9e95", lineHeight:1.5 }}>
-                      Verification typically takes 1–2 business days. Full networking features will unlock automatically.
-                    </div>
-                  )}
-                </div>
 
             </div>
 
@@ -2559,5 +2507,3 @@ export default function RescuPawLink() {
     </div>
   );
 }
-
-      
