@@ -458,12 +458,12 @@ function Toast({ msg }) {
 
 // ── ChatSystem Component ──────────────────────────────────
 const CHANNELS = [
-  { id:"all",       label:"📢 All Shelters",      desc:"Network-wide announcements and coordination" },
-  { id:"urgent",    label:"🚨 Urgent Transfers",   desc:"Animals that need placement in under 72 hours" },
-  { id:"transport", label:"🚗 Transport Board",    desc:"Volunteer drivers and transport coordination" },
-  { id:"medical",   label:"💉 Medical Needs",      desc:"Animals needing medical support or sponsorship" },
-  { id:"dogs",      label:"🐕 Dog Network",        desc:"Dog-specific placement and breed rescue" },
-  { id:"cats",      label:"🐈 Cat Network",        desc:"Cat-specific placement and rescue coordination" },
+  { id:"general",  label:"All Shelters",     icon:"chat",     desc:"Network-wide announcements and coordination" },
+  { id:"urgent",   label:"Urgent Transfers",  icon:"alert",    desc:"Animals that need placement in under 72 hours" },
+  { id:"transport",label:"Transport Board",   icon:"transfer", desc:"Volunteer drivers and transport coordination" },
+  { id:"medical",  label:"Medical Needs",     icon:"shield",   desc:"Animals needing medical support or sponsorship" },
+  { id:"dogs",     label:"Dog Network",       icon:"dog",      desc:"Dog-specific placement and breed rescue" },
+  { id:"cats",     label:"Cat Network",       icon:"cat",      desc:"Cat-specific placement and rescue coordination" },
 ];
 
 const CHANNEL_SEED = {
@@ -603,8 +603,7 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
                     onMouseEnter={e=>{ if(!isActive) e.currentTarget.style.background="#f8f8f6"; }}
                     onMouseLeave={e=>{ if(!isActive) e.currentTarget.style.background="transparent"; }}>
                     <div style={{ display:"flex", alignItems:"center", gap:8, flex:1, minWidth:0 }}>
-                      <div style={{ width:26, height:26, borderRadius:7, background:isActive?"rgba(107,143,113,0.15)":"#f0f0ee", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}
-                        dangerouslySetInnerHTML={{__html: typeof ch.icon === 'string' ? ch.icon : ''}}/>
+                      <div style={{ width:26, height:26, borderRadius:7, background:isActive?"rgba(107,143,113,0.15)":"#f0f0ee", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{I[ch.icon]}</div>
                       <span style={{ fontSize:13, fontWeight:isActive||hasUnread?700:400, color:isActive?"#4a6b50":hasUnread?"#1a1c18":"#4e5449", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                         {ch.label}
                       </span>
