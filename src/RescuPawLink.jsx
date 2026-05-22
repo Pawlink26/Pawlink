@@ -1077,7 +1077,8 @@ export default function RescuPawLink() {
   ];
 
   const NAV_LINKS = [
-    ["Pet Search",   ()=>{setPage("app");setTab("adopt");setMobileOpen(false);}],
+    ["Adopt",        ()=>{setPage("app");setTab("adopt");setFSpecies("All");setMobileOpen(false);}],
+    ["Foster",       ()=>{setPage("app");setTab("adopt");setFSpecies("Foster");setMobileOpen(false);}],
     ["Shelters",     ()=>{setPage("app");setTab("network");setMobileOpen(false);}],
     ["Lost & Found", ()=>{setPage("app");setTab("lostfound");setMobileOpen(false);}],
     ["About",        ()=>{setPage("about");setMobileOpen(false);}],
@@ -1280,6 +1281,41 @@ export default function RescuPawLink() {
           ))}
         </div>
       </div>
+
+      <div style={{ height:1, background:"#e8e8e6", margin:"8px 32px" }}/>
+
+      {/* ── FOSTER NEEDED ── */}
+      {animals.filter(a=>a.listingType==="foster"||a.listingType==="both"||a.listing_type==="foster"||a.listing_type==="both").length > 0 && (
+        <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 clamp(16px,4vw,48px) 32px" }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
+            <div>
+              <div style={{ fontSize:11, fontWeight:700, color:"#16a34a", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:4 }}>💚 Foster Needed</div>
+              <h2 style={{ fontSize:18, fontWeight:800 }}>Animals Looking for Temporary Homes</h2>
+            </div>
+            <button onClick={()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}} className="btn btn-secondary btn-sm">See All →</button>
+          </div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))", gap:16 }}>
+            {animals.filter(a=>a.listingType==="foster"||a.listingType==="both"||a.listing_type==="foster"||a.listing_type==="both").slice(0,4).map(a=>(
+              <div key={a.id} style={{ background:"#fff", borderRadius:14, overflow:"hidden", border:"1px solid #86efac", cursor:"pointer", transition:"all 0.2s" }}
+                onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
+                onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-3px)"; e.currentTarget.style.boxShadow="0 8px 24px rgba(22,163,74,0.12)"; }}
+                onMouseLeave={e=>{ e.currentTarget.style.transform="none"; e.currentTarget.style.boxShadow="none"; }}>
+                <div style={{ height:140, position:"relative", overflow:"hidden" }}>
+                  <img src={a.species==="Dog"?"https://i.imgur.com/9y1Muh4.png":"https://i.imgur.com/gy1SBr3.png"} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                  <div style={{ position:"absolute", top:8, left:8 }}>
+                    <span style={{ background:"#16a34a", color:"#fff", fontSize:10, fontWeight:800, padding:"3px 9px", borderRadius:20, textTransform:"uppercase" }}>💚 Foster</span>
+                  </div>
+                </div>
+                <div style={{ padding:"12px 14px" }}>
+                  <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>{a.name}</div>
+                  <div style={{ fontSize:12, color:"#4e5449" }}>{a.breed} · {a.shelterCity}, {a.shelterState}</div>
+                  <div style={{ fontSize:12, color:"#16a34a", fontWeight:600, marginTop:6 }}>Temporary foster needed</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div style={{ height:1, background:"#e8e8e6", margin:"8px 32px" }}/>
       {/* ── ADOPTABLE PETS — compact row ── */}
@@ -1840,16 +1876,18 @@ export default function RescuPawLink() {
           {/* Center — desktop tab links */}
           <nav className="hide-mobile" style={{ display:"flex", gap:2 }}>
             {[
-              { key:"adopt",   label:"Adoptable Animals", icon:I.heartPaw },
-              { key:"network", label:"Shelter Network",   icon:I.network },
+              { key:"adopt",     label:"Adopt",             icon:I.heartPaw },
+              { key:"foster",    label:"Foster",            icon:I.paw      },
+              { key:"network",   label:"Shelter Network",   icon:I.network  },
+              { key:"lostfound", label:"Lost & Found",      icon:I.search   },
               ...(isLoggedIn ? [
                 { key:"chat",      label:"Coordinator Chat", icon:I.chat },
                 { key:"post",      label:"Post Animal",      icon:I.plus },
                 { key:"dashboard", label:"Dashboard",        icon:I.home },
-                { key:"lostfound", label:"Lost & Found",      icon:I.search },
               ] : []),
             ].map(t => (
-              <button key={t.key} className={`nav-link ${tab===t.key?"active":""}`} onClick={() => setTab(t.key)}>
+              <button key={t.key} className={`nav-link ${(t.key==="foster"&&tab==="adopt"&&fSpecies==="Foster")||(t.key==="adopt"&&tab==="adopt"&&fSpecies!=="Foster")||(t.key!=="foster"&&t.key!=="adopt"&&tab===t.key)?"active":""}`}
+                onClick={() => { if(t.key==="foster"){ setTab("adopt"); setFSpecies("Foster"); } else { setTab(t.key); if(t.key==="adopt") setFSpecies("All"); } }}>
                 {t.icon}<span>{t.label}</span>
               </button>
             ))}
@@ -1880,17 +1918,18 @@ export default function RescuPawLink() {
         {mobileOpen && (
           <div style={{ background:"#ffffff", borderTop:"1px solid #e8e8e6", padding:"12px 20px 20px", animation:"slideDown 0.2s ease" }}>
             {[
-              { key:"adopt",   label:"Adoptable Animals" },
-              { key:"network", label:"Shelter Network" },
+              { key:"adopt",     label:"Adopt" },
+              { key:"foster",    label:"Foster" },
+              { key:"network",   label:"Shelter Network" },
+              { key:"lostfound", label:"Lost & Found" },
               ...(isLoggedIn ? [
                 { key:"chat",      label:"Coordinator Chat" },
                 { key:"post",      label:"Post Animal" },
                 { key:"dashboard", label:"Dashboard" },
-              { key:"lostfound", label:"Lost & Found" },
               ] : []),
             ].map(t=>(
-              <button key={t.key} onClick={()=>{ setTab(t.key); setMobileOpen(false); }}
-                style={{ display:"block", width:"100%", textAlign:"left", background:tab===t.key?"#eef4ef":"none", border:"none", fontFamily:"inherit", fontSize:15, fontWeight:tab===t.key?700:500, color:tab===t.key?"#4a6b50":"#1a1c18", padding:"13px 12px", borderBottom:"1px solid #f0f0ee", cursor:"pointer", borderRadius:tab===t.key?8:0, borderLeft:tab===t.key?"3px solid #6b8f71":"3px solid transparent" }}>
+              <button key={t.key} onClick={()=>{ if(t.key==="foster"){ setTab("adopt"); setFSpecies("Foster"); } else { setTab(t.key); if(t.key==="adopt") setFSpecies("All"); } setMobileOpen(false); }}
+                style={{ display:"block", width:"100%", textAlign:"left", background:((t.key==="foster"&&tab==="adopt"&&fSpecies==="Foster")||(t.key==="adopt"&&tab==="adopt"&&fSpecies!=="Foster")||(t.key!=="foster"&&t.key!=="adopt"&&tab===t.key))?"#eef4ef":"none", border:"none", fontFamily:"inherit", fontSize:15, fontWeight:((t.key==="foster"&&tab==="adopt"&&fSpecies==="Foster")||(t.key==="adopt"&&tab==="adopt"&&fSpecies!=="Foster")||(t.key!=="foster"&&t.key!=="adopt"&&tab===t.key))?700:500, color:((t.key==="foster"&&tab==="adopt"&&fSpecies==="Foster")||(t.key==="adopt"&&tab==="adopt"&&fSpecies!=="Foster")||(t.key!=="foster"&&t.key!=="adopt"&&tab===t.key))?"#4a6b50":"#1a1c18", padding:"13px 12px", borderBottom:"1px solid #f0f0ee", cursor:"pointer", borderRadius:8, borderLeft:((t.key==="foster"&&tab==="adopt"&&fSpecies==="Foster")||(t.key==="adopt"&&tab==="adopt"&&fSpecies!=="Foster")||(t.key!=="foster"&&t.key!=="adopt"&&tab===t.key))?"3px solid #6b8f71":"3px solid transparent" }}>
                 {t.label}
               </button>
             ))}
@@ -2016,8 +2055,10 @@ export default function RescuPawLink() {
                         : <img src={a.species==="Dog"?"https://i.imgur.com/9y1Muh4.png":"https://i.imgur.com/gy1SBr3.png"} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center" }}/>
                       }
                       {/* Status badge */}
-                      <div style={{ position:"absolute", top:12, left:12 }}>
+                      <div style={{ position:"absolute", top:12, left:12, display:"flex", gap:5, flexWrap:"wrap" }}>
                         <span className={`badge ${stateBadgeColor(a.status)}`}>{a.status==="critical"?"⚠ Critical":"⏱ Urgent"}</span>
+                        {(a.listingType==="foster"||a.listing_type==="foster") && <span className="badge" style={{background:"#f0fdf4",color:"#16a34a",border:"1px solid #86efac"}}>💚 Foster</span>}
+                        {(a.listingType==="both"||a.listing_type==="both") && <span className="badge" style={{background:"#eff6ff",color:"#2563eb",border:"1px solid #bfdbfe"}}>Adopt/Foster</span>}
                       </div>
                       {/* Days left */}
                       <div style={{ position:"absolute", bottom:12, right:12, background:"rgba(27,28,25,0.65)", backdropFilter:"blur(6px)", color:"#fff", borderRadius:8, padding:"5px 11px", fontSize:12, fontWeight:700, fontFamily:"'Inter',sans-serif" }}>
