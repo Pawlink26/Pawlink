@@ -771,6 +771,17 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
 }
 
 // ── MAIN APP ──────────────────────────────────────────────
+
+// ── Lost & Found Seed Data ─────────────────────────────
+const SEED_LF = [
+  { id:"lf1", type:"lost",  species:"Dog",  name:"Max",     breed:"Golden Retriever", color:"Golden",       area:"Austin, TX",      zip:"78701", lat:30.27, lng:-97.74,  description:"Lost near Zilker Park. Wearing blue collar with tag. Very friendly.",         contact:"owner@email.com",    date:"2026-05-20" },
+  { id:"lf2", type:"found", species:"Cat",  name:"Unknown", breed:"Tabby",            color:"Orange/White", area:"Houston, TX",     zip:"77001", lat:29.76, lng:-95.37,  description:"Found wandering near Memorial Park. No collar. Friendly and healthy.",        contact:"finder@email.com",   date:"2026-05-21" },
+  { id:"lf3", type:"lost",  species:"Dog",  name:"Bella",   breed:"Beagle",           color:"Tri-color",    area:"Denver, CO",      zip:"80201", lat:39.74, lng:-104.98, description:"Lost from backyard. Small dog, very shy. Answers to Bella.",                  contact:"bella@email.com",    date:"2026-05-19" },
+  { id:"lf4", type:"found", species:"Dog",  name:"Unknown", breed:"Lab Mix",          color:"Black",        area:"Dallas, TX",      zip:"75201", lat:32.78, lng:-96.80,  description:"Found on I-35 frontage road. Male, neutered, no chip. Friendly with kids.", contact:"shelter@dallas.org", date:"2026-05-22" },
+  { id:"lf5", type:"lost",  species:"Cat",  name:"Whiskers",breed:"Siamese",          color:"Cream/Brown",  area:"Los Angeles, CA", zip:"90001", lat:34.05, lng:-118.24, description:"Indoor cat, escaped through window. Microchipped. Very vocal.",               contact:"whiskers@email.com", date:"2026-05-18" },
+  { id:"lf6", type:"found", species:"Dog",  name:"Unknown", breed:"Pit Mix",          color:"Brindle",      area:"Austin, TX",      zip:"78704", lat:30.25, lng:-97.75,  description:"Found near South Congress. Sweet and well-behaved. No ID.",                  contact:"found@rescue.org",   date:"2026-05-21" },
+];
+
 export default function RescuPawLink() {
   const [page, setPage]           = useState("landing");
   const [authMode, setAuthMode]   = useState("login");
@@ -812,6 +823,18 @@ export default function RescuPawLink() {
   });
   const [applyF,  setApplyF]  = useState({ name:"", email:"", phone:"", message:"", type:"adopt" });
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [lostFound, setLostFound] = useState([]);
+  const [lfForm, setLfForm] = useState({ type:"lost", species:"Dog", name:"", breed:"", color:"", area:"", description:"", contact:"", photo:"" });
+  const [lfInquiry, setLfInquiry] = useState(null);
+  const [lfInqMsg, setLfInqMsg] = useState({ name:"", email:"", message:"" });
+  const [lfSearch, setLfSearch] = useState("");
+  const [lfZip, setLfZip] = useState("");
+  const [lfState, setLfState] = useState("");
+  const [lfTypeFilter, setLfTypeFilter] = useState("all");
+  const [lfGeoUsed, setLfGeoUsed] = useState(false);
+  const [lfUserLat, setLfUserLat] = useState(null);
+  const [lfUserLng, setLfUserLng] = useState(null);
+  const [lfTab, setLfTab] = useState("browse"); // browse | report
 
   const fileRef = useRef();
 
@@ -1049,11 +1072,12 @@ export default function RescuPawLink() {
   ];
 
   const NAV_LINKS = [
-    ["Pet Search", ()=>{setPage("app");setTab("adopt");setMobileOpen(false);}],
-    ["Shelters",   ()=>{setPage("app");setTab("network");setMobileOpen(false);}],
-    ["About",      null],
-    ["Resources",  null],
-    ["Contact",    null],
+    ["Pet Search",   ()=>{setPage("app");setTab("adopt");setMobileOpen(false);}],
+    ["Shelters",     ()=>{setPage("app");setTab("network");setMobileOpen(false);}],
+    ["Lost & Found", ()=>{setPage("app");setTab("lostfound");setMobileOpen(false);}],
+    ["About",        null],
+    ["Resources",    null],
+    ["Contact",      null],
   ];
 
   if (page === "landing") return (
@@ -1405,7 +1429,7 @@ export default function RescuPawLink() {
               <div style={{ fontSize:12, color:"rgba(255,255,255,0.38)" }}>Every animal deserves a second chance.</div>
             </div>
             <div style={{ display:"flex", gap:0, alignItems:"center", fontSize:12, color:"rgba(255,255,255,0.45)" }}>
-              {[["About",null],["Resources",null],["Pet Search",()=>{setPage("app");setTab("adopt");}],["Shelters",()=>{setPage("app");setTab("network");}],["Contact",null]].map(([l,fn],i,arr)=>(
+              {[["About",null],["Resources",null],["Pet Search",()=>{setPage("app");setTab("adopt");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["Contact",null]].map(([l,fn],i,arr)=>(
                 <span key={l} style={{ display:"flex", alignItems:"center" }}>
                   <button onClick={fn||undefined} style={{ background:"none", border:"none", color:"rgba(255,255,255,0.45)", cursor:fn?"pointer":"default", fontFamily:"inherit", fontSize:12, padding:"4px 10px" }}
                     onMouseEnter={e=>{ if(fn) e.currentTarget.style.color="#fff"; }}
@@ -1526,6 +1550,7 @@ export default function RescuPawLink() {
                 { key:"chat",      label:"Coordinator Chat", icon:I.chat },
                 { key:"post",      label:"Post Animal",      icon:I.plus },
                 { key:"dashboard", label:"Dashboard",        icon:I.home },
+                { key:"lostfound", label:"Lost & Found",      icon:I.search },
               ] : []),
             ].map(t => (
               <button key={t.key} className={`nav-link ${tab===t.key?"active":""}`} onClick={() => setTab(t.key)}>
@@ -1565,6 +1590,7 @@ export default function RescuPawLink() {
                 { key:"chat",      label:"Coordinator Chat" },
                 { key:"post",      label:"Post Animal" },
                 { key:"dashboard", label:"Dashboard" },
+              { key:"lostfound", label:"Lost & Found" },
               ] : []),
             ].map(t=>(
               <button key={t.key} onClick={()=>{ setTab(t.key); setMobileOpen(false); }}
@@ -2314,6 +2340,291 @@ export default function RescuPawLink() {
           </div>
         )}
       </main>
+
+
+        {tab === "lostfound" && (
+          <div>
+            {/* Header */}
+            <div style={{ marginBottom:20 }}>
+              <h1 style={{ fontSize:26, fontWeight:800, marginBottom:6 }}>Lost & Found</h1>
+              <p style={{ color:"#4e5449", fontSize:14 }}>Help reunite lost pets with their families. Showing reports nearest to you first.</p>
+            </div>
+
+            {/* Location search bar */}
+            {lfTab === "browse" && (
+              <div style={{ background:"#fff", border:"1px solid #e8e8e6", borderRadius:14, padding:"16px 20px", marginBottom:18, boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
+                <div style={{ display:"flex", gap:12, flexWrap:"wrap", alignItems:"flex-end" }}>
+                  <div style={{ flex:2, minWidth:160 }}>
+                    <label className="label">Search by city or state</label>
+                    <div style={{ position:"relative" }}>
+                      <input className="input" placeholder="e.g. Austin or TX"
+                        value={lfSearch} onChange={e=>setLfSearch(e.target.value)}
+                        style={{ paddingLeft:36 }}/>
+                      <div style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)" }}>{I.search}</div>
+                    </div>
+                  </div>
+                  <div style={{ flex:1, minWidth:120 }}>
+                    <label className="label">Zip Code</label>
+                    <input className="input" placeholder="e.g. 78701" maxLength={5}
+                      value={lfZip} onChange={e=>setLfZip(e.target.value.replace(/\D/g,""))}/>
+                  </div>
+                  <div style={{ flex:1, minWidth:120 }}>
+                    <label className="label">State</label>
+                    <select className="select" value={lfState} onChange={e=>setLfState(e.target.value)}>
+                      <option value="">All States</option>
+                      {US_STATES.map(s=><option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                  <button className="btn btn-primary btn-md" style={{ flexShrink:0 }}
+                    onClick={()=>{ setLfSearch(""); setLfZip(""); setLfState(""); setLfGeoUsed(false); }}>
+                    Clear
+                  </button>
+                  <button style={{ flexShrink:0, padding:"11px 16px", borderRadius:10, border:"2px solid #e4e4e2", background:lfGeoUsed?"#eef4ef":"#fff", color:lfGeoUsed?"#4a6b50":"#4e5449", fontWeight:600, fontSize:13, cursor:"pointer", fontFamily:"inherit", display:"flex", alignItems:"center", gap:6, transition:"all 0.2s" }}
+                    onClick={()=>{
+                      if(navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(pos=>{
+                          setLfUserLat(pos.coords.latitude);
+                          setLfUserLng(pos.coords.longitude);
+                          setLfGeoUsed(true);
+                          setToast("📍 Showing reports nearest to your location");
+                        }, ()=>setToast("Could not get location. Try searching by city or zip."));
+                      }
+                    }}>
+                    {I.pin} {lfGeoUsed ? "Near Me ✓" : "Use My Location"}
+                  </button>
+                </div>
+                {(lfSearch || lfZip || lfState || lfGeoUsed) && (
+                  <div style={{ marginTop:10, fontSize:12, color:"#6b8f71", fontWeight:600 }}>
+                    {lfGeoUsed ? "📍 Sorted by distance from your location" : `Filtering by: ${[lfSearch, lfZip, lfState].filter(Boolean).join(", ")}`}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Sub-tabs + type filter */}
+            <div style={{ display:"flex", gap:10, marginBottom:20, flexWrap:"wrap", alignItems:"center" }}>
+              {[["browse","Browse Reports"],["report","Report Lost/Found"]].map(([k,l])=>(
+                <button key={k} onClick={()=>setLfTab(k)}
+                  style={{ padding:"10px 22px", borderRadius:24, border:`2px solid ${lfTab===k?"#6b8f71":"#e4e4e2"}`, background:lfTab===k?"#eef4ef":"#fff", color:lfTab===k?"#4a6b50":"#4e5449", fontWeight:lfTab===k?700:500, fontSize:13, cursor:"pointer", fontFamily:"inherit", transition:"all 0.2s" }}>
+                  {l}
+                </button>
+              ))}
+              {lfTab==="browse" && (
+                <div style={{ display:"flex", gap:8, marginLeft:"auto" }}>
+                  {[["all","All"],["lost","Lost"],["found","Found"]].map(([v,l])=>(
+                    <button key={v} onClick={()=>setLfTypeFilter(v)}
+                      className={`filter-chip ${lfTypeFilter===v?"active":""}`}>{l}</button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {lfTab === "browse" ? (
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:18 }}>
+                {lostFound
+                  .filter(r => {
+                    if(lfTypeFilter !== "all" && r.type !== lfTypeFilter) return false;
+                    const loc = r.area.toLowerCase();
+                    if(lfSearch && !loc.includes(lfSearch.toLowerCase())) return false;
+                    if(lfState && !loc.includes(lfState.toLowerCase()) && !r.area.includes(lfState)) return false;
+                    if(lfZip && !r.zip?.includes(lfZip)) return false;
+                    return true;
+                  })
+                  .sort((a,b) => {
+                    // Sort by geo distance if available, else by date
+                    if(lfGeoUsed && a.lat && b.lat) {
+                      const distA = Math.abs(a.lat-lfUserLat)+Math.abs(a.lng-lfUserLng);
+                      const distB = Math.abs(b.lat-lfUserLat)+Math.abs(b.lng-lfUserLng);
+                      return distA - distB;
+                    }
+                    return new Date(b.date) - new Date(a.date);
+                  })
+                  .map(r=>(
+                  <div key={r.id} className="card" style={{ overflow:"hidden", transition:"all 0.2s" }}
+                    onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 12px 32px rgba(0,0,0,0.1)"; }}
+                    onMouseLeave={e=>{ e.currentTarget.style.transform="none"; e.currentTarget.style.boxShadow=""; }}>
+                    {/* Image */}
+                    <div style={{ height:160, background:r.type==="lost"?"linear-gradient(135deg,#fef2f2,#fee2e2)":"linear-gradient(135deg,#f0fdf4,#dcfce7)", display:"flex", alignItems:"center", justifyContent:"center", position:"relative", overflow:"hidden" }}>
+                      <img src={r.species==="Dog"?"https://i.imgur.com/9y1Muh4.png":"https://i.imgur.com/gy1SBr3.png"} alt={r.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                      <div style={{ position:"absolute", top:10, left:10 }}>
+                        <span style={{ background:r.type==="lost"?"#c85a35":"#16a34a", color:"#fff", fontSize:10, fontWeight:800, padding:"4px 10px", borderRadius:20, textTransform:"uppercase", letterSpacing:"0.06em" }}>
+                          {r.type==="lost"?"🔍 LOST":"✅ FOUND"}
+                        </span>
+                      </div>
+                      <div style={{ position:"absolute", top:10, right:10, background:"rgba(0,0,0,0.5)", color:"#fff", fontSize:10, padding:"3px 8px", borderRadius:8 }}>{r.date}</div>
+                    </div>
+                    {/* Info */}
+                    <div style={{ padding:16 }}>
+                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:6 }}>
+                        <div>
+                          <h3 style={{ fontSize:16, fontWeight:700 }}>{r.name === "Unknown" ? `${r.type==="found"?"Found":"Lost"} ${r.species}` : r.name}</h3>
+                          <div style={{ fontSize:12, color:"#4e5449" }}>{r.breed} · {r.color}</div>
+                        </div>
+                        <span style={{ fontSize:11, background:"#f4f4f2", padding:"3px 9px", borderRadius:6, color:"#4e5449", flexShrink:0 }}>{r.species}</span>
+                      </div>
+                      <div style={{ fontSize:12, color:"#6b8f71", fontWeight:600, marginBottom:8 }}>📍 {r.area}</div>
+                      <p style={{ fontSize:13, color:"#1a1c18", lineHeight:1.55, marginBottom:12, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{r.description}</p>
+                      <button onClick={()=>{ setLfInquiry(r); setLfInqMsg({ name:"", email:"", message:"" }); }}
+                        style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:13, fontWeight:700, color:"#6b8f71", background:"#eef4ef", padding:"8px 14px", borderRadius:8, border:"1px solid #c7dfc9", cursor:"pointer", fontFamily:"inherit", transition:"all 0.2s" }}>
+                        {r.type==="lost"?"📩 Inquiry — I Found This Pet":"📩 Inquiry — I Know This Pet"}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              /* Report form */
+              <div className="card" style={{ padding:28, maxWidth:600 }}>
+                <h2 style={{ fontSize:20, fontWeight:700, marginBottom:6 }}>Submit a Report</h2>
+                <p style={{ fontSize:13, color:"#4e5449", marginBottom:24 }}>Help us reunite a pet with their family.</p>
+
+                {/* Lost or Found toggle */}
+                <div style={{ marginBottom:20 }}>
+                  <label className="label">Report Type</label>
+                  <div style={{ display:"flex", gap:10 }}>
+                    {["lost","found"].map(t=>(
+                      <button key={t} onClick={()=>setLfForm(p=>({...p,type:t}))}
+                        style={{ flex:1, padding:"12px", borderRadius:10, border:`2px solid ${lfForm.type===t?"#6b8f71":"#e4e4e2"}`, background:lfForm.type===t?"#eef4ef":"#fff", color:lfForm.type===t?"#4a6b50":"#4e5449", fontWeight:lfForm.type===t?700:500, fontSize:14, cursor:"pointer", fontFamily:"inherit", transition:"all 0.2s", textTransform:"capitalize" }}>
+                        {t==="lost"?"🔍 I Lost a Pet":"✅ I Found a Pet"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{ display:"grid", gap:14 }}>
+                  {/* Species */}
+                  <div>
+                    <label className="label">Animal Type</label>
+                    <div style={{ display:"flex", gap:10 }}>
+                      {["Dog","Cat","Other"].map(s=>(
+                        <button key={s} onClick={()=>setLfForm(p=>({...p,species:s}))}
+                          style={{ flex:1, padding:"10px", borderRadius:10, border:`2px solid ${lfForm.species===s?"#6b8f71":"#e4e4e2"}`, background:lfForm.species===s?"#eef4ef":"#fff", color:lfForm.species===s?"#4a6b50":"#4e5449", fontWeight:lfForm.species===s?700:500, fontSize:13, cursor:"pointer", fontFamily:"inherit" }}>
+                          {s==="Dog"?"🐕 Dog":s==="Cat"?"🐈 Cat":"🐾 Other"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+                    <div>
+                      <label className="label">Pet Name {lfForm.type==="found"?"(if known)":""}</label>
+                      <input className="input" placeholder="e.g. Max" value={lfForm.name} onChange={e=>setLfForm(p=>({...p,name:e.target.value}))}/>
+                    </div>
+                    <div>
+                      <label className="label">Breed</label>
+                      <input className="input" placeholder="e.g. Golden Retriever" value={lfForm.breed} onChange={e=>setLfForm(p=>({...p,breed:e.target.value}))}/>
+                    </div>
+                  </div>
+
+                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+                    <div>
+                      <label className="label">Color / Markings</label>
+                      <input className="input" placeholder="e.g. Black with white patch" value={lfForm.color} onChange={e=>setLfForm(p=>({...p,color:e.target.value}))}/>
+                    </div>
+                    <div>
+                      <label className="label">Area / Location *</label>
+                      <input className="input" placeholder="e.g. Austin, TX" value={lfForm.area} onChange={e=>setLfForm(p=>({...p,area:e.target.value}))}/>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="label">Description</label>
+                    <textarea className="input textarea" rows={3} placeholder={lfForm.type==="lost"?"Describe where/when lost, any distinctive features, collar color...":"Describe where found, condition of animal, any ID or tags..."} value={lfForm.description} onChange={e=>setLfForm(p=>({...p,description:e.target.value}))} style={{ resize:"vertical" }}/>
+                  </div>
+
+                  <div>
+                    <label className="label">Contact Info *</label>
+                    <input className="input" placeholder="Phone or email" value={lfForm.contact} onChange={e=>setLfForm(p=>({...p,contact:e.target.value}))}/>
+                  </div>
+
+                  <button className="btn btn-primary btn-lg" style={{ marginTop:4 }}
+                    disabled={!lfForm.area || !lfForm.contact}
+                    onClick={()=>{
+                      const newReport = { ...lfForm, id:`lf${Date.now()}`, date:new Date().toISOString().split("T")[0], name:lfForm.name||"Unknown" };
+                      setLostFound(p=>[newReport,...p]);
+                      setLfForm({ type:"lost", species:"Dog", name:"", breed:"", color:"", area:"", description:"", contact:"", photo:"" });
+                      setLfTab("browse");
+                      setToast("✅ Report submitted! Others can now see and contact you.");
+                    }}>
+                    Submit Report
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+
+      {/* ══ LOST/FOUND INQUIRY MODAL ══════════════════════════ */}
+      {lfInquiry && (
+        <div className="modal-backdrop" onClick={()=>setLfInquiry(null)}>
+          <div className="modal" style={{ width:"100%", maxWidth:480, padding:32 }} onClick={e=>e.stopPropagation()}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:20 }}>
+              <div>
+                <div style={{ fontSize:11, fontWeight:700, color:lfInquiry.type==="lost"?"#c85a35":"#16a34a", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:4 }}>
+                  {lfInquiry.type==="lost"?"🔍 Lost Pet":"✅ Found Pet"}
+                </div>
+                <h2 style={{ fontSize:20, fontWeight:800 }}>
+                  {lfInquiry.name === "Unknown" ? `${lfInquiry.type==="found"?"Found":"Lost"} ${lfInquiry.species}` : lfInquiry.name}
+                </h2>
+                <div style={{ fontSize:13, color:"#4e5449" }}>{lfInquiry.breed} · {lfInquiry.area}</div>
+              </div>
+              <button onClick={()=>setLfInquiry(null)} style={{ background:"#f4f4f2", border:"none", borderRadius:"50%", width:32, height:32, cursor:"pointer", fontSize:18, display:"flex", alignItems:"center", justifyContent:"center" }}>×</button>
+            </div>
+
+            <div style={{ background:"#f8f8f6", borderRadius:12, padding:"12px 16px", marginBottom:20, fontSize:13, color:"#4e5449", lineHeight:1.6 }}>
+              {lfInquiry.description}
+            </div>
+
+            <div style={{ display:"grid", gap:14 }}>
+              <div>
+                <label className="label">Your Name *</label>
+                <input className="input" placeholder="Full name" value={lfInqMsg.name} onChange={e=>setLfInqMsg(p=>({...p,name:e.target.value}))}/>
+              </div>
+              <div>
+                <label className="label">Your Email *</label>
+                <input className="input" type="email" placeholder="your@email.com" value={lfInqMsg.email} onChange={e=>setLfInqMsg(p=>({...p,email:e.target.value}))}/>
+              </div>
+              <div>
+                <label className="label">Message</label>
+                <textarea className="input" rows={3} style={{ resize:"vertical" }}
+                  placeholder={lfInquiry.type==="lost"?"Describe where/when you may have seen this pet...":"Tell us more about how this pet looks or any identifying info..."}
+                  value={lfInqMsg.message} onChange={e=>setLfInqMsg(p=>({...p,message:e.target.value}))}/>
+              </div>
+              <button className="btn btn-primary btn-lg"
+                disabled={!lfInqMsg.name || !lfInqMsg.email}
+                onClick={async ()=>{
+                  // Send email notification via EmailJS
+                  try {
+                    await sendEmail(EMAILJS_TEMPLATE_ADOPTION, {
+                      to_name:    lfInquiry.contact,
+                      to_email:   lfInquiry.contact,
+                      from_name:  lfInqMsg.name,
+                      applicant_email: lfInqMsg.email,
+                      animal_name: lfInquiry.name !== "Unknown" ? lfInquiry.name : `${lfInquiry.type==="found"?"Found":"Lost"} ${lfInquiry.species}`,
+                      shelter_name: "Lost & Found Board",
+                      message: `LOST & FOUND INQUIRY
+
+Report: ${lfInquiry.type.toUpperCase()} ${lfInquiry.species} — ${lfInquiry.name}
+Location: ${lfInquiry.area}
+
+From: ${lfInqMsg.name} (${lfInqMsg.email})
+
+Message: ${lfInqMsg.message || "No additional message."}`,
+                    });
+                  } catch(e) { console.log("Email error", e); }
+                  setToast("✅ Inquiry sent! The reporter will be notified by email.");
+                  setLfInquiry(null);
+                }}>
+                Send Inquiry
+              </button>
+              <p style={{ fontSize:11, color:"#9a9e95", textAlign:"center", lineHeight:1.5 }}>
+                Your inquiry will be sent directly to the person who submitted this report. Shelters in the area are also notified.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ══ ANIMAL DETAIL MODAL ════════════════════════════ */}
       {selectedAnimal && (
