@@ -1776,7 +1776,7 @@ export default function RescuPawLink() {
 
                       {/* Avatar */}
                       <div style={{ width:48, height:48, borderRadius:12, background:s.needsHelp?"#fdf0eb":"#eef4ef", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>
-                        {s.needsHelp?'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c85a35" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3H20.5a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r=".5" fill="#c85a35"/></svg>':'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b8f71" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21v-8h6v8"/></svg>'}
+                        {s.needsHelp||s.needs_help ? I.alert : I.home}
                       </div>
 
                       {/* Info */}
