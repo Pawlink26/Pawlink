@@ -484,7 +484,13 @@ const CHANNEL_SEED = {
 };
 
 function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText, msgEndRef, sendMsg, isLoggedIn, onLogin, dmTarget, setDmTarget }) {
-  const [activeChannel, setActiveChannel] = useState(() => { const st = user?.state||user?.shelterState; return st ? `state_${st}` : "general"; });
+  const [activeChannel, setActiveChannel] = useState("general");
+
+  // Auto-default to user's state channel on mount
+  useEffect(() => {
+    const st = user?.state || user?.shelterState;
+    if (st) setActiveChannel(`state_${st}`);
+  }, [user?.id]);
   const [view, setView] = useState("channels"); // channels | dms
   const [channelMsgs, setChannelMsgs] = useState(CHANNEL_SEED);
   const [dmMsgs, setDmMsgs] = useState({
@@ -3197,3 +3203,4 @@ Message: ${lfInqMsg.message || "No additional message."}`,
       )}
     </div>
   );
+}
