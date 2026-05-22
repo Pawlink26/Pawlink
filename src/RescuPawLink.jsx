@@ -477,10 +477,14 @@ const CHANNEL_SEED = {
   medical:   [{ id:1, from:"Austin Animal Center", fromId:"s1", time:"Monday", text:"Looking for a rescue that can take a dog with a broken leg. Surgery already done, just needs recovery foster." }],
   dogs:      [{ id:1, from:"Denver Dumb Friends League", fromId:"s4", time:"Tuesday", text:"We have 8 open dog kennels this week. Prioritizing bully breeds and large dogs. Send us a DM." }],
   cats:      [{ id:1, from:"Houston SPCA", fromId:"s2", time:"Wednesday", text:"We pulled 14 cats from a hoarding situation. Looking for rescue partners to help place. All have been vet-checked." }],
+  // State channels — keyed by state code e.g. "state_TX"
+  state_TX:  [{ id:1, from:"Austin Animal Center", fromId:"s1", time:"9:00 AM", text:"Good morning TX shelters! We have 3 open dog kennels this week. Anyone needing transfers in-state?" }, { id:2, from:"Dallas Animal Services", fromId:"s3", time:"9:15 AM", text:"Dallas here — we're at 85% capacity. May need to move 2 dogs by Friday." }, { id:3, from:"Houston SPCA", fromId:"s2", time:"9:30 AM", text:"Houston can take small dogs. DM us with details." }],
+  state_CO:  [{ id:1, from:"Denver Dumb Friends League", fromId:"s4", time:"Monday", text:"Colorado shelters — we have a transport run to Pueblo on Thursday if anyone needs to move animals south." }],
+  state_CA:  [{ id:1, from:"LA Animal Services", fromId:"s5", time:"Yesterday", text:"LA shelters — critical overcrowding this week. Looking for any SoCal rescues with space for cats." }],
 };
 
 function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText, msgEndRef, sendMsg, isLoggedIn, onLogin, dmTarget, setDmTarget }) {
-  const [activeChannel, setActiveChannel] = useState("all");
+  const [activeChannel, setActiveChannel] = useState(() => { const st = user?.state||user?.shelterState; return st ? `state_${st}` : "general"; });
   const [view, setView] = useState("channels"); // channels | dms
   const [channelMsgs, setChannelMsgs] = useState(CHANNEL_SEED);
   const [dmMsgs, setDmMsgs] = useState({
@@ -508,7 +512,8 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
   function sendChannelMsg() {
     if (!input.trim() || !isLoggedIn) return;
     const msg = { id:Date.now(), from:user.name, fromId:user.id, time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}), text:input };
-    setChannelMsgs(p => ({ ...p, [activeChannel]: [...(p[activeChannel]||[]), msg] }));
+    const chKey = activeChannel === "general" ? "all" : activeChannel;
+    setChannelMsgs(p => ({ ...p, [chKey]: [...(p[chKey]||[]), msg] }));
     setInput("");
   }
 
@@ -534,7 +539,7 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
   const activeDmShelter = shelters.find(s => s.id === activeDm);
   const activeDmKey = activeDm && user ? getDmKey(user.id, activeDm) : null;
   const activeDmConvo = activeDmKey ? (dmMsgs[activeDmKey] || []) : [];
-  const activeChannelMsgs = channelMsgs[activeChannel] || [];
+  const activeChannelMsgs = channelMsgs[activeChannel==="general"?"all":activeChannel] || [];
 
   const totalUnread = Object.values(unread).reduce((s,v)=>s+v, 0);
 
@@ -597,7 +602,33 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
           {/* Channel list */}
           {view === "channels" && (
             <div style={{ flex:1, overflowY:"auto", padding:"10px 10px" }}>
-              <div style={{ fontSize:11, fontWeight:700, color:"#9a9e95", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:8, padding:"0 4px" }}>Channels</div>
+              {/* State channel — shown first if user has a state */}
+              {(user?.state||user?.shelterState) && (
+                <>
+                  <div style={{ fontSize:11, fontWeight:700, color:"#9a9e95", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:8, padding:"0 4px" }}>Your State</div>
+                  {[{ id:`state_${user?.state||user?.shelterState}`, label:`${user?.state||user?.shelterState} Shelters`, icon:"network" }].map(ch => {
+                    const hasUnread = !!unread[ch.id];
+                    const isActive = activeChannel === ch.id && view === "channels";
+                    return (
+                      <div key={ch.id} onClick={()=>{ setActiveChannel(ch.id); setView("channels"); setUnread(p=>{const n={...p};delete n[ch.id];return n;}); setInput(""); }}
+                        style={{ padding:"9px 12px", borderRadius:9, marginBottom:6, cursor:"pointer", display:"flex", alignItems:"center", gap:9, justifyContent:"space-between", background:isActive?"#eef4ef":"rgba(107,143,113,0.06)", transition:"background 0.15s", borderLeft:isActive?"3px solid #6b8f71":"3px solid rgba(107,143,113,0.3)", border:"1px solid rgba(107,143,113,0.15)" }}
+                        onMouseEnter={e=>{ if(!isActive) e.currentTarget.style.background="#eef4ef"; }}
+                        onMouseLeave={e=>{ if(!isActive) e.currentTarget.style.background="rgba(107,143,113,0.06)"; }}>
+                        <div style={{ display:"flex", alignItems:"center", gap:8, flex:1, minWidth:0 }}>
+                          <div style={{ width:26, height:26, borderRadius:7, background:isActive?"rgba(107,143,113,0.2)":"rgba(107,143,113,0.12)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{I.network}</div>
+                          <div style={{ minWidth:0 }}>
+                            <div style={{ fontSize:13, fontWeight:700, color:isActive?"#4a6b50":"#1a1c18", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{ch.label}</div>
+                            <div style={{ fontSize:11, color:"#9a9e95" }}>Your local network</div>
+                          </div>
+                        </div>
+                        {hasUnread && <span style={{ width:8, height:8, borderRadius:"50%", background:"#dc2626", flexShrink:0 }}/>}
+                      </div>
+                    );
+                  })}
+                  <div style={{ fontSize:11, fontWeight:700, color:"#9a9e95", textTransform:"uppercase", letterSpacing:"0.1em", margin:"12px 0 8px", padding:"0 4px" }}>All Channels</div>
+                </>
+              )}
+              {!(user?.state||user?.shelterState) && <div style={{ fontSize:11, fontWeight:700, color:"#9a9e95", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:8, padding:"0 4px" }}>Channels</div>}
               {CHANNELS.map(ch => {
                 const hasUnread = !!unread[ch.id];
                 const isActive = activeChannel === ch.id && view === "channels";
@@ -689,8 +720,8 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
           {view === "channels" && (
             <div style={{ padding:"14px 20px", borderBottom:"1px solid var(--border)", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
               <div>
-                <div style={{ fontWeight:700, fontSize:16 }}>{CHANNELS.find(c=>c.id===activeChannel)?.label}</div>
-                <div style={{ fontSize:12, color:"#9a9e95", marginTop:2 }}>{CHANNELS.find(c=>c.id===activeChannel)?.desc}</div>
+                <div style={{ fontWeight:700, fontSize:16 }}>{[...CHANNELS, {id:activeChannel, label:activeChannel.startsWith("state_")?`${activeChannel.replace("state_","")} Shelters`:activeChannel}].find(c=>c.id===activeChannel)?.label}</div>
+                <div style={{ fontSize:12, color:"#9a9e95", marginTop:2 }}>{[...CHANNELS, {id:activeChannel, label:activeChannel.startsWith("state_")?`${activeChannel.replace("state_","")} Shelters`:activeChannel}].find(c=>c.id===activeChannel)?.desc}</div>
               </div>
               <div style={{ fontSize:12, color:"#9a9e95" }}>{shelters.length} members</div>
             </div>
@@ -748,7 +779,7 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
                         value={input}
                         onChange={e=>setInput(e.target.value)}
                         onKeyDown={e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); view==="channels"?sendChannelMsg():sendDmMsg(); }}}
-                        placeholder={view==="channels" ? `Message #${CHANNELS.find(c=>c.id===activeChannel)?.label.split(" ").slice(1).join(" ")}...` : `Message ${activeDmShelter?.name}...`}
+                        placeholder={view==="channels" ? `Message #${[...CHANNELS, {id:activeChannel, label:activeChannel.startsWith("state_")?`${activeChannel.replace("state_","")} Shelters`:activeChannel}].find(c=>c.id===activeChannel)?.label.split(" ").slice(1).join(" ")}...` : `Message ${activeDmShelter?.name}...`}
                         style={{ resize:"none", borderRadius:12, fontSize:14 }}
                       />
                       <div style={{ fontSize:11, color:"#9a9e95", marginTop:4 }}>Press Enter to send · Shift+Enter for new line</div>
@@ -3166,4 +3197,3 @@ Message: ${lfInqMsg.message || "No additional message."}`,
       )}
     </div>
   );
-}
