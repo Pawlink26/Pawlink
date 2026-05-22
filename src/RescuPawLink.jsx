@@ -1075,7 +1075,7 @@ export default function RescuPawLink() {
     ["Pet Search",   ()=>{setPage("app");setTab("adopt");setMobileOpen(false);}],
     ["Shelters",     ()=>{setPage("app");setTab("network");setMobileOpen(false);}],
     ["Lost & Found", ()=>{setPage("app");setTab("lostfound");setMobileOpen(false);}],
-    ["About",        null],
+    ["About",        ()=>{setPage("about");setMobileOpen(false);}],
     ["Resources",    null],
     ["Contact",      null],
   ];
@@ -1429,7 +1429,7 @@ export default function RescuPawLink() {
               <div style={{ fontSize:12, color:"rgba(255,255,255,0.38)" }}>Every animal deserves a second chance.</div>
             </div>
             <div style={{ display:"flex", gap:0, alignItems:"center", fontSize:12, color:"rgba(255,255,255,0.45)" }}>
-              {[["About",null],["Resources",null],["Pet Search",()=>{setPage("app");setTab("adopt");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["Contact",null]].map(([l,fn],i,arr)=>(
+              {[["About",()=>{setPage("about");}],["Resources",null],["Pet Search",()=>{setPage("app");setTab("adopt");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["Contact",null]].map(([l,fn],i,arr)=>(
                 <span key={l} style={{ display:"flex", alignItems:"center" }}>
                   <button onClick={fn||undefined} style={{ background:"none", border:"none", color:"rgba(255,255,255,0.45)", cursor:fn?"pointer":"default", fontFamily:"inherit", fontSize:12, padding:"4px 10px" }}
                     onMouseEnter={e=>{ if(fn) e.currentTarget.style.color="#fff"; }}
@@ -1450,6 +1450,211 @@ export default function RescuPawLink() {
 
   // AUTH
   // ─────────────────────────────────────────────────────────
+
+  if (page === "about") return (
+    <div style={{ fontFamily:"'DM Sans',sans-serif", color:"#1a1c18", background:"#ffffff", minHeight:"100vh" }}>
+
+      {/* ── NAV ── */}
+      <nav style={{ background:"#fff", borderBottom:"1px solid #e8e8e6", position:"sticky", top:0, zIndex:100, boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
+        <div style={{ maxWidth:"100%", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+          <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", padding:0 }}>
+            <span style={{ fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"#1a1c18", letterSpacing:"-0.4px" }}><span style={{ color:"#6b8f71" }}>Rescu</span>PawLink</span>
+          </button>
+          <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:4 }}>
+            {[["Pet Search",()=>{setPage("app");setTab("adopt");}],["Shelters",()=>{setPage("app");setTab("network");}],["About",()=>setPage("about")],["Resources",null],["Contact",null]].map(([l,fn],i,arr)=>(
+              <span key={l} style={{ display:"flex", alignItems:"center" }}>
+                <button onClick={fn||undefined} style={{ background:"none", border:"none", cursor:fn?"pointer":"default", fontFamily:"inherit", fontSize:13, fontWeight:l==="About"?700:500, color:l==="About"?"#1a1c18":"#4e5449", padding:"6px 12px", borderRadius:6 }}>{l}</button>
+                {i < arr.length-1 && <span style={{ color:"#ddd", fontSize:12 }}>|</span>}
+              </span>
+            ))}
+          </div>
+          <button className="btn btn-primary btn-sm" style={{ fontWeight:700 }} onClick={()=>{setAuthMode("register");setPage("login");}}>Register Your Shelter</button>
+        </div>
+      </nav>
+
+      {/* ── HERO ── */}
+      <div style={{ background:"#1a1c18", padding:"clamp(64px,10vw,110px) clamp(16px,4vw,48px)", position:"relative", overflow:"hidden" }}>
+        <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse at 20% 50%, rgba(107,143,113,0.16) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(107,143,113,0.08) 0%, transparent 50%)" }}/>
+        <div style={{ maxWidth:760, margin:"0 auto", textAlign:"center", position:"relative" }}>
+          <div style={{ fontSize:11, fontWeight:700, color:"#6b8f71", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:16 }}>Our Story</div>
+          <h1 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(32px,5vw,58px)", fontWeight:900, color:"#fff", marginBottom:20, lineHeight:1.08, letterSpacing:"-0.03em" }}>
+            A Network Built to <span style={{ color:"#6b8f71" }}>Save Lives</span>
+          </h1>
+          <p style={{ fontSize:"clamp(15px,2vw,18px)", color:"rgba(255,255,255,0.62)", lineHeight:1.75, maxWidth:560, margin:"0 auto" }}>
+            Built by rescuers. Driven by volunteers. Designed to close the gap between shelters that need help and shelters that can give it.
+          </p>
+        </div>
+      </div>
+
+      {/* ── STAT BANNER ── */}
+      <div style={{ background:"#6b8f71", padding:"clamp(40px,6vw,56px) clamp(16px,4vw,48px)" }}>
+        <div style={{ maxWidth:900, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))", gap:32, alignItems:"center" }}>
+          <div style={{ textAlign:"center" }}>
+            <div style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(56px,8vw,88px)", fontWeight:900, color:"#fff", letterSpacing:"-0.04em", lineHeight:1, marginBottom:10 }}>607K</div>
+            <div style={{ fontSize:15, color:"rgba(255,255,255,0.75)", fontWeight:500, lineHeight:1.6, maxWidth:240, margin:"0 auto" }}>
+              <strong style={{ color:"#fff", display:"block", fontSize:16, marginBottom:4 }}>Dogs & cats euthanized in 2024</strong>
+              Most due to lack of space — not lack of love.
+            </div>
+          </div>
+          <div style={{ height:1, background:"rgba(255,255,255,0.2)" }} className="hide-mobile"/>
+          <div style={{ textAlign:"center" }}>
+            <div style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(18px,2.5vw,22px)", fontWeight:700, color:"rgba(255,255,255,0.88)", lineHeight:1.4, marginBottom:10, maxWidth:320, margin:"0 auto 10px" }}>
+              The leading cause wasn't aggression, illness, or behavior.
+            </div>
+            <div style={{ fontSize:15, color:"rgba(255,255,255,0.65)", lineHeight:1.6, maxWidth:280, margin:"0 auto" }}>
+              <strong style={{ color:"#fff", fontSize:18 }}>It was space.</strong><br/>A broken communication gap that, if closed, could have saved hundreds of thousands of lives.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── ORIGIN ── */}
+      <div style={{ padding:"clamp(56px,7vw,88px) clamp(16px,4vw,48px)" }}>
+        <div style={{ maxWidth:1000, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:"clamp(40px,6vw,80px)", alignItems:"center" }}>
+          <div>
+            <div style={{ fontSize:11, fontWeight:700, color:"#6b8f71", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:12 }}>Why We Built This</div>
+            <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(24px,3.5vw,38px)", fontWeight:800, letterSpacing:"-0.02em", marginBottom:20, lineHeight:1.1 }}>We Didn't Build This From a Boardroom.</h2>
+            <p style={{ fontSize:16, color:"#4e5449", lineHeight:1.75 }}>RescuPawLink was created by rescuers and volunteers — people who have sat in shelter hallways, driven animals across state lines at midnight, and watched what happens when the system runs out of room.</p>
+            <p style={{ fontSize:16, color:"#4e5449", lineHeight:1.75, marginTop:16 }}>We built it from the back seat of a car with three dogs and a deadline. We know what it feels like to need a space and not know where to look. This platform is our answer to that.</p>
+          </div>
+          <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+            {[
+              { icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b8f71" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></svg>, title:"Midnight Transport Runs", desc:"Volunteers driving hours to move animals between facilities — because no one had a better way to connect." },
+              { icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b8f71" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 2 .7 2.9a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.2-1.2a2 2 0 012.1-.5c.9.3 1.9.6 2.9.7A2 2 0 0122 16.9z"/></svg>, title:"Phone Tag Between Shelters", desc:"Coordinators calling down a list hoping someone had space. No real-time visibility. No shared system." },
+              { icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b8f71" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>, title:"Deadlines That Didn't Have to Happen", desc:"Animals euthanized while a shelter two hours away had open kennels. That gap is what RescuPawLink closes." },
+            ].map(c=>(
+              <div key={c.title} style={{ background:"#fff", border:"1px solid #e8e8e6", borderRadius:16, padding:22, display:"flex", gap:16, alignItems:"flex-start", boxShadow:"0 1px 4px rgba(0,0,0,0.05)" }}>
+                <div style={{ width:44, height:44, borderRadius:12, background:"#eef4ef", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{c.icon}</div>
+                <div>
+                  <div style={{ fontFamily:"'Inter',sans-serif", fontSize:14, fontWeight:700, color:"#1a1c18", marginBottom:4 }}>{c.title}</div>
+                  <div style={{ fontSize:13, color:"#4e5449", lineHeight:1.6 }}>{c.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── PROBLEM ── */}
+      <div style={{ background:"#f4f4f2", padding:"clamp(48px,6vw,80px) clamp(16px,4vw,48px)" }}>
+        <div style={{ maxWidth:800, margin:"0 auto" }}>
+          <div style={{ background:"#fff", border:"1px solid #e8e8e6", borderRadius:20, padding:"clamp(32px,5vw,52px)", position:"relative", overflow:"hidden", boxShadow:"0 1px 4px rgba(0,0,0,0.05)" }}>
+            <div style={{ position:"absolute", top:0, left:0, right:0, height:4, background:"#c85a35", borderRadius:"20px 20px 0 0" }}/>
+            <div style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(56px,12vw,120px)", fontWeight:900, color:"#c85a35", letterSpacing:"-0.05em", lineHeight:1, marginBottom:8 }}>607,000</div>
+            <div style={{ fontSize:18, fontWeight:700, color:"#1a1c18", marginBottom:22 }}>dogs and cats euthanized in the United States in 2024.</div>
+            <p style={{ fontSize:16, color:"#4e5449", lineHeight:1.75 }}>The animals didn't run out of time. <strong style={{ color:"#1a1c18" }}>The system ran out of coordination.</strong> Shelters at capacity with nowhere to send animals. Rescues that didn't know help was available two counties over.</p>
+            <p style={{ fontSize:16, color:"#4e5449", lineHeight:1.75, marginTop:14 }}>The leading cause wasn't aggression, illness, or behavioral issues — it was space. A broken communication gap between facilities that, if closed, could have saved hundreds of thousands of lives.</p>
+            <div style={{ marginTop:28, borderLeft:"3px solid #c85a35", paddingLeft:20, fontSize:18, fontStyle:"italic", color:"#1a1c18", lineHeight:1.6 }}>
+              "The animals didn't run out of time. The system ran out of coordination."
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── WHAT WE DO ── */}
+      <div style={{ padding:"clamp(56px,7vw,88px) clamp(16px,4vw,48px)" }}>
+        <div style={{ maxWidth:1000, margin:"0 auto" }}>
+          <div style={{ fontSize:11, fontWeight:700, color:"#6b8f71", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:12 }}>What RescuPawLink Does</div>
+          <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(24px,3.5vw,38px)", fontWeight:800, letterSpacing:"-0.02em", maxWidth:600, marginBottom:14, lineHeight:1.1 }}>A Real-Time Coordination Platform Built for Shelters</h2>
+          <p style={{ fontSize:16, color:"#4e5449", lineHeight:1.75, maxWidth:620, marginBottom:40 }}>RescuPawLink gives every facility — from a 10-kennel municipal shelter to a nationwide rescue organization — the tools to connect, communicate, and collaborate.</p>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(270px,1fr))", gap:16 }}>
+            {[
+              { icon:I.capacity, title:"Live Capacity Broadcasting",   desc:"Shelters broadcast their available space in real time so partner facilities know exactly who has room right now." },
+              { icon:I.transfer, title:"Animal Transfers",             desc:"Coordinate animal transfers between shelters before deadlines hit. One click to request. Instant network notification." },
+              { icon:I.alert,    title:"Urgent Animal Listings",       desc:"Animals with days or hours left are flagged and visible to the entire network. Every hour matters." },
+              { icon:I.heartPaw, title:"Adoptions & Fosters",         desc:"List adoptable animals and foster opportunities to reach families across the country." },
+              { icon:I.chat,     title:"Coordinator Chat",            desc:"Direct messaging and shared channels for transport, medical needs, and network-wide coordination." },
+              { icon:I.search,   title:"Lost & Found",                desc:"Post lost and found animals to help reunite pets with their families — with location-based search." },
+            ].map(f=>(
+              <div key={f.title} style={{ background:"#fff", border:"1px solid #e8e8e6", borderRadius:16, padding:24, boxShadow:"0 1px 4px rgba(0,0,0,0.04)", display:"flex", flexDirection:"column", gap:12, transition:"all 0.2s" }}
+                onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 12px 32px rgba(0,0,0,0.08)"; }}
+                onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="0 1px 4px rgba(0,0,0,0.04)"; }}>
+                <div style={{ width:44, height:44, borderRadius:12, background:"#eef4ef", display:"flex", alignItems:"center", justifyContent:"center" }}>{f.icon}</div>
+                <div>
+                  <div style={{ fontFamily:"'Inter',sans-serif", fontSize:15, fontWeight:700, marginBottom:6 }}>{f.title}</div>
+                  <div style={{ fontSize:13, color:"#4e5449", lineHeight:1.65 }}>{f.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── ANIMALS FIRST ── */}
+      <div style={{ background:"#eef4ef", padding:"clamp(48px,6vw,72px) clamp(16px,4vw,48px)" }}>
+        <div style={{ maxWidth:800, margin:"0 auto", textAlign:"center" }}>
+          <div style={{ fontSize:11, fontWeight:700, color:"#6b8f71", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:16 }}>Our Promise</div>
+          <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(24px,3.5vw,38px)", fontWeight:800, letterSpacing:"-0.02em", marginBottom:16, lineHeight:1.1 }}>Animals First. Always.</h2>
+          <p style={{ fontSize:16, color:"#4e5449", lineHeight:1.75, maxWidth:560, margin:"0 auto 32px" }}>Animals facing euthanasia deadlines are given priority placement on RescuPawLink. The moment a shelter flags a critical animal, the entire network sees it. Every connection made through this platform is a life that doesn't become a statistic.</p>
+          <div style={{ display:"flex", gap:10, justifyContent:"center", flexWrap:"wrap" }}>
+            {[["⚠ Critical animals surfaced first", true],["Live deadline countdown",false],["Network-wide alerts",false],["Instant transfer requests",false],["38 states connected",false]].map(([t,u])=>(
+              <span key={t} style={{ background:u?"#fdf0eb":"#fff", border:`1px solid ${u?"#f0c4b4":"#c7dfc9"}`, color:u?"#c85a35":"#4a6b50", borderRadius:24, padding:"8px 18px", fontSize:13, fontWeight:600 }}>{t}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── COMMITMENT ── */}
+      <div style={{ padding:"clamp(56px,7vw,88px) clamp(16px,4vw,48px)" }}>
+        <div style={{ maxWidth:1000, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:"clamp(40px,6vw,64px)", alignItems:"start" }}>
+          <div>
+            <div style={{ fontSize:11, fontWeight:700, color:"#6b8f71", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:12 }}>Our Commitment</div>
+            <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(24px,3.5vw,38px)", fontWeight:800, letterSpacing:"-0.02em", marginBottom:20, lineHeight:1.1 }}>We Are the Infrastructure. Not the Shelter.</h2>
+            <p style={{ fontSize:16, color:"#4e5449", lineHeight:1.75 }}>RescuPawLink is free for every shelter and rescue to get started. Because saving lives shouldn't come with a barrier to entry.</p>
+            <p style={{ fontSize:16, color:"#4e5449", lineHeight:1.75, marginTop:14 }}>We are not a shelter. We are not a rescue. We are the infrastructure that connects them — a utility built to make the entire ecosystem work better, faster, and together.</p>
+            <p style={{ fontSize:16, color:"#4e5449", lineHeight:1.75, marginTop:14 }}>RescuPawLink is designed to be a forerunner utility in the effort to minimize euthanasia risk — not just a tool, but a standard. A platform that every shelter in the country can rely on when lives are on the line.</p>
+            <div style={{ fontSize:18, fontWeight:700, color:"#1a1c18", marginTop:28, lineHeight:1.5 }}>Every animal deserves a second chance.<br/>We built RescuPawLink to make sure they get one.</div>
+          </div>
+          <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+            {[
+              { label:"Free to Start",      text:"Every shelter and rescue can join and access core features to get started. Because saving lives shouldn't come with a barrier to entry." },
+              { label:"Built by Rescuers",  text:"Every feature was designed by people who have been in the field — who know what coordinators actually need at 2am with six animals and one hour." },
+              { label:"A National Standard",text:"Our goal is for RescuPawLink to become the coordination layer every shelter in the country relies on — the 911 of animal rescue." },
+            ].map(c=>(
+              <div key={c.label} style={{ background:"#f4f4f2", border:"1px solid #e8e8e6", borderRadius:16, padding:24 }}>
+                <div style={{ fontSize:11, fontWeight:700, color:"#6b8f71", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:8 }}>{c.label}</div>
+                <div style={{ fontSize:14, color:"#4e5449", lineHeight:1.65 }}>{c.text}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── CTA ── */}
+      <div style={{ background:"#6b8f71", padding:"clamp(56px,7vw,80px) clamp(16px,4vw,48px)", textAlign:"center" }}>
+        <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(24px,3.5vw,40px)", fontWeight:800, color:"#fff", marginBottom:12, letterSpacing:"-0.02em", lineHeight:1.1 }}>Join the Network. Save a Life.</h2>
+        <p style={{ fontSize:16, color:"rgba(255,255,255,0.78)", marginBottom:32, maxWidth:440, margin:"0 auto 32px", lineHeight:1.7 }}>Register your shelter today and connect with hundreds of facilities already working together to give animals a second chance.</p>
+        <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
+          <button className="btn btn-lg" style={{ background:"#fff", color:"#4a6b50", border:"none", fontWeight:700 }} onClick={()=>{setAuthMode("register");setPage("login");}}>Register Your Shelter →</button>
+          <button className="btn btn-lg" style={{ background:"rgba(255,255,255,0.15)", color:"#fff", border:"2px solid rgba(255,255,255,0.5)", backdropFilter:"blur(8px)" }} onClick={()=>{setPage("app");setTab("adopt");}}>Browse Animals</button>
+        </div>
+      </div>
+
+      {/* ── FOOTER ── */}
+      <footer style={{ background:"#1a1c18", padding:"28px clamp(16px,4vw,48px)" }}>
+        <div style={{ maxWidth:1400, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:20, marginBottom:16 }}>
+          <div>
+            <div style={{ fontFamily:"'Inter',sans-serif", fontSize:15, fontWeight:800, color:"#fff", marginBottom:4 }}><span style={{ color:"#6b8f71" }}>Rescu</span>PawLink</div>
+            <div style={{ fontSize:12, color:"rgba(255,255,255,0.38)" }}>Every animal deserves a second chance.</div>
+          </div>
+          <div style={{ display:"flex", gap:0, alignItems:"center" }}>
+            {[["Pet Search",()=>{setPage("app");setTab("adopt");}],["Shelters",()=>{setPage("app");setTab("network");}],["About",()=>setPage("about")],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["Contact",null]].map(([l,fn],i,arr)=>(
+              <span key={l} style={{ display:"flex", alignItems:"center" }}>
+                <button onClick={fn||undefined} style={{ background:"none", border:"none", color:"rgba(255,255,255,0.45)", cursor:fn?"pointer":"default", fontFamily:"inherit", fontSize:12, padding:"4px 10px" }}
+                  onMouseEnter={e=>{ if(fn) e.currentTarget.style.color="#fff"; }} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.45)"}>{l}</button>
+                {i < arr.length-1 && <span style={{ color:"rgba(255,255,255,0.2)" }}>|</span>}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div style={{ maxWidth:1400, margin:"0 auto", paddingTop:14, borderTop:"1px solid rgba(255,255,255,0.07)", fontSize:11, color:"rgba(255,255,255,0.22)" }}>
+          © 2026 RescuPawLink Network · All rights reserved · rescupawlink.com
+        </div>
+      </footer>
+
+    </div>
+  );
+
   const isLoggedIn = !!user;
   if (page === "login") return (
     <div style={{ minHeight:"100vh", background:"#f8f8f6", display:"flex", flexDirection:"column", fontFamily:"'DM Sans',sans-serif" }}>
