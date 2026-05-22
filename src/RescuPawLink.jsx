@@ -2264,8 +2264,6 @@ export default function RescuPawLink() {
               </form>
             </div>
 
-            </div>
-
             {/* ── My Animals ── */}
             <div id="my-animals" className="card" style={{ padding:24 }}>
               <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:18 }}>
