@@ -793,6 +793,7 @@ export default function RescuPawLink() {
   const [toast, setToast]         = useState("");
   const [selectedAnimal, setSelectedAnimal] = useState(null);
   const [claimTarget, setClaimTarget]       = useState(null);
+  const [transferF, setTransferF]           = useState({ org:"", email:"", count:"", notes:"" });
   const [applyTarget, setApplyTarget]       = useState(null);
   const [postStep, setPostStep]   = useState(1);
   const [loading, setLoading]     = useState(false);
@@ -1441,6 +1442,13 @@ export default function RescuPawLink() {
           </div>
           <div style={{ paddingTop:14, borderTop:"1px solid rgba(255,255,255,0.07)", fontSize:11, color:"rgba(255,255,255,0.22)" }}>
             © 2026 RescuPawLink Network · All rights reserved · rescupawlink.com
+            </div>
+            <div style={{ display:"flex", gap:16, marginTop:8 }}>
+              <button onClick={()=>setPage("privacy")} style={{ background:"none", border:"none", fontSize:11, color:"rgba(255,255,255,0.35)", cursor:"pointer", fontFamily:"inherit", padding:0 }}
+                onMouseEnter={e=>e.currentTarget.style.color="rgba(255,255,255,0.7)"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.35)"}>Privacy Policy</button>
+              <span style={{ color:"rgba(255,255,255,0.15)", fontSize:11 }}>·</span>
+              <button onClick={()=>setPage("terms")} style={{ background:"none", border:"none", fontSize:11, color:"rgba(255,255,255,0.35)", cursor:"pointer", fontFamily:"inherit", padding:0 }}
+                onMouseEnter={e=>e.currentTarget.style.color="rgba(255,255,255,0.7)"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.35)"}>Terms of Service</button>
           </div>
         </div>
       </footer>
@@ -1649,9 +1657,88 @@ export default function RescuPawLink() {
         </div>
         <div style={{ maxWidth:1400, margin:"0 auto", paddingTop:14, borderTop:"1px solid rgba(255,255,255,0.07)", fontSize:11, color:"rgba(255,255,255,0.22)" }}>
           © 2026 RescuPawLink Network · All rights reserved · rescupawlink.com
+            </div>
+            <div style={{ display:"flex", gap:16, marginTop:8 }}>
+              <button onClick={()=>setPage("privacy")} style={{ background:"none", border:"none", fontSize:11, color:"rgba(255,255,255,0.35)", cursor:"pointer", fontFamily:"inherit", padding:0 }}
+                onMouseEnter={e=>e.currentTarget.style.color="rgba(255,255,255,0.7)"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.35)"}>Privacy Policy</button>
+              <span style={{ color:"rgba(255,255,255,0.15)", fontSize:11 }}>·</span>
+              <button onClick={()=>setPage("terms")} style={{ background:"none", border:"none", fontSize:11, color:"rgba(255,255,255,0.35)", cursor:"pointer", fontFamily:"inherit", padding:0 }}
+                onMouseEnter={e=>e.currentTarget.style.color="rgba(255,255,255,0.7)"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.35)"}>Terms of Service</button>
         </div>
       </footer>
 
+    </div>
+  );
+
+
+  if (page === "privacy") return (
+    <div style={{ fontFamily:"'DM Sans',sans-serif", color:"#1a1c18", background:"#f8f8f6", minHeight:"100vh" }}>
+      <nav style={{ background:"#fff", borderBottom:"1px solid #e8e8e6", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100 }}>
+        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"#1a1c18", letterSpacing:"-0.4px" }}><span style={{ color:"#6b8f71" }}>Rescu</span>PawLink</button>
+        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontSize:13, color:"#4e5449", fontFamily:"inherit", display:"flex", alignItems:"center", gap:5 }}>← Back</button>
+      </nav>
+      <div style={{ maxWidth:720, margin:"0 auto", padding:"56px clamp(16px,4vw,48px) 80px" }}>
+        <div style={{ fontSize:11, fontWeight:700, color:"#6b8f71", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:12 }}>Legal</div>
+        <h1 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(28px,4vw,42px)", fontWeight:900, letterSpacing:"-0.03em", marginBottom:8, lineHeight:1.1 }}>Privacy Policy</h1>
+        <p style={{ fontSize:13, color:"#9a9e95", marginBottom:48 }}>Effective Date: January 1, 2026</p>
+
+        {[
+          { title:"What We Collect", body:"RescuPawLink collects information you provide when registering your shelter — including your organization name, city, state, email address, and phone number. We also collect animal listings, capacity updates, and messages sent through the platform." },
+          { title:"How We Use It", body:"Your information is used to operate the platform — displaying your shelter on the network, sending transfer and adoption notifications, and enabling coordination between shelters. We do not sell your data to third parties." },
+          { title:"Email Communications", body:"By registering, you may receive platform notifications related to transfer requests, adoption inquiries, and network alerts. You can opt out of non-essential communications at any time." },
+          { title:"Data Storage", body:"Your data is stored securely through Supabase. We take reasonable measures to protect your information but cannot guarantee absolute security." },
+          { title:"Public Information", body:"Shelter names, cities, states, capacity status, and animal listings are visible to other users of the platform. Email addresses are never displayed publicly." },
+          { title:"Third-Party Services", body:"RescuPawLink uses Supabase for data storage and EmailJS for notifications. These services have their own privacy policies." },
+          { title:"Changes", body:"We may update this policy as the platform evolves. Continued use of RescuPawLink constitutes acceptance of the current policy." },
+          { title:"Contact", body:"Questions? Email us at rescupawlink@gmail.com" },
+        ].map(s=>(
+          <div key={s.title} style={{ marginBottom:36, paddingBottom:36, borderBottom:"1px solid #e8e8e6" }}>
+            <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:700, marginBottom:10, color:"#1a1c18" }}>{s.title}</h2>
+            <p style={{ fontSize:15, color:"#4e5449", lineHeight:1.8 }}>{s.body}</p>
+          </div>
+        ))}
+
+        <div style={{ display:"flex", gap:16, marginTop:8 }}>
+          <button onClick={()=>setPage("terms")} style={{ fontSize:13, fontWeight:700, color:"#6b8f71", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit", textDecoration:"underline" }}>View Terms of Service →</button>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (page === "terms") return (
+    <div style={{ fontFamily:"'DM Sans',sans-serif", color:"#1a1c18", background:"#f8f8f6", minHeight:"100vh" }}>
+      <nav style={{ background:"#fff", borderBottom:"1px solid #e8e8e6", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100 }}>
+        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"#1a1c18", letterSpacing:"-0.4px" }}><span style={{ color:"#6b8f71" }}>Rescu</span>PawLink</button>
+        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontSize:13, color:"#4e5449", fontFamily:"inherit", display:"flex", alignItems:"center", gap:5 }}>← Back</button>
+      </nav>
+      <div style={{ maxWidth:720, margin:"0 auto", padding:"56px clamp(16px,4vw,48px) 80px" }}>
+        <div style={{ fontSize:11, fontWeight:700, color:"#6b8f71", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:12 }}>Legal</div>
+        <h1 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(28px,4vw,42px)", fontWeight:900, letterSpacing:"-0.03em", marginBottom:8, lineHeight:1.1 }}>Terms of Service</h1>
+        <p style={{ fontSize:13, color:"#9a9e95", marginBottom:48 }}>Effective Date: January 1, 2026</p>
+
+        {[
+          { title:"Acceptance", body:"By using RescuPawLink, you agree to these Terms of Service. If you do not agree, do not use the platform." },
+          { title:"Eligibility", body:"RescuPawLink is intended for licensed shelters, registered rescues, foster networks, and animal welfare organizations. By registering, you confirm your organization is legitimate and operates in compliance with applicable laws." },
+          { title:"Accurate Information", body:"You agree to provide accurate, up-to-date information about your shelter's capacity, animals, and contact details. Misleading or false listings may result in account removal." },
+          { title:"Prohibited Use", body:"You may not use RescuPawLink to misrepresent animals, engage in fraudulent transfers, harass other users, or violate any applicable laws. Commercial solicitation unrelated to animal welfare is prohibited." },
+          { title:"Animal Welfare", body:"RescuPawLink is a coordination tool. We are not responsible for the welfare of animals transferred or adopted through connections made on the platform. All parties involved in transfers and adoptions bear responsibility for animal care." },
+          { title:"No Guarantee", body:"We do not guarantee that using RescuPawLink will prevent euthanasia, secure transfers, or result in successful adoptions. The platform facilitates connections — outcomes depend on the actions of participating organizations." },
+          { title:"Intellectual Property", body:"RescuPawLink's design, code, and content are proprietary. You may not copy, reproduce, or redistribute any part of the platform without written permission." },
+          { title:"Termination", body:"We reserve the right to suspend or remove any account that violates these terms or undermines the integrity of the network." },
+          { title:"Limitation of Liability", body:"RescuPawLink is provided as-is. We are not liable for any damages arising from use of the platform, including failed transfers, miscommunications, or data loss." },
+          { title:"Changes", body:"These terms may be updated as the platform evolves. Continued use constitutes acceptance." },
+          { title:"Contact", body:"Questions? Email us at rescupawlink@gmail.com" },
+        ].map(s=>(
+          <div key={s.title} style={{ marginBottom:36, paddingBottom:36, borderBottom:"1px solid #e8e8e6" }}>
+            <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:700, marginBottom:10, color:"#1a1c18" }}>{s.title}</h2>
+            <p style={{ fontSize:15, color:"#4e5449", lineHeight:1.8 }}>{s.body}</p>
+          </div>
+        ))}
+
+        <div style={{ display:"flex", gap:16, marginTop:8 }}>
+          <button onClick={()=>setPage("privacy")} style={{ fontSize:13, fontWeight:700, color:"#6b8f71", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit", textDecoration:"underline" }}>View Privacy Policy →</button>
+        </div>
+      </div>
     </div>
   );
 
@@ -2096,7 +2183,7 @@ export default function RescuPawLink() {
                       {isLoggedIn && !isMe && (
                         <div style={{ display:"flex", flexDirection:"column", gap:8, alignItems:"stretch", minWidth:130 }}>
                           {s.availableSpace > 0 && (
-                            <button className="btn btn-primary btn-sm" onClick={()=>setClaimTarget(s)}>
+                            <button className="btn btn-primary btn-sm" onClick={()=>{ if(!isLoggedIn){setAuthMode("login");setPage("login");return;} setClaimTarget(s); setTransferF({ org:user?.name||"", email:user?.email||"", count:"", notes:"" }); }}>
                               Request Space
                             </button>
                           )}
@@ -2104,7 +2191,7 @@ export default function RescuPawLink() {
                             💬 Message
                           </button>
                           {s.needsHelp && (
-                            <button className="btn btn-sm" style={{ background:"#fdf0eb", color:"#c85a35", border:"1px solid #fbd0c3", fontWeight:600 }} onClick={()=>setClaimTarget(s)}>
+                            <button className="btn btn-sm" style={{ background:"#fdf0eb", color:"#c85a35", border:"1px solid #fbd0c3", fontWeight:600 }} onClick={()=>{ if(!isLoggedIn){setAuthMode("login");setPage("login");return;} setClaimTarget(s); setTransferF({ org:user?.name||"", email:user?.email||"", count:"", notes:"" }); }}>
                               Offer Help
                             </button>
                           )}
@@ -2362,7 +2449,7 @@ export default function RescuPawLink() {
                       </div>
                       <div style={{ display:"flex", gap:6, flexDirection:"column" }}>
                         <button className="btn btn-sm" style={{ background:"#dc2626", color:"#fff", fontSize:11, padding:"5px 10px" }}
-                          onClick={e=>{e.stopPropagation(); const s=shelters.find(sh=>sh.id===a.shelterId); setClaimTarget(s);}}>
+                          onClick={e=>{ e.stopPropagation(); if(!isLoggedIn){setAuthMode("login");setPage("login");return;} const s=shelters.find(sh=>sh.id===a.shelterId); setClaimTarget(s); setTransferF({ org:user?.name||"", email:user?.email||"", count:"", notes:"" }); }}>
                           Offer Space
                         </button>
                       </div>
@@ -2409,7 +2496,7 @@ export default function RescuPawLink() {
                       <span style={{ fontSize:13, color:"#4e5449" }}> is over capacity and seeking transfer help</span>
                       <div style={{ fontSize:12, color:"#9a9e95", marginTop:2 }}>📍 {s.city}, {s.state}</div>
                     </div>
-                    <button className="btn btn-sm" style={{ background:"#c85a35", color:"#fff", flexShrink:0 }} onClick={()=>setClaimTarget(s)}>Offer Help</button>
+                    <button className="btn btn-sm" style={{ background:"#c85a35", color:"#fff", flexShrink:0 }} onClick={()=>{ if(!isLoggedIn){setAuthMode("login");setPage("login");return;} setClaimTarget(s); setTransferF({ org:user?.name||"", email:user?.email||"", count:"", notes:"" }); }}>Offer Help</button>
                   </div>
                 ))}
                 {/* Shelters with open space */}
@@ -2421,7 +2508,7 @@ export default function RescuPawLink() {
                       <span style={{ fontSize:13, color:"#4e5449" }}> has <strong style={{ color:"#16a34a" }}>{s.availableSpace} open spaces</strong> available</span>
                       <div style={{ fontSize:12, color:"#9a9e95", marginTop:2 }}>📍 {s.city}, {s.state} · {s.canTake.join(", ")||"All animals"}</div>
                     </div>
-                    <button className="btn btn-ghost btn-sm" onClick={()=>setClaimTarget(s)}>Request Space</button>
+                    <button className="btn btn-ghost btn-sm" onClick={()=>{ if(!isLoggedIn){setAuthMode("login");setPage("login");return;} setClaimTarget(s); setTransferF({ org:user?.name||"", email:user?.email||"", count:"", notes:"" }); }}>Request Space</button>
                   </div>
                 ))}
                 {/* Recent chat messages */}
@@ -2889,7 +2976,7 @@ Message: ${lfInqMsg.message || "No additional message."}`,
                 <button className="btn btn-secondary btn-md" style={{ padding:13 }} onClick={()=>{setApplyTarget(selectedAnimal);setApplyF(p=>({...p,type:"foster"}));}}>💚 Offer to Foster</button>
               </div>
               {isLoggedIn && (
-                <button onClick={()=>{setClaimTarget(shelters.find(s=>s.id===selectedAnimal.shelterId));setSelectedAnimal(null);}} className="btn btn-ghost btn-md" style={{ width:"100%", marginTop:10, padding:12 }}>
+                <button onClick={()=>{ if(!isLoggedIn){setAuthMode("login");setPage("login");return;} const s=shelters.find(sh=>sh.id===selectedAnimal.shelterId); setClaimTarget(s); setTransferF({ org:user?.name||"", email:user?.email||"", count:"", notes:"" }); setSelectedAnimal(null); }} className="btn btn-ghost btn-md" style={{ width:"100%", marginTop:10, padding:12 }}>
                   🤝 Offer Transfer Space (Shelter Staff)
                 </button>
               )}
@@ -2982,37 +3069,32 @@ Message: ${lfInqMsg.message || "No additional message."}`,
               At <strong>{claimTarget.name}</strong> · <span style={{ color:"#4a6b50", fontWeight:700 }}>{claimTarget.availableSpace} spaces available</span>
             </p>
             <div style={{ display:"grid", gap:13, marginBottom:18 }}>
-              {[
-                { label:"Your Organization", placeholder:"Your shelter name",             key:"org" },
-                { label:"Contact Email",     placeholder:"coordinator@yourshelter.org",   key:"email" },
-                { label:"# of Animals",      placeholder:"How many?",                     key:"count" },
-                { label:"Species & Details", placeholder:"e.g. 2 small dogs, 1 cat — all vaccinated", key:"notes" },
-              ].map(f=>(
-                <div key={f.key}><label className="label">{f.label}</label><input className="input" placeholder={f.placeholder} id={`transfer-${f.key}`}/></div>
-              ))}
+              <div><label className="label">Your Organization</label><input className="input" placeholder="Your shelter name" value={transferF.org} onChange={e=>setTransferF(p=>({...p,org:e.target.value}))}/></div>
+              <div><label className="label">Contact Email</label><input className="input" type="email" placeholder="coordinator@yourshelter.org" value={transferF.email} onChange={e=>setTransferF(p=>({...p,email:e.target.value}))}/></div>
+              <div><label className="label"># of Animals</label><input className="input" placeholder="How many?" value={transferF.count} onChange={e=>setTransferF(p=>({...p,count:e.target.value}))}/></div>
+              <div><label className="label">Species & Details</label><input className="input" placeholder="e.g. 2 small dogs, 1 cat — all vaccinated" value={transferF.notes} onChange={e=>setTransferF(p=>({...p,notes:e.target.value}))}/></div>
             </div>
-            <div style={{ background:"#f8f8f6", borderRadius:10, padding:"12px 16px", marginBottom:18, fontSize:13, color:"var(--muted)", lineHeight:1.6 }}>
+            <div style={{ background:"#f8f8f6", borderRadius:10, padding:"12px 16px", marginBottom:18, fontSize:13, color:"#4e5449", lineHeight:1.6 }}>
               📬 Your request will be sent directly to <strong>{claimTarget.name}</strong>. They'll respond as soon as they can.
             </div>
             <div style={{ display:"flex", gap:10 }}>
-              <button className="btn btn-primary btn-md" style={{ flex:1, padding:13 }} onClick={async ()=>{
-                const org   = document.getElementById("transfer-org")?.value;
-                const email = document.getElementById("transfer-email")?.value;
-                const count = document.getElementById("transfer-count")?.value;
-                const notes = document.getElementById("transfer-notes")?.value;
-                const ok = await sendTransferEmail({
-                  fromShelterName: org || user?.name || "A partner shelter",
-                  fromEmail:       email || user?.email || "",
-                  toShelterName:   claimTarget.name,
-                  toEmail:         claimTarget.email,
-                  count, species: notes,
-                });
-                setClaimTarget(null);
-                showToast(ok
-                  ? `✓ Transfer request sent to ${claimTarget.name}!`
-                  : `Request logged! ${claimTarget.name} will be in touch with you soon.`
-                );
-              }}>Send Request</button>
+              <button className="btn btn-primary btn-md" style={{ flex:1, padding:13 }}
+                disabled={!transferF.org || !transferF.email}
+                onClick={async ()=>{
+                  const ok = await sendTransferEmail({
+                    fromShelterName: transferF.org || user?.name || "A partner shelter",
+                    fromEmail:       transferF.email || user?.email || "",
+                    toShelterName:   claimTarget.name,
+                    toEmail:         claimTarget.email,
+                    count:           transferF.count,
+                    species:         transferF.notes,
+                  });
+                  setClaimTarget(null);
+                  showToast(ok
+                    ? `✓ Transfer request sent to ${claimTarget.name}!`
+                    : `Request logged! ${claimTarget.name} will be in touch with you soon.`
+                  );
+                }}>Send Request</button>
               <button className="btn btn-ghost btn-md" onClick={()=>setClaimTarget(null)}>Cancel</button>
             </div>
           </div>
