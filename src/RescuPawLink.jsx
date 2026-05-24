@@ -485,11 +485,17 @@ const CHANNEL_SEED = {
 
 function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText, msgEndRef, sendMsg, isLoggedIn, onLogin, dmTarget, setDmTarget }) {
   const [activeChannel, setActiveChannel] = useState("general");
+  const [pinnedStates, setPinnedStates] = useState([]);
+  const [stateSearch, setStateSearch] = useState("");
+  const [showStatePicker, setShowStatePicker] = useState(false);
 
   // Auto-default to user's state channel on mount
   useEffect(() => {
     const st = user?.state || user?.shelterState;
-    if (st) setActiveChannel(`state_${st}`);
+    if (st) {
+      setActiveChannel(`state_${st}`);
+      setPinnedStates([st]);
+    }
   }, [user?.id]);
   const [view, setView] = useState("channels"); // channels | dms
   const [channelMsgs, setChannelMsgs] = useState(CHANNEL_SEED);
@@ -608,33 +614,78 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
           {/* Channel list */}
           {view === "channels" && (
             <div style={{ flex:1, overflowY:"auto", padding:"10px 10px" }}>
-              {/* State channel — shown first if user has a state */}
-              {(user?.state||user?.shelterState) && (
-                <>
-                  <div style={{ fontSize:11, fontWeight:700, color:"#9a9e95", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:8, padding:"0 4px" }}>Your State</div>
-                  {[{ id:`state_${user?.state||user?.shelterState}`, label:`${user?.state||user?.shelterState} Shelters`, icon:"network" }].map(ch => {
-                    const hasUnread = !!unread[ch.id];
-                    const isActive = activeChannel === ch.id && view === "channels";
-                    return (
-                      <div key={ch.id} onClick={()=>{ setActiveChannel(ch.id); setView("channels"); setUnread(p=>{const n={...p};delete n[ch.id];return n;}); setInput(""); }}
-                        style={{ padding:"9px 12px", borderRadius:9, marginBottom:6, cursor:"pointer", display:"flex", alignItems:"center", gap:9, justifyContent:"space-between", background:isActive?"#eef4ef":"rgba(107,143,113,0.06)", transition:"background 0.15s", borderLeft:isActive?"3px solid #6b8f71":"3px solid rgba(107,143,113,0.3)", border:"1px solid rgba(107,143,113,0.15)" }}
-                        onMouseEnter={e=>{ if(!isActive) e.currentTarget.style.background="#eef4ef"; }}
-                        onMouseLeave={e=>{ if(!isActive) e.currentTarget.style.background="rgba(107,143,113,0.06)"; }}>
-                        <div style={{ display:"flex", alignItems:"center", gap:8, flex:1, minWidth:0 }}>
-                          <div style={{ width:26, height:26, borderRadius:7, background:isActive?"rgba(107,143,113,0.2)":"rgba(107,143,113,0.12)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{I.network}</div>
-                          <div style={{ minWidth:0 }}>
-                            <div style={{ fontSize:13, fontWeight:700, color:isActive?"#4a6b50":"#1a1c18", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{ch.label}</div>
-                            <div style={{ fontSize:11, color:"#9a9e95" }}>Your local network</div>
-                          </div>
-                        </div>
-                        {hasUnread && <span style={{ width:8, height:8, borderRadius:"50%", background:"#dc2626", flexShrink:0 }}/>}
-                      </div>
-                    );
-                  })}
-                  <div style={{ fontSize:11, fontWeight:700, color:"#9a9e95", textTransform:"uppercase", letterSpacing:"0.1em", margin:"12px 0 8px", padding:"0 4px" }}>All Channels</div>
-                </>
+
+              {/* ── State Channels Section ── */}
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 4px", marginBottom:8 }}>
+                <div style={{ fontSize:11, fontWeight:700, color:"#9a9e95", textTransform:"uppercase", letterSpacing:"0.1em" }}>State Chats</div>
+                <button onClick={()=>setShowStatePicker(p=>!p)}
+                  style={{ fontSize:11, fontWeight:700, color:"#6b8f71", background:"#eef4ef", border:"1px solid #c7dfc9", borderRadius:6, padding:"3px 8px", cursor:"pointer", fontFamily:"inherit" }}>
+                  {showStatePicker ? "Done" : "+ Add State"}
+                </button>
+              </div>
+
+              {/* State picker dropdown */}
+              {showStatePicker && (
+                <div style={{ marginBottom:12, background:"#f8f8f6", borderRadius:10, border:"1px solid #e8e8e6", padding:10 }}>
+                  <div style={{ position:"relative", marginBottom:8 }}>
+                    <input
+                      className="input"
+                      placeholder="Search states…"
+                      value={stateSearch}
+                      onChange={e=>setStateSearch(e.target.value)}
+                      style={{ fontSize:12, padding:"7px 10px 7px 30px", height:"auto" }}
+                    />
+                    <div style={{ position:"absolute", left:8, top:"50%", transform:"translateY(-50%)" }}>{I.search}</div>
+                  </div>
+                  <div style={{ maxHeight:160, overflowY:"auto", display:"flex", flexDirection:"column", gap:2 }}>
+                    {US_STATES.filter(s=>s.toLowerCase().includes(stateSearch.toLowerCase())).map(st=>(
+                      <button key={st} onClick={()=>{
+                        setPinnedStates(p=>p.includes(st)?p.filter(x=>x!==st):[...p,st]);
+                        setStateSearch("");
+                      }}
+                        style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"7px 10px", borderRadius:7, border:"none", background:pinnedStates.includes(st)?"#eef4ef":"transparent", color:pinnedStates.includes(st)?"#4a6b50":"#1a1c18", fontWeight:pinnedStates.includes(st)?700:400, fontSize:13, cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
+                        <span>{st} Shelters</span>
+                        {pinnedStates.includes(st)
+                          ? <span style={{ fontSize:11, color:"#6b8f71" }}>✓ Added</span>
+                          : <span style={{ fontSize:11, color:"#9a9e95" }}>+ Add</span>
+                        }
+                      </button>
+                    ))}
+                  </div>
+                </div>
               )}
-              {!(user?.state||user?.shelterState) && <div style={{ fontSize:11, fontWeight:700, color:"#9a9e95", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:8, padding:"0 4px" }}>Channels</div>}
+
+              {/* Pinned state channels */}
+              {pinnedStates.length > 0 && pinnedStates.map(st => {
+                const chId = `state_${st}`;
+                const isActive = activeChannel === chId;
+                const isOwn = st === (user?.state||user?.shelterState);
+                return (
+                  <div key={chId} style={{ marginBottom:4, display:"flex", alignItems:"center", gap:4 }}>
+                    <div onClick={()=>{ setActiveChannel(chId); setUnread(p=>{const n={...p};delete n[chId];return n;}); setInput(""); }}
+                      style={{ flex:1, padding:"9px 10px", borderRadius:9, cursor:"pointer", display:"flex", alignItems:"center", gap:8, background:isActive?"#eef4ef":"rgba(107,143,113,0.05)", border:`1px solid ${isActive?"#c7dfc9":"rgba(107,143,113,0.15)"}`, borderLeft:`3px solid ${isActive?"#6b8f71":"rgba(107,143,113,0.3)"}`, transition:"all 0.15s" }}
+                      onMouseEnter={e=>{ if(!isActive) e.currentTarget.style.background="#eef4ef"; }}
+                      onMouseLeave={e=>{ if(!isActive) e.currentTarget.style.background="rgba(107,143,113,0.05)"; }}>
+                      <div style={{ width:24, height:24, borderRadius:6, background:isActive?"rgba(107,143,113,0.2)":"rgba(107,143,113,0.1)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{I.network}</div>
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{ fontSize:13, fontWeight:isActive?700:500, color:isActive?"#4a6b50":"#1a1c18", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{st} Shelters</div>
+                        {isOwn && <div style={{ fontSize:10, color:"#6b8f71" }}>Your state</div>}
+                      </div>
+                      {unread[chId] && <span style={{ width:7, height:7, borderRadius:"50%", background:"#dc2626", flexShrink:0 }}/>}
+                    </div>
+                    {!isOwn && (
+                      <button onClick={()=>setPinnedStates(p=>p.filter(x=>x!==st))}
+                        style={{ width:22, height:22, borderRadius:6, border:"none", background:"#f0f0ee", color:"#9a9e95", cursor:"pointer", fontSize:14, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>×</button>
+                    )}
+                  </div>
+                );
+              })}
+
+              {pinnedStates.length === 0 && (
+                <div style={{ fontSize:12, color:"#9a9e95", padding:"4px 8px 10px", lineHeight:1.5 }}>No state chats added yet. Click <strong>+ Add State</strong> to join a regional channel.</div>
+              )}
+
+              <div style={{ fontSize:11, fontWeight:700, color:"#9a9e95", textTransform:"uppercase", letterSpacing:"0.1em", margin:"14px 0 8px", padding:"0 4px" }}>All Channels</div>
               {CHANNELS.map(ch => {
                 const hasUnread = !!unread[ch.id];
                 const isActive = activeChannel === ch.id && view === "channels";
@@ -1235,7 +1286,7 @@ export default function RescuPawLink() {
               active:false
             },
             {
-              icon:<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#6b8f71" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>,
+              icon:<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#6b8f71" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>,
               label:"VOLUNTEER & SUPPORT",
               desc:"Empower volunteer networks and connect shelter support resources.",
               fn:()=>{setAuthMode("register");setPage("login");},
