@@ -1370,78 +1370,95 @@ export default function RescuPawLink() {
         </div>
       </div>
 
-      <div style={{ height:1, background:"#e8e8e6", margin:"8px 32px" }}/>
+      {/* ── ADOPT & FOSTER — side by side ── */}
+      <div style={{ maxWidth:1400, margin:"0 auto", padding:"clamp(32px,5vw,56px) clamp(16px,4vw,48px)" }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:40 }}>
 
-      {/* ── FOSTER NEEDED ── */}
-      {animals.filter(a=>a.listingType==="foster"||a.listingType==="both"||a.listing_type==="foster"||a.listing_type==="both").length > 0 && (
-        <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 clamp(16px,4vw,48px) 32px" }}>
-          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
-            <div>
-              <div style={{ fontSize:11, fontWeight:700, color:"#16a34a", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:4 }}>💚 Foster Needed</div>
-              <h2 style={{ fontSize:18, fontWeight:800 }}>Animals Looking for Temporary Homes</h2>
+          {/* Adoptable column */}
+          <div>
+            <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:20 }}>
+              <div>
+                <div style={{ fontSize:11, fontWeight:700, color:"#c85a35", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>🏡 Find a Home</div>
+                <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(20px,2.5vw,26px)", fontWeight:800, letterSpacing:"-0.03em", lineHeight:1.1 }}>Adoptable Pets</h2>
+              </div>
+              <button onClick={()=>{setPage("app");setTab("adopt");setFSpecies("All");}}
+                style={{ background:"rgba(107,143,113,0.88)", color:"#fff", border:"2px solid rgba(107,143,113,0.6)", backdropFilter:"blur(8px)", borderRadius:10, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", flexShrink:0, whiteSpace:"nowrap" }}>
+                See All →
+              </button>
             </div>
-            <button onClick={()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}} className="btn btn-secondary btn-sm">See All →</button>
-          </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))", gap:16 }}>
-            {animals.filter(a=>a.listingType==="foster"||a.listingType==="both"||a.listing_type==="foster"||a.listing_type==="both").slice(0,4).map(a=>(
-              <div key={a.id} style={{ background:"#fff", borderRadius:14, overflow:"hidden", border:"1px solid #86efac", cursor:"pointer", transition:"all 0.2s" }}
-                onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
-                onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-3px)"; e.currentTarget.style.boxShadow="0 8px 24px rgba(22,163,74,0.12)"; }}
-                onMouseLeave={e=>{ e.currentTarget.style.transform="none"; e.currentTarget.style.boxShadow="none"; }}>
-                <div style={{ height:140, position:"relative", overflow:"hidden" }}>
-                  <img src={a.species==="Dog"?"https://i.imgur.com/9y1Muh4.png":"https://i.imgur.com/gy1SBr3.png"} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
-                  <div style={{ position:"absolute", top:8, left:8 }}>
-                    <span style={{ background:"#16a34a", color:"#fff", fontSize:10, fontWeight:800, padding:"3px 9px", borderRadius:20, textTransform:"uppercase" }}>💚 Foster</span>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))", gap:14 }}>
+              {animals.filter(a=>{ const lt=a.listingType||a.listing_type||"adopt"; return lt==="adopt"||lt==="both"; }).slice(0,4).map(a=>(
+                <div key={a.id} style={{ background:"#fff", borderRadius:16, overflow:"hidden", cursor:"pointer", border:"1px solid #e8e8e6", boxShadow:"0 2px 8px rgba(0,0,0,0.06)", transition:"all 0.2s" }}
+                  onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
+                  onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 12px 32px rgba(0,0,0,0.12)"; }}
+                  onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,0.06)"; }}>
+                  <div style={{ height:180, position:"relative", overflow:"hidden" }}>
+                    <img src={a.species==="Dog"?"https://i.imgur.com/9y1Muh4.png":"https://i.imgur.com/gy1SBr3.png"} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                    <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 55%)" }}/>
+                    <div style={{ position:"absolute", top:10, left:10 }}>
+                      <span style={{ background:a.status==="critical"?"#c85a35":"#c47a1e", color:"#fff", fontSize:9, fontWeight:800, padding:"3px 8px", borderRadius:20, textTransform:"uppercase" }}>{a.daysLeft}d left</span>
+                    </div>
+                    <div style={{ position:"absolute", bottom:10, left:12, right:12 }}>
+                      <div style={{ fontSize:15, fontWeight:700, color:"#fff", marginBottom:1 }}>{a.name}</div>
+                      <div style={{ fontSize:11, color:"rgba(255,255,255,0.8)" }}>{a.breed}</div>
+                    </div>
+                  </div>
+                  <div style={{ padding:"10px 14px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                    <div style={{ fontSize:11, color:"#4e5449" }}>📍 {a.shelterCity}, {a.shelterState}</div>
+                    <div style={{ fontSize:11, fontWeight:700, color:"#6b8f71" }}>Adopt →</div>
                   </div>
                 </div>
-                <div style={{ padding:"12px 14px" }}>
-                  <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>{a.name}</div>
-                  <div style={{ fontSize:12, color:"#4e5449" }}>{a.breed} · {a.shelterCity}, {a.shelterState}</div>
-                  <div style={{ fontSize:12, color:"#16a34a", fontWeight:600, marginTop:6 }}>Temporary foster needed</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div style={{ height:1, background:"#e8e8e6", margin:"8px 32px" }}/>
-      {/* ── ADOPTABLE PETS — compact row ── */}
-      <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 clamp(16px,4vw,48px) 56px" }}>
-        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
-          <h2 style={{ fontSize:18, fontWeight:800, color:"#1a1c18" }}>Adoptable Pets</h2>
-          <button onClick={()=>{setPage("app");setTab("adopt");}} className="btn btn-secondary btn-sm">See All →</button>
-        </div>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))", gap:14 }}>
-          {animals.slice(0,6).map((a,i)=>(
-            <div key={a.id} style={{ background:"#fff", borderRadius:12, overflow:"hidden", cursor:"pointer", border:"1px solid #e8e0d4", transition:"all 0.18s" }}
-              onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
-              onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-3px)"; e.currentTarget.style.boxShadow="0 6px 20px rgba(0,0,0,0.1)"; }}
-              onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="none"; }}>
-              <div style={{ height:150, background:a.status==="critical"?"linear-gradient(135deg,#fef2f2,#fee2e2)":"linear-gradient(135deg,#fffbeb,#fef3c7)", display:"flex", alignItems:"center", justifyContent:"center", position:"relative" }}>
-                {a.photos?.[0]
-                  ? <img src={a.photos[0]} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
-                  : <div style={{ color:a.status==="critical"?"#c85a35":"#c47a1e" }}>
-                      {a.species==="Dog"
-                        ? <img src="https://i.imgur.com/9y1Muh4.png" alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
-                        : <img src="https://i.imgur.com/gy1SBr3.png" alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
-                      }
-                    </div>
-                }
-                <div style={{ position:"absolute", top:6, left:6 }}>
-                  <span style={{ background:a.status==="critical"?"#c85a35":"#c47a1e", color:"#fff", fontSize:9, fontWeight:800, padding:"2px 7px", borderRadius:20, textTransform:"uppercase" }}>{a.daysLeft}d</span>
-                </div>
-              </div>
-              <div style={{ padding:"10px 12px" }}>
-                <div style={{ fontSize:13, fontWeight:700, color:"#1a1c18", marginBottom:1 }}>{a.name}</div>
-                <div style={{ fontSize:11, color:"#4e5449" }}>{a.breed}</div>
-                <div style={{ fontSize:10, color:"#9a9e95", marginTop:2 }}>{a.shelterCity}, {a.shelterState}</div>
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* Foster column */}
+          <div>
+            <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:20 }}>
+              <div>
+                <div style={{ fontSize:11, fontWeight:700, color:"#16a34a", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>💚 Foster Needed</div>
+                <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(20px,2.5vw,26px)", fontWeight:800, letterSpacing:"-0.03em", lineHeight:1.1 }}>Temporary Homes</h2>
+              </div>
+              <button onClick={()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}}
+                style={{ background:"rgba(22,163,74,0.88)", color:"#fff", border:"2px solid rgba(22,163,74,0.5)", backdropFilter:"blur(8px)", borderRadius:10, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", flexShrink:0, whiteSpace:"nowrap" }}>
+                See All →
+              </button>
+            </div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))", gap:14 }}>
+              {animals.filter(a=>{ const lt=a.listingType||a.listing_type||"adopt"; return lt==="foster"||lt==="both"; }).length === 0 && (
+                <div style={{ gridColumn:"1/-1", background:"#f0fdf4", border:"1px solid #86efac", borderRadius:16, padding:"40px 24px", textAlign:"center" }}>
+                  <div style={{ fontSize:32, marginBottom:8 }}>💚</div>
+                  <div style={{ fontSize:14, fontWeight:700, color:"#16a34a", marginBottom:6 }}>Foster spots open</div>
+                  <div style={{ fontSize:13, color:"#4e5449", lineHeight:1.6 }}>No foster listings yet — shelters can post animals needing temporary homes.</div>
+                </div>
+              )}
+              {animals.filter(a=>{ const lt=a.listingType||a.listing_type||"adopt"; return lt==="foster"||lt==="both"; }).slice(0,4).map(a=>(
+                <div key={a.id} style={{ background:"#fff", borderRadius:16, overflow:"hidden", cursor:"pointer", border:"1px solid #86efac", boxShadow:"0 2px 8px rgba(22,163,74,0.08)", transition:"all 0.2s" }}
+                  onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
+                  onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 12px 32px rgba(22,163,74,0.18)"; }}
+                  onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="0 2px 8px rgba(22,163,74,0.08)"; }}>
+                  <div style={{ height:180, position:"relative", overflow:"hidden" }}>
+                    <img src={a.species==="Dog"?"https://i.imgur.com/9y1Muh4.png":"https://i.imgur.com/gy1SBr3.png"} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                    <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 55%)" }}/>
+                    <div style={{ position:"absolute", top:10, left:10 }}>
+                      <span style={{ background:"#16a34a", color:"#fff", fontSize:9, fontWeight:800, padding:"3px 8px", borderRadius:20, textTransform:"uppercase" }}>💚 Foster</span>
+                    </div>
+                    <div style={{ position:"absolute", bottom:10, left:12, right:12 }}>
+                      <div style={{ fontSize:15, fontWeight:700, color:"#fff", marginBottom:1 }}>{a.name}</div>
+                      <div style={{ fontSize:11, color:"rgba(255,255,255,0.8)" }}>{a.breed}</div>
+                    </div>
+                  </div>
+                  <div style={{ padding:"10px 14px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                    <div style={{ fontSize:11, color:"#4e5449" }}>📍 {a.shelterCity}, {a.shelterState}</div>
+                    <div style={{ fontSize:11, fontWeight:700, color:"#16a34a" }}>Foster →</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
       </div>
-
 
 
       {/* ── NETWORK SECTION — merged For Shelters + How It Works ── */}
