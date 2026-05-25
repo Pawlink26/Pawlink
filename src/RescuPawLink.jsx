@@ -1226,32 +1226,32 @@ export default function RescuPawLink() {
 
       {/* ── HERO — full width on desktop, padded on mobile ── */}
       <div style={{ padding:"clamp(16px,2vw,24px) clamp(16px,3vw,32px) 0" }}>
-        <div style={{ position:"relative", borderRadius:"clamp(12px,2vw,22px)", overflow:"hidden", height:"clamp(420px,65vh,680px)" }}>
+        <div style={{ position:"relative", borderRadius:"clamp(12px,2vw,22px)", overflow:"hidden", height:"clamp(420px,65vh,680px)", background:"#4a6b50" }}>
           <img src="https://i.imgur.com/VxvRJfd.png" alt="Dog and cat"
             style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"55% center" }}
-            onError={e=>e.target.style.display="none"}
           />
-          <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.12) 40%, rgba(0,0,0,0.48) 100%)" }}/>
+          {/* Gradient stronger at bottom so text is always readable */}
+          <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 30%, rgba(0,0,0,0.6) 75%, rgba(0,0,0,0.78) 100%)" }}/>
 
-          {/* Search bar overlaid */}
-          <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"0 24px" }}>
-            <h1 className="fade-up" style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(22px,4vw,48px)", fontWeight:900, color:"#fff", textAlign:"center", lineHeight:1.1, letterSpacing:"-1px", textShadow:"0 2px 16px rgba(0,0,0,0.3)", marginBottom:10 }}>
+          {/* Content pinned to bottom */}
+          <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-end", padding:"0 clamp(20px,5vw,64px) clamp(32px,5vw,56px)" }}>
+            <h1 className="fade-up" style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(24px,4vw,52px)", fontWeight:900, color:"#fff", textAlign:"center", lineHeight:1.08, letterSpacing:"-0.03em", textShadow:"0 2px 16px rgba(0,0,0,0.4)", marginBottom:12 }}>
               Connecting Shelters. Saving Lives.
             </h1>
-            <p className="fade-up-1" style={{ fontSize:"clamp(13px,1.6vw,16px)", color:"rgba(255,255,255,0.88)", textAlign:"center", marginBottom:18, textShadow:"0 1px 8px rgba(0,0,0,0.3)", maxWidth:520 }}>
+            <p className="fade-up-1" style={{ fontSize:"clamp(13px,1.6vw,16px)", color:"rgba(255,255,255,0.88)", textAlign:"center", marginBottom:24, textShadow:"0 1px 8px rgba(0,0,0,0.4)", maxWidth:500, lineHeight:1.6 }}>
               Share capacity, coordinate transfers, and get animals placed — before time runs out. Free for every shelter and rescue.
             </p>
-            {/* Two transparent CTA buttons */}
-            <div className="fade-up-1" style={{ display:"flex", gap:12, flexWrap:"wrap", justifyContent:"center" }}>
-              <button style={{ padding:"14px 28px", borderRadius:10, border:"2px solid rgba(255,255,255,0.6)", background:"rgba(255,255,255,0.15)", backdropFilter:"blur(12px)", color:"#fff", fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all 0.2s", letterSpacing:"0.01em" }}
-                onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"}
-                onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}
+            {/* Two frosted CTA buttons */}
+            <div className="fade-up-1" style={{ display:"flex", gap:12, flexWrap:"wrap", justifyContent:"center", width:"100%" }}>
+              <button style={{ padding:"14px clamp(20px,3vw,32px)", borderRadius:10, border:"2px solid rgba(255,255,255,0.6)", background:"rgba(255,255,255,0.18)", backdropFilter:"blur(12px)", color:"#fff", fontSize:"clamp(13px,1.4vw,15px)", fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all 0.2s", letterSpacing:"0.01em", flexShrink:0 }}
+                onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.28)"}
+                onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.18)"}
                 onClick={()=>{setAuthMode("register");setPage("login");}}>
                 Register Your Shelter
               </button>
-              <button style={{ padding:"14px 28px", borderRadius:10, border:"2px solid rgba(255,255,255,0.6)", background:"rgba(255,255,255,0.15)", backdropFilter:"blur(12px)", color:"#fff", fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all 0.2s", letterSpacing:"0.01em" }}
-                onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"}
-                onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}
+              <button style={{ padding:"14px clamp(20px,3vw,32px)", borderRadius:10, border:"2px solid rgba(255,255,255,0.6)", background:"rgba(255,255,255,0.18)", backdropFilter:"blur(12px)", color:"#fff", fontSize:"clamp(13px,1.4vw,15px)", fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all 0.2s", letterSpacing:"0.01em", flexShrink:0 }}
+                onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.28)"}
+                onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.18)"}
                 onClick={()=>{setPage("app");setTab("adopt");}}>
                 Adoptable Pets
               </button>
@@ -2209,22 +2209,26 @@ export default function RescuPawLink() {
                 <p style={{ color:"#4e5449", fontSize:14 }}>Live capacity across every partner shelter. Connect, coordinate, and save animals together.</p>
               </div>
               {!isLoggedIn && (
-                <button className="btn btn-primary btn-md" onClick={()=>{setAuthMode("register");setPage("login");}}>
-                  🐾 Join to Connect
+                <button style={{ background:"rgba(107,143,113,0.88)", color:"#fff", border:"2px solid rgba(107,143,113,0.6)", backdropFilter:"blur(8px)", borderRadius:10, padding:"10px 20px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", display:"flex", alignItems:"center", gap:6, flexShrink:0 }}
+                  onClick={()=>{setAuthMode("register");setPage("login");}}>
+                  {I.network} Join Network
                 </button>
               )}
             </div>
 
             {/* Sign-in prompt for guests */}
             {!isLoggedIn && (
-              <div style={{ background:"#eef4ef", border:"1px solid var(--sage-mid)", borderRadius:16, padding:"24px 28px", marginBottom:24, display:"grid", gridTemplateColumns:"1fr auto", gap:20, alignItems:"center", flexWrap:"wrap" }}>
-                <div>
-                  <div style={{ fontWeight:700, fontSize:16, color:"#1a1c18", marginBottom:6 }}>🔗 Want to coordinate with these shelters?</div>
-                  <p style={{ fontSize:14, color:"#4e5449", lineHeight:1.55 }}>Registered shelters can see full contact details, claim available space, send transfer requests, and message coordinators directly — all in one place.</p>
+              <div style={{ background:"#eef4ef", border:"1px solid #c7dfc9", borderRadius:16, padding:"28px 24px", marginBottom:24 }}>
+                <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:10 }}>
+                  {I.network}
+                  <div style={{ fontFamily:"'Inter',sans-serif", fontWeight:800, fontSize:17, color:"#1a1c18" }}>Connect with this network</div>
                 </div>
-                <div style={{ display:"flex", flexDirection:"column", gap:8, flexShrink:0 }}>
-                  <button className="btn btn-primary btn-md" onClick={()=>{setAuthMode("register");setPage("login");}}>Register Your Shelter</button>
-                  <button className="btn btn-ghost btn-sm" onClick={()=>{setAuthMode("login");setPage("login");}}>Sign In</button>
+                <p style={{ fontSize:14, color:"#4e5449", lineHeight:1.65, marginBottom:20 }}>Registered shelters can claim available space, send transfer requests, and message coordinators directly — all in one place.</p>
+                <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
+                  <button style={{ flex:1, minWidth:140, background:"rgba(107,143,113,0.88)", color:"#fff", border:"2px solid rgba(107,143,113,0.6)", backdropFilter:"blur(8px)", borderRadius:10, padding:"12px 20px", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
+                    onClick={()=>{setAuthMode("register");setPage("login");}}>Register Your Shelter</button>
+                  <button style={{ flex:1, minWidth:100, background:"#fff", color:"#4a6b50", border:"2px solid #c7dfc9", borderRadius:10, padding:"12px 20px", fontSize:14, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}
+                    onClick={()=>{setAuthMode("login");setPage("login");}}>Sign In</button>
                 </div>
               </div>
             )}
