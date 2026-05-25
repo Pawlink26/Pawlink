@@ -1910,11 +1910,21 @@ export default function RescuPawLink() {
   if (page === "login") return (
     <div style={{ minHeight:"100vh", background:"#f8f8f6", display:"flex", flexDirection:"column", fontFamily:"'DM Sans',sans-serif" }}>
       {/* Auth Nav */}
-      <nav style={{ background:"#f8f8f6", borderBottom:"1px solid var(--border)", padding:"0 32px", height:64, display:"flex", alignItems:"center", justifyContent:"space-between", boxShadow:"0 1px 6px rgba(0,0,0,0.04)" }}>
-        <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:9 }}>
+      <nav style={{ background:"#ffffff", borderBottom:"1px solid #e8e8e6", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
+        <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer" }}>
           <span style={{ fontFamily:"'Inter',sans-serif", fontSize:17, fontWeight:800, color:"#1a1c18", letterSpacing:"-0.4px" }}><span style={{ color:"#6b8f71" }}>Rescu</span>PawLink</span>
         </button>
-        <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", color:"#4e5449", cursor:"pointer", fontSize:13, fontFamily:"inherit", display:"flex", alignItems:"center", gap:5 }}>← Back to site</button>
+        <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:0 }}>
+          {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["About",()=>setPage("about")],["Contact",null]].map(([l,fn],i,arr)=>(
+            <span key={l} style={{ display:"flex", alignItems:"center" }}>
+              <button onClick={fn||undefined} style={{ background:"none", border:"none", cursor:fn?"pointer":"default", fontFamily:"inherit", fontSize:13, fontWeight:500, color:"#4e5449", padding:"6px 14px", borderRadius:6 }}
+                onMouseEnter={e=>{ if(fn) e.currentTarget.style.color="#1a1c18"; }}
+                onMouseLeave={e=>e.currentTarget.style.color="#4e5449"}>{l}</button>
+              {i < arr.length-1 && <span style={{ color:"#ddd", fontSize:12 }}>|</span>}
+            </span>
+          ))}
+        </div>
+        <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", color:"#4e5449", cursor:"pointer", fontSize:13, fontFamily:"inherit" }}>← Back</button>
       </nav>
       <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", padding:24, background:"#f8f8f6" }}>
       <div className="card fade-up" style={{ width:"100%", maxWidth:460, padding:"36px 40px", boxShadow:"0 8px 40px rgba(0,0,0,0.1)", border:"1px solid var(--border)" }}>
@@ -2150,7 +2160,7 @@ export default function RescuPawLink() {
                   <div style={{ display:"flex", gap:6 }}>
                     {["All","Dog","Cat","Other","Foster"].map(sp=>(
                       <button key={sp} className={`filter-chip ${fSpecies===sp?"active":""}`} onClick={()=>setFSpecies(sp)}>
-                        {sp==="Foster"?<span style={{fontSize:16}}>💚</span>:sp==="Dog"?<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 32,35 C 22,35 20,53 26,58 C 30,62 33,52 35,46 C 37,40 43,33 50,33 C 57,33 63,40 65,46 C 67,52 70,62 74,58 C 80,53 78,35 68,35 C 60,35 56,42 56,48 C 56,58 62,65 50,65 C 38,65 44,58 44,48 C 44,42 40,35 32,35 Z M 46,55 C 47,53 53,53 54,55 C 54,57 52,60 50,60 C 48,60 46,57 46,55 Z" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>:sp==="Cat"?<svg viewBox="0 0 100 100" width="22" height="22" fill="none"><rect width="100" height="100" rx="24" fill="#C2D3C6"/><path d="M 30,42 C 28,32 35,26 40,34 C 44,30 56,30 60,34 C 65,26 72,32 70,42 C 72,55 65,68 50,68 C 35,68 28,55 30,42 Z M 43,47 C 44,45 48,45 48,47 M 52,47 C 52,45 56,45 57,47 M 47,54 C 49,56 51,56 53,54 L 50,51 Z M 24,49 L 31,48 M 22,54 L 30,51 M 78,49 L 69,48 M 80,54 L 70,51" stroke="#2E4436" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>:sp==="Other"?<span>🐾</span>:null} {sp}
+                        {sp}
                       </button>
                     ))}
                   </div>
