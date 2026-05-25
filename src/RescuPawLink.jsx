@@ -1170,7 +1170,6 @@ export default function RescuPawLink() {
     ["Shelters",     ()=>{setPage("app");setTab("network");setMobileOpen(false);}],
     ["Lost & Found", ()=>{setPage("app");setTab("lostfound");setMobileOpen(false);}],
     ["About",        ()=>{setPage("about");setMobileOpen(false);}],
-    ["Resources",    null],
     ["Contact",      null],
   ];
 
@@ -1189,7 +1188,7 @@ export default function RescuPawLink() {
           <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:0 }}>
             {NAV_LINKS.map(([l,fn],i,arr)=>(
               <span key={l} style={{ display:"flex", alignItems:"center" }}>
-                <button onClick={fn||undefined} style={{ background:"none", border:"none", cursor:fn?"pointer":"default", fontFamily:"inherit", fontSize:13, fontWeight:500, color:"#4e5449", padding:"6px 12px", borderRadius:6, transition:"color 0.15s" }}
+                <button onClick={fn||undefined} style={{ background:"none", border:"none", cursor:fn?"pointer":"default", fontFamily:"inherit", fontSize:13, fontWeight:500, color:"#4e5449", padding:"6px 14px", borderRadius:6, transition:"color 0.15s", whiteSpace:"nowrap" }}
                   onMouseEnter={e=>{ if(fn) e.currentTarget.style.color="#1a1c18"; }}
                   onMouseLeave={e=>e.currentTarget.style.color="#4e5449"}>{l}</button>
                 {i < arr.length-1 && <span style={{ color:"#d0c8bc", fontSize:12 }}>|</span>}
@@ -1575,7 +1574,7 @@ export default function RescuPawLink() {
               <div style={{ fontSize:12, color:"rgba(255,255,255,0.38)" }}>Every animal deserves a second chance.</div>
             </div>
             <div style={{ display:"flex", gap:0, alignItems:"center", fontSize:12, color:"rgba(255,255,255,0.45)" }}>
-              {[["About",()=>{setPage("about");}],["Resources",null],["Pet Search",()=>{setPage("app");setTab("adopt");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["Contact",null]].map(([l,fn],i,arr)=>(
+              {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["About",()=>setPage("about")],["Contact",null]].map(([l,fn],i,arr)=>(
                 <span key={l} style={{ display:"flex", alignItems:"center" }}>
                   <button onClick={fn||undefined} style={{ background:"none", border:"none", color:"rgba(255,255,255,0.45)", cursor:fn?"pointer":"default", fontFamily:"inherit", fontSize:12, padding:"4px 10px" }}
                     onMouseEnter={e=>{ if(fn) e.currentTarget.style.color="#fff"; }}
@@ -1614,7 +1613,7 @@ export default function RescuPawLink() {
             <span style={{ fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"#1a1c18", letterSpacing:"-0.4px" }}><span style={{ color:"#6b8f71" }}>Rescu</span>PawLink</span>
           </button>
           <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:4 }}>
-            {[["Pet Search",()=>{setPage("app");setTab("adopt");}],["Shelters",()=>{setPage("app");setTab("network");}],["About",()=>setPage("about")],["Resources",null],["Contact",null]].map(([l,fn],i,arr)=>(
+            {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["About",()=>setPage("about")],["Contact",null]].map(([l,fn],i,arr)=>(
               <span key={l} style={{ display:"flex", alignItems:"center" }}>
                 <button onClick={fn||undefined} style={{ background:"none", border:"none", cursor:fn?"pointer":"default", fontFamily:"inherit", fontSize:13, fontWeight:l==="About"?700:500, color:l==="About"?"#1a1c18":"#4e5449", padding:"6px 12px", borderRadius:6 }}>{l}</button>
                 {i < arr.length-1 && <span style={{ color:"#ddd", fontSize:12 }}>|</span>}
@@ -1820,7 +1819,17 @@ export default function RescuPawLink() {
     <div style={{ fontFamily:"'DM Sans',sans-serif", color:"#1a1c18", background:"#f8f8f6", minHeight:"100vh" }}>
       <nav style={{ background:"#fff", borderBottom:"1px solid #e8e8e6", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100 }}>
         <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"#1a1c18", letterSpacing:"-0.4px" }}><span style={{ color:"#6b8f71" }}>Rescu</span>PawLink</button>
-        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontSize:13, color:"#4e5449", fontFamily:"inherit", display:"flex", alignItems:"center", gap:5 }}>← Back</button>
+        <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:0 }}>
+          {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["About",()=>setPage("about")],["Contact",null]].map(([l,fn],i,arr)=>(
+            <span key={l} style={{ display:"flex", alignItems:"center" }}>
+              <button onClick={fn||undefined} style={{ background:"none", border:"none", cursor:fn?"pointer":"default", fontFamily:"inherit", fontSize:13, fontWeight:500, color:"#4e5449", padding:"6px 14px", borderRadius:6 }}
+                onMouseEnter={e=>{ if(fn) e.currentTarget.style.color="#1a1c18"; }}
+                onMouseLeave={e=>e.currentTarget.style.color="#4e5449"}>{l}</button>
+              {i < arr.length-1 && <span style={{ color:"#ddd", fontSize:12 }}>|</span>}
+            </span>
+          ))}
+        </div>
+        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontSize:13, color:"#4e5449", fontFamily:"inherit" }}>← Back</button>
       </nav>
       <div style={{ maxWidth:720, margin:"0 auto", padding:"56px clamp(16px,4vw,48px) 80px" }}>
         <div style={{ fontSize:11, fontWeight:700, color:"#6b8f71", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:12 }}>Legal</div>
@@ -1854,7 +1863,17 @@ export default function RescuPawLink() {
     <div style={{ fontFamily:"'DM Sans',sans-serif", color:"#1a1c18", background:"#f8f8f6", minHeight:"100vh" }}>
       <nav style={{ background:"#fff", borderBottom:"1px solid #e8e8e6", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100 }}>
         <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"#1a1c18", letterSpacing:"-0.4px" }}><span style={{ color:"#6b8f71" }}>Rescu</span>PawLink</button>
-        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontSize:13, color:"#4e5449", fontFamily:"inherit", display:"flex", alignItems:"center", gap:5 }}>← Back</button>
+        <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:0 }}>
+          {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["About",()=>setPage("about")],["Contact",null]].map(([l,fn],i,arr)=>(
+            <span key={l} style={{ display:"flex", alignItems:"center" }}>
+              <button onClick={fn||undefined} style={{ background:"none", border:"none", cursor:fn?"pointer":"default", fontFamily:"inherit", fontSize:13, fontWeight:500, color:"#4e5449", padding:"6px 14px", borderRadius:6 }}
+                onMouseEnter={e=>{ if(fn) e.currentTarget.style.color="#1a1c18"; }}
+                onMouseLeave={e=>e.currentTarget.style.color="#4e5449"}>{l}</button>
+              {i < arr.length-1 && <span style={{ color:"#ddd", fontSize:12 }}>|</span>}
+            </span>
+          ))}
+        </div>
+        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontSize:13, color:"#4e5449", fontFamily:"inherit" }}>← Back</button>
       </nav>
       <div style={{ maxWidth:720, margin:"0 auto", padding:"56px clamp(16px,4vw,48px) 80px" }}>
         <div style={{ fontSize:11, fontWeight:700, color:"#6b8f71", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:12 }}>Legal</div>
@@ -1981,19 +2000,19 @@ export default function RescuPawLink() {
           {/* Center — desktop tab links */}
           <nav className="hide-mobile" style={{ display:"flex", gap:2 }}>
             {[
-              { key:"adopt",     label:"Adopt",             icon:I.heartPaw },
-              { key:"foster",    label:"Foster",            icon:I.paw      },
-              { key:"network",   label:"Shelter Network",   icon:I.network  },
-              { key:"lostfound", label:"Lost & Found",      icon:I.search   },
+              { key:"adopt",     label:"Adopt"             },
+              { key:"foster",    label:"Foster"            },
+              { key:"network",   label:"Shelter Network"   },
+              { key:"lostfound", label:"Lost & Found"      },
               ...(isLoggedIn ? [
-                { key:"chat",      label:"Coordinator Chat", icon:I.chat },
-                { key:"post",      label:"Post Animal",      icon:I.plus },
-                { key:"dashboard", label:"Dashboard",        icon:I.home },
+                { key:"chat",      label:"Coordinator Chat" },
+                { key:"post",      label:"Post Animal"      },
+                { key:"dashboard", label:"Dashboard"        },
               ] : []),
             ].map(t => (
               <button key={t.key} className={`nav-link ${(t.key==="foster"&&tab==="adopt"&&fSpecies==="Foster")||(t.key==="adopt"&&tab==="adopt"&&fSpecies!=="Foster")||(t.key!=="foster"&&t.key!=="adopt"&&tab===t.key)?"active":""}`}
                 onClick={() => { if(t.key==="foster"){ setTab("adopt"); setFSpecies("Foster"); } else { setTab(t.key); if(t.key==="adopt") setFSpecies("All"); } }}>
-                {t.icon}<span>{t.label}</span>
+                <span>{t.label}</span>
               </button>
             ))}
           </nav>
