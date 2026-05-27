@@ -666,7 +666,7 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
                       style={{ flex:1, padding:"9px 10px", borderRadius:9, cursor:"pointer", display:"flex", alignItems:"center", gap:8, background:isActive?"#eef4ef":"rgba(107,143,113,0.05)", border:`1px solid ${isActive?"#c7dfc9":"rgba(107,143,113,0.15)"}`, borderLeft:`3px solid ${isActive?"#6b8f71":"rgba(107,143,113,0.3)"}`, transition:"all 0.15s" }}
                       onMouseEnter={e=>{ if(!isActive) e.currentTarget.style.background="#eef4ef"; }}
                       onMouseLeave={e=>{ if(!isActive) e.currentTarget.style.background="rgba(107,143,113,0.05)"; }}>
-                      <div style={{ width:24, height:24, borderRadius:6, background:isActive?"rgba(107,143,113,0.2)":"rgba(107,143,113,0.1)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{I.network}</div>
+                      <div style={{ width:24, height:24, borderRadius:6, background:isActive?"rgba(107,143,113,0.2)":"rgba(107,143,113,0.1)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{I.home}</div>
                       <div style={{ flex:1, minWidth:0 }}>
                         <div style={{ fontSize:13, fontWeight:isActive?700:500, color:isActive?"#4a6b50":"#1a1c18", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{st} Shelters</div>
                         {isOwn && <div style={{ fontSize:10, color:"#6b8f71" }}>Your state</div>}
@@ -1178,9 +1178,9 @@ export default function RescuPawLink() {
 
       {/* ── NAV ── */}
       <nav style={{ background:"#ffffff", borderBottom:"1px solid #e8e8e6", position:"sticky", top:0, zIndex:100 }}>
-        <div style={{ maxWidth:"100%", margin:"0 auto", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+        <div style={{ maxWidth:"100%", margin:"0 auto", padding:"0 clamp(16px,3vw,48px)", height:72, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
           <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", padding:0 }}>
-<img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:38, width:"auto", display:"block" }}/>
+<img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:52, width:"auto", display:"block" }}/>
           </button>
           <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:0 }}>
             {NAV_LINKS.map(([l,fn],i,arr)=>(
@@ -1261,7 +1261,7 @@ export default function RescuPawLink() {
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))", gap:12 }}>
           {[
             {
-              icon:<img src="https://i.imgur.com/CTeO1wb.png" style={{ width:36, height:36, objectFit:"cover", borderRadius:8 }}/>,
+              icon:<img src="https://i.imgur.com/CTeO1wb.png" style={{ width:36, height:36, objectFit:"cover", borderRadius:8, filter:"brightness(0) invert(1)" }}/>,
               label:"SHELTER NETWORK",
               desc:"Find shelter networks, maps, and shelter coordinators.",
               fn:()=>{setPage("app");setTab("network");},
@@ -1293,7 +1293,7 @@ export default function RescuPawLink() {
               style={{ display:"flex", flexDirection:"column", alignItems:"flex-start", gap:10, padding:"20px 18px", background:t.active?"#6b8f71":"#ffffff", borderRadius:14, border:`1px solid ${t.active?"#6b8f71":"#e8e8e6"}`, cursor:"pointer", textAlign:"left", transition:"all 0.2s", fontFamily:"inherit" }}
               onMouseEnter={e=>{ if(!t.active){ e.currentTarget.style.background="#f4f4f2"; e.currentTarget.style.borderColor="#d0c8bc"; }}}
               onMouseLeave={e=>{ if(!t.active){ e.currentTarget.style.background="#fff"; e.currentTarget.style.borderColor="#e8e8e6"; }}}>
-              <div style={{ color:t.active?"#fff":"#6b8f71" }}>{t.icon}</div>
+              <div style={{ color:t.active?"#fff":"#6b8f71", filter:t.active?"brightness(0) invert(1)":"none" }}>{t.icon}</div>
               <div>
                 <div style={{ fontSize:11, fontWeight:800, color:t.active?"rgba(255,255,255,0.9)":"#1a1c18", letterSpacing:"0.07em", marginBottom:5 }}>{t.label}</div>
                 <div style={{ fontSize:12, color:t.active?"rgba(255,255,255,0.75)":"#4e5449", lineHeight:1.55 }}>{t.desc}</div>
@@ -1566,7 +1566,7 @@ export default function RescuPawLink() {
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:20, marginBottom:16 }}>
             <div>
               <div style={{ fontFamily:"'Inter',sans-serif", fontSize:15, fontWeight:800, color:"#fff", marginBottom:4 }}>
-<img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:34, width:"auto", display:"block" }}/>
+<img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:48, width:"auto", display:"block" }}/>
               </div>
               <div style={{ fontSize:12, color:"rgba(255,255,255,0.38)" }}>Every animal deserves a second chance.</div>
             </div>
@@ -1605,9 +1605,9 @@ export default function RescuPawLink() {
 
       {/* ── NAV ── */}
       <nav style={{ background:"#fff", borderBottom:"1px solid #e8e8e6", position:"sticky", top:0, zIndex:100, boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
-        <div style={{ maxWidth:"100%", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+        <div style={{ maxWidth:"100%", padding:"0 clamp(16px,3vw,48px)", height:72, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
           <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", padding:0 }}>
-            <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:38, width:"auto", display:"block" }}/>
+            <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:52, width:"auto", display:"block" }}/>
           </button>
           <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:4 }}>
             {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["About",()=>setPage("about")],].map(([l,fn],i,arr)=>(
@@ -1783,7 +1783,7 @@ export default function RescuPawLink() {
       <footer style={{ background:"#1a1c18", padding:"28px clamp(16px,4vw,48px)" }}>
         <div style={{ maxWidth:1400, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:20, marginBottom:16 }}>
           <div>
-            <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:26, width:"auto", display:"block", marginBottom:4, filter:"brightness(0) invert(1)" }}/>
+            <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:38, width:"auto", display:"block", marginBottom:4, filter:"brightness(0) invert(1)" }}/>
             <div style={{ fontSize:12, color:"rgba(255,255,255,0.38)" }}>Every animal deserves a second chance.</div>
           </div>
           <div style={{ display:"flex", gap:0, alignItems:"center" }}>
@@ -1814,8 +1814,8 @@ export default function RescuPawLink() {
 
   if (page === "privacy") return (
     <div style={{ fontFamily:"'DM Sans',sans-serif", color:"#1a1c18", background:"#f8f8f6", minHeight:"100vh" }}>
-      <nav style={{ background:"#fff", borderBottom:"1px solid #e8e8e6", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100 }}>
-        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"#1a1c18", letterSpacing:"-0.4px" }}><img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:38, width:"auto", display:"block" }}/></button>
+      <nav style={{ background:"#fff", borderBottom:"1px solid #e8e8e6", padding:"0 clamp(16px,3vw,48px)", height:72, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100 }}>
+        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"#1a1c18", letterSpacing:"-0.4px" }}><img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:52, width:"auto", display:"block" }}/></button>
         <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:0 }}>
           {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["About",()=>setPage("about")],].map(([l,fn],i,arr)=>(
             <span key={l} style={{ display:"flex", alignItems:"center" }}>
@@ -1858,8 +1858,8 @@ export default function RescuPawLink() {
 
   if (page === "terms") return (
     <div style={{ fontFamily:"'DM Sans',sans-serif", color:"#1a1c18", background:"#f8f8f6", minHeight:"100vh" }}>
-      <nav style={{ background:"#fff", borderBottom:"1px solid #e8e8e6", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100 }}>
-        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"#1a1c18", letterSpacing:"-0.4px" }}><img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:38, width:"auto", display:"block" }}/></button>
+      <nav style={{ background:"#fff", borderBottom:"1px solid #e8e8e6", padding:"0 clamp(16px,3vw,48px)", height:72, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100 }}>
+        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"#1a1c18", letterSpacing:"-0.4px" }}><img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:52, width:"auto", display:"block" }}/></button>
         <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:0 }}>
           {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["About",()=>setPage("about")],].map(([l,fn],i,arr)=>(
             <span key={l} style={{ display:"flex", alignItems:"center" }}>
@@ -1907,9 +1907,9 @@ export default function RescuPawLink() {
   if (page === "login") return (
     <div style={{ minHeight:"100vh", background:"#f8f8f6", display:"flex", flexDirection:"column", fontFamily:"'DM Sans',sans-serif" }}>
       {/* Auth Nav */}
-      <nav style={{ background:"#ffffff", borderBottom:"1px solid #e8e8e6", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
+      <nav style={{ background:"#ffffff", borderBottom:"1px solid #e8e8e6", padding:"0 clamp(16px,3vw,48px)", height:72, display:"flex", alignItems:"center", justifyContent:"space-between", boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
         <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer" }}>
-          <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:36, width:"auto", display:"block" }}/>
+          <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:48, width:"auto", display:"block" }}/>
         </button>
         <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:0 }}>
           {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["About",()=>setPage("about")],].map(([l,fn],i,arr)=>(
@@ -1988,7 +1988,7 @@ export default function RescuPawLink() {
 
       {/* Header */}
       <header style={{ background:"#ffffff", borderBottom:"1px solid #e8e8e6", position:"sticky", top:0, zIndex:100, boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
-        <div style={{ maxWidth:"100%", margin:"0 auto", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", gap:8 }}>
+        <div style={{ maxWidth:"100%", margin:"0 auto", padding:"0 clamp(16px,3vw,48px)", height:72, display:"flex", alignItems:"center", justifyContent:"space-between", gap:8 }}>
 
           {/* Left — back + wordmark */}
           <div style={{ display:"flex", alignItems:"center", gap:4, flexShrink:0 }}>
@@ -2000,7 +2000,7 @@ export default function RescuPawLink() {
             </button>
             <div style={{ width:1, height:18, background:"#e4e4e2", margin:"0 4px" }}/>
             <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", padding:0 }}>
-              <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:36, width:"auto", display:"block" }}/>
+              <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:48, width:"auto", display:"block" }}/>
             </button>
           </div>
 
