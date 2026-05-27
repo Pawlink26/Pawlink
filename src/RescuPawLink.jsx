@@ -1180,9 +1180,7 @@ export default function RescuPawLink() {
       <nav style={{ background:"#ffffff", borderBottom:"1px solid #e8e8e6", position:"sticky", top:0, zIndex:100 }}>
         <div style={{ maxWidth:"100%", margin:"0 auto", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
           <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", padding:0 }}>
-            <span style={{ fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"#1a1c18", letterSpacing:"-0.4px" }}>
-              <span style={{ color:"#6b8f71" }}>Rescu</span>PawLink
-            </span>
+<img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:38, width:"auto", display:"block" }}/>
           </button>
           <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:0 }}>
             {NAV_LINKS.map(([l,fn],i,arr)=>(
@@ -1568,7 +1566,7 @@ export default function RescuPawLink() {
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:20, marginBottom:16 }}>
             <div>
               <div style={{ fontFamily:"'Inter',sans-serif", fontSize:15, fontWeight:800, color:"#fff", marginBottom:4 }}>
-                <span style={{ color:"#6b8f71" }}>Rescu</span>PawLink
+<img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:34, width:"auto", display:"block" }}/>
               </div>
               <div style={{ fontSize:12, color:"rgba(255,255,255,0.38)" }}>Every animal deserves a second chance.</div>
             </div>
@@ -1609,7 +1607,7 @@ export default function RescuPawLink() {
       <nav style={{ background:"#fff", borderBottom:"1px solid #e8e8e6", position:"sticky", top:0, zIndex:100, boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
         <div style={{ maxWidth:"100%", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
           <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", padding:0 }}>
-            <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:32, width:"auto", display:"block" }}/>
+            <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:38, width:"auto", display:"block" }}/>
           </button>
           <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:4 }}>
             {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["About",()=>setPage("about")],].map(([l,fn],i,arr)=>(
@@ -1817,7 +1815,7 @@ export default function RescuPawLink() {
   if (page === "privacy") return (
     <div style={{ fontFamily:"'DM Sans',sans-serif", color:"#1a1c18", background:"#f8f8f6", minHeight:"100vh" }}>
       <nav style={{ background:"#fff", borderBottom:"1px solid #e8e8e6", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100 }}>
-        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"#1a1c18", letterSpacing:"-0.4px" }}><img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:32, width:"auto", display:"block" }}/></button>
+        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"#1a1c18", letterSpacing:"-0.4px" }}><img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:38, width:"auto", display:"block" }}/></button>
         <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:0 }}>
           {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["About",()=>setPage("about")],].map(([l,fn],i,arr)=>(
             <span key={l} style={{ display:"flex", alignItems:"center" }}>
@@ -1861,7 +1859,7 @@ export default function RescuPawLink() {
   if (page === "terms") return (
     <div style={{ fontFamily:"'DM Sans',sans-serif", color:"#1a1c18", background:"#f8f8f6", minHeight:"100vh" }}>
       <nav style={{ background:"#fff", borderBottom:"1px solid #e8e8e6", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100 }}>
-        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"#1a1c18", letterSpacing:"-0.4px" }}><img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:32, width:"auto", display:"block" }}/></button>
+        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontFamily:"'Inter',sans-serif", fontSize:18, fontWeight:800, color:"#1a1c18", letterSpacing:"-0.4px" }}><img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:38, width:"auto", display:"block" }}/></button>
         <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:0 }}>
           {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["About",()=>setPage("about")],].map(([l,fn],i,arr)=>(
             <span key={l} style={{ display:"flex", alignItems:"center" }}>
@@ -1911,7 +1909,7 @@ export default function RescuPawLink() {
       {/* Auth Nav */}
       <nav style={{ background:"#ffffff", borderBottom:"1px solid #e8e8e6", padding:"0 clamp(16px,3vw,48px)", height:62, display:"flex", alignItems:"center", justifyContent:"space-between", boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
         <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer" }}>
-          <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:28, width:"auto", display:"block" }}/>
+          <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:36, width:"auto", display:"block" }}/>
         </button>
         <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:0 }}>
           {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["About",()=>setPage("about")],].map(([l,fn],i,arr)=>(
@@ -2002,7 +2000,7 @@ export default function RescuPawLink() {
             </button>
             <div style={{ width:1, height:18, background:"#e4e4e2", margin:"0 4px" }}/>
             <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", padding:0 }}>
-              <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:28, width:"auto", display:"block" }}/>
+              <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:36, width:"auto", display:"block" }}/>
             </button>
           </div>
 
