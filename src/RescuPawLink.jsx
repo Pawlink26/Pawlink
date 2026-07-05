@@ -1028,6 +1028,7 @@ export default function RescuPawLink() {
       if (result.error) { setAuthErr(result.error_description || "Invalid email or password."); setLoading(false); return; }
       if (!result.access_token) { setAuthErr("Please verify your email address before signing in. Check your inbox for a confirmation link."); setLoading(false); return; }
       localStorage.setItem("rpl_token", result.access_token);
+      localStorage.setItem("rpl_login_time", Date.now().toString());
       // Find shelter by email
       const shelterData = await sbFetch(`shelters?email=eq.${encodeURIComponent(loginF.email)}`);
       if (shelterData?.[0]) {
@@ -1039,6 +1040,7 @@ export default function RescuPawLink() {
         // Admin account — no shelter row needed
         const adminUser = { id:"admin", name:"RescuPawLink Admin", email:"rescupawlink@gmail.com", verified:true, isAdmin:true };
         localStorage.setItem("rpl_shelter_id", "admin");
+        localStorage.setItem("rpl_login_time", Date.now().toString());
         setUser(adminUser);
         setPage("app"); setTab("admin");
         showToast("Welcome, Admin!");
@@ -1086,6 +1088,7 @@ export default function RescuPawLink() {
   function handleSignOut() {
     localStorage.removeItem("rpl_token");
     localStorage.removeItem("rpl_shelter_id");
+    localStorage.removeItem("rpl_login_time");
     setUser(null); setPage("landing");
   }
 
@@ -1993,24 +1996,27 @@ export default function RescuPawLink() {
 
         {authErr && <div style={{ background:"#fdf0eb", border:"1px solid #f0c4b4", color:"#dc2626", borderRadius:9, padding:"10px 14px", fontSize:13, marginBottom:18 }}>{authErr}</div>}
 
-        {authMode === "login" ? (
-          {authMode === "verify" && (
-            <div style={{ textAlign:"center", padding:"20px 0" }}>
-              <div style={{ width:64, height:64, borderRadius:20, background:"#eef4ef", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 20px" }}>{I.check}</div>
-              <h3 style={{ fontFamily:"'Inter',sans-serif", fontSize:20, fontWeight:800, marginBottom:10 }}>Verify Your Email</h3>
-              <p style={{ fontSize:14, color:"#4e5449", lineHeight:1.7, marginBottom:24 }}>
-                We sent a confirmation link to <strong>{regF.email}</strong>. Click the link in your email to activate your account, then come back and sign in.
-              </p>
-              <div style={{ background:"#f4f4f2", borderRadius:12, padding:"14px 18px", fontSize:13, color:"#4e5449", marginBottom:24, textAlign:"left", lineHeight:1.65 }}>
-                <strong>Didn't get it?</strong> Check your spam folder or make sure you entered the right email address.
-              </div>
-              <button type="button" className="btn btn-primary btn-lg" style={{ width:"100%" }}
-                onClick={()=>setAuthMode("login")}>
-                Go to Sign In
-              </button>
+        {/* Verify screen */}
+        {authMode === "verify" && (
+          <div style={{ textAlign:"center", padding:"20px 0" }}>
+            <div style={{ width:64, height:64, borderRadius:20, background:"#eef4ef", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 20px" }}>{I.check}</div>
+            <h3 style={{ fontFamily:"'Inter',sans-serif", fontSize:20, fontWeight:800, marginBottom:10 }}>Verify Your Email</h3>
+            <p style={{ fontSize:14, color:"#4e5449", lineHeight:1.7, marginBottom:24 }}>
+              We sent a confirmation link to <strong>{regF.email}</strong>. Click the link in your email to activate your account, then come back and sign in.
+            </p>
+            <div style={{ background:"#f4f4f2", borderRadius:12, padding:"14px 18px", fontSize:13, color:"#4e5449", marginBottom:24, textAlign:"left", lineHeight:1.65 }}>
+              <strong>Didn't get it?</strong> Check your spam folder or make sure you entered the right email address.
             </div>
-          )}
-          <form onSubmit={handleLogin} style={{ display: authMode==="login" ? "block" : "none" }}>
+            <button type="button" className="btn btn-primary btn-lg" style={{ width:"100%" }}
+              onClick={()=>setAuthMode("login")}>
+              Go to Sign In
+            </button>
+          </div>
+        )}
+
+        {/* Login form */}
+        {authMode === "login" && (
+          <form onSubmit={handleLogin}>
             <h2 style={{ fontSize:22, marginBottom:4 }}>Welcome back</h2>
             <p style={{ color:"#4e5449", fontSize:13, marginBottom:22 }}>Sign in to your shelter account.</p>
             <div style={{ marginBottom:14 }}><label className="label">Email</label><input className="input" type="email" required placeholder="intake@yourshelter.org" value={loginF.email} onChange={e=>setLoginF(p=>({...p,email:e.target.value}))} /></div>
@@ -2018,7 +2024,9 @@ export default function RescuPawLink() {
             <div style={{ fontSize:12, color:"#9a9e95", marginBottom:22 }}>Demo: any shelter email + password "demo"</div>
             <button className="btn btn-primary btn-md" type="submit" style={{ width:"100%", padding:13 }} disabled={loading}>{loading ? <Spinner /> : "Sign In"}</button>
           </form>
-        ) : (
+        )}
+        {/* Register form */}
+        {authMode === "register" && (
           <form onSubmit={handleRegister}>
             <h2 style={{ fontSize:22, marginBottom:4 }}>Join RescuPawLink</h2>
             <p style={{ color:"#4e5449", fontSize:13, marginBottom:22 }}>Free for all shelters and rescues.</p>
