@@ -1001,26 +1001,44 @@ export default function RescuPawLink() {
   async function loadShelters() {
     try {
       const data = await sbFetch("shelters?order=name");
-      if (data?.length) setShelters(data);
+      if (data?.length) {
+        setShelters(prev => {
+          const realIds = new Set(data.map(s => s.id));
+          const seedOnly = prev.filter(s => !realIds.has(s.id));
+          return [...data, ...seedOnly];
+        });
+      }
     } catch(e) { console.log("Using seed shelters"); }
   }
 
   async function loadAnimals() {
     try {
       const data = await sbFetch("animals?order=days_left");
-      if (data?.length) setAnimals(data.map(a => ({
-        ...a,
-        daysLeft: a.days_left,
-        shelterName: a.shelter_name,
-        shelterCity: a.shelter_city,
-        shelterState: a.shelter_state,
-        shelterPhone: a.shelter_phone,
-        shelterEmail: a.shelter_email,
-        goodWithKids: a.good_with_kids,
-        goodWithDogs: a.good_with_dogs,
-        goodWithCats: a.good_with_cats,
-      })));
+      if (data?.length) {
+        const realAnimals = data.map(a => ({
+          ...a,
+          daysLeft: a.days_left,
+          shelterName: a.shelter_name,
+          shelterCity: a.shelter_city,
+          shelterState: a.shelter_state,
+          shelterPhone: a.shelter_phone,
+          shelterEmail: a.shelter_email,
+          goodWithKids: a.good_with_kids,
+          goodWithDogs: a.good_with_dogs,
+          goodWithCats: a.good_with_cats,
+        }));
+        // Merge: keep seed animals + add real ones (avoid duplicates by id)
+        setAnimals(prev => {
+          const realIds = new Set(realAnimals.map(a => a.id));
+          const seedOnly = prev.filter(a => !realIds.has(a.id));
+          return [...realAnimals, ...seedOnly].sort((a,b) => (a.daysLeft||99)-(b.daysLeft||99));
+        });
+      }
     } catch(e) { console.log("Using seed animals"); }
+  }
+
+  async function loadSheltersAndAnimals() {
+    await Promise.all([loadShelters(), loadAnimals()]);
   }
 
   // ── Auth ────────────────────────────────────────
@@ -1061,30 +1079,45 @@ export default function RescuPawLink() {
     e.preventDefault(); setAuthErr(""); setLoading(true);
     if (regF.password !== regF.confirm) { setAuthErr("Passwords do not match."); setLoading(false); return; }
     try {
-      // Sign up with Supabase Auth
+      // Step 1 — Create auth account
       const result = await sbAuth("signup", regF.email, regF.password);
-      if (result.error) { setAuthErr(result.error_description || "Registration failed. This email may already be registered."); setLoading(false); return; }
-      // Create shelter profile in database
-      await sbFetch("shelters", {
+      if (result.error) {
+        setAuthErr(result.error_description || "Registration failed. This email may already be registered.");
+        setLoading(false); return;
+      }
+
+      // Step 2 — Save shelter profile to Supabase
+      const shelterPayload = {
+        name: regF.orgName, type: regF.type, city: regF.city,
+        state: regF.state, email: regF.email.toLowerCase(), phone: regF.phone,
+        total_space: 0, available_space: 0, needs_help: false,
+        can_take: [], bio: "", verified: false,
+      };
+      const shelterResult = await sbFetch("shelters", {
         method: "POST",
-        body: JSON.stringify({
-          name: regF.orgName, type: regF.type, city: regF.city,
-          state: regF.state, email: regF.email, phone: regF.phone,
-          total_space: 0, available_space: 0, needs_help: false,
-          can_take: [], bio: "", verified: false,
-        }),
+        body: JSON.stringify(shelterPayload),
       });
-      // Show email verification message — do NOT auto-login
+
+      // Step 3 — Log result for debugging
+      console.log("Shelter save result:", shelterResult);
+      if (!shelterResult || shelterResult.error) {
+        console.error("Shelter save failed:", shelterResult?.error);
+        // Still show verify screen — auth account was created
+        // Admin will need to manually add shelter or fix RLS
+        setAuthErr("");
+        setAuthMode("verify");
+        setLoading(false);
+        return;
+      }
+
+      // Success — show email verification
       setAuthErr("");
       setAuthMode("verify");
       setLoading(false);
       return;
     } catch(e) {
-      // Fallback to local if Supabase tables not set up yet
-      const ns = { id:`s${Date.now()}`, name:regF.orgName, city:regF.city, state:regF.state, type:regF.type, email:regF.email, phone:regF.phone, totalSpace:0, availableSpace:0, needsHelp:false, canTake:[], bio:"", verified:false };
-      setShelters(p => [...p, ns]);
-      setUser(ns); setPage("app"); setTab("dashboard");
-      showToast(`Welcome to RescuPawLink, ${regF.orgName}!`);
+      console.error("Registration error:", e);
+      setAuthErr("Registration failed. Please check your connection and try again.");
     }
     setLoading(false);
   }
@@ -1122,7 +1155,7 @@ export default function RescuPawLink() {
     };
     // Save to Supabase
     try {
-      await sbFetch("animals", {
+      const result = await sbFetch("animals", {
         method: "POST",
         body: JSON.stringify({
           name: postF.name, species: postF.species, breed: postF.breed,
@@ -1137,11 +1170,22 @@ export default function RescuPawLink() {
           status: a.status,
         }),
       });
-    } catch(err) { console.log("Saved locally only"); }
+      if (!result || result.error) {
+        console.error("Animal save failed:", result?.error);
+        showToast("⚠ Could not save to database. Check your connection and try again.");
+        return;
+      }
+      // Use the Supabase-returned ID if available
+      if (result[0]?.id) a.id = result[0].id;
+    } catch(err) {
+      console.error("submitPost error:", err);
+      showToast("⚠ Could not save to database. Check your connection and try again.");
+      return;
+    }
     setAnimals(p => [...p, a]);
-    setPostF({ name:"", species:"Dog", breed:"", age:"", sex:"", weight:"", color:"", description:"", daysLeft:7, vaccinated:false, neutered:false, goodWithKids:false, goodWithDogs:false, goodWithCats:false, fee:"", photos:[] });
+    setPostF({ name:"", species:"Dog", breed:"", age:"", sex:"", weight:"", color:"", description:"", daysLeft:7, vaccinated:false, neutered:false, goodWithKids:false, goodWithDogs:false, goodWithCats:false, fee:"", photos:[], listingType:"adopt" });
     setPostStep(1); setTab("dashboard");
-    showToast(`${a.name} is now live on RescuPawLink!`);
+    showToast(`✅ ${a.name} is now live on RescuPawLink!`);
   }
 
   // ── Update capacity ─────────────────────────────
