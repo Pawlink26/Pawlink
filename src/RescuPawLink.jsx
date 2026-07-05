@@ -989,6 +989,7 @@ export default function RescuPawLink() {
       // Restore admin session
       if (shelterId === "admin") {
         setUser({ id:"admin", name:"RescuPawLink Admin", email:"rescupawlink@gmail.com", verified:true, isAdmin:true });
+        setPage("app"); setTab("dashboard");
         return;
       }
       const data = await sbFetch(`shelters?id=eq.${shelterId}`);
@@ -1035,7 +1036,7 @@ export default function RescuPawLink() {
         const adminUser = { id:"admin", name:"RescuPawLink Admin", email:"rescupawlink@gmail.com", verified:true, isAdmin:true };
         localStorage.setItem("rpl_shelter_id", "admin");
         setUser(adminUser);
-        setPage("app"); setTab("admin");
+        setPage("app"); setTab("dashboard");
         showToast("Welcome, Admin!");
         setLoading(false); return;
       }
@@ -2077,7 +2078,7 @@ export default function RescuPawLink() {
               <span className="hide-mobile">Home</span>
             </button>
             <div style={{ width:1, height:18, background:"#e4e4e2", margin:"0 4px" }}/>
-            <button onClick={() => setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", padding:0 }}>
+            <button onClick={() => { if(isLoggedIn) { setTab(isAdmin?"dashboard":"dashboard"); } else { setPage("landing"); } }} style={{ background:"none", border:"none", cursor:"pointer", padding:0 }}>
               <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:58, width:"auto", maxWidth:200, display:"block" }}/>
             </button>
           </div>
