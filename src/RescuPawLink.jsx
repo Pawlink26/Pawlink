@@ -945,6 +945,7 @@ export default function RescuPawLink() {
     "s2-s3": [{ id:1, from:"Dallas Animal Services", fromId:"s3", to:"s2", time:"10:32 AM", text:"We're critically over capacity. Can you take 3 dogs this week?" }, { id:2, from:"Houston SPCA", fromId:"s2", to:"s3", time:"10:45 AM", text:"Yes! We can take up to 5. Arrange transport by Thursday?" }],
   });
   const [applyF,  setApplyF]  = useState({ name:"", email:"", phone:"", message:"", type:"adopt" });
+  const [applyAgreed, setApplyAgreed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const isAdmin = user?.email === "rescupawlink@gmail.com";
   const [adminSelectedShelter, setAdminSelectedShelter] = useState(null);
@@ -1029,6 +1030,15 @@ export default function RescuPawLink() {
       if (!result.access_token) { setAuthErr("Please verify your email address before signing in. Check your inbox for a confirmation link."); setLoading(false); return; }
       localStorage.setItem("rpl_token", result.access_token);
       localStorage.setItem("rpl_login_time", Date.now().toString());
+      // Check admin FIRST before any shelter lookup
+      if (loginF.email === "rescupawlink@gmail.com") {
+        const adminUser = { id:"admin", name:"RescuPawLink Admin", email:"rescupawlink@gmail.com", verified:true, isAdmin:true };
+        localStorage.setItem("rpl_shelter_id", "admin");
+        setUser(adminUser);
+        setPage("app"); setTab("admin");
+        showToast("Welcome, Admin!");
+        setLoading(false); return;
+      }
       // Find shelter by email
       const shelterData = await sbFetch(`shelters?email=eq.${encodeURIComponent(loginF.email)}`);
       if (shelterData?.[0]) {
@@ -1036,14 +1046,6 @@ export default function RescuPawLink() {
         setUser(shelterData[0]);
         setPage("app"); setTab("dashboard");
         showToast(`Welcome back, ${shelterData[0].name}!`);
-      } else if (loginF.email === "rescupawlink@gmail.com") {
-        // Admin account — no shelter row needed
-        const adminUser = { id:"admin", name:"RescuPawLink Admin", email:"rescupawlink@gmail.com", verified:true, isAdmin:true };
-        localStorage.setItem("rpl_shelter_id", "admin");
-        localStorage.setItem("rpl_login_time", Date.now().toString());
-        setUser(adminUser);
-        setPage("app"); setTab("admin");
-        showToast("Welcome, Admin!");
       } else {
         setAuthErr("No shelter profile found for this email. Please register your shelter.");
       }
@@ -2794,7 +2796,7 @@ export default function RescuPawLink() {
                       </div>
                       <div>
                         <div style={{ fontWeight:700, fontSize:13 }}>{a.name} <span style={{ fontSize:11, color:"#9a9e95" }}>· {a.species} · {a.breed}</span></div>
-                        <div style={{ fontSize:11, color:"#4e5449" }}>{a.shelterName} · {a.shelterCity}, {a.shelterState}</div>
+                        <div style={{ fontSize:11, color:"#4e5449" }}>{isAdmin ? <button onClick={e=>{e.stopPropagation();const sh=shelters.find(s=>s.id===a.shelterId||s.id===a.shelter_id||s.name===a.shelterName);if(sh)setAdminSelectedShelter(sh);}} style={{background:"none",border:"none",color:"#6b8f71",fontWeight:700,cursor:"pointer",fontSize:11,fontFamily:"inherit",padding:0,textDecoration:"underline"}}>{a.shelterName}</button> : a.shelterName} · {a.shelterCity}, {a.shelterState}</div>
                         <div style={{ display:"flex", gap:6, marginTop:3, flexWrap:"wrap" }}>
                           <span style={{ fontSize:10, fontWeight:700, padding:"2px 7px", borderRadius:20, background:a.status==="critical"?"#fdf0eb":a.status==="urgent"?"#fdf6ec":"#eef4ef", color:a.status==="critical"?"#c85a35":a.status==="urgent"?"#c47a1e":"#6b8f71" }}>{a.daysLeft}d · {a.status}</span>
                           {(a.listingType==="foster"||a.listing_type==="foster") && <span style={{ fontSize:10, fontWeight:700, padding:"2px 7px", borderRadius:20, background:"#f0fdf4", color:"#16a34a" }}>Foster</span>}
@@ -3592,14 +3594,35 @@ Message: ${lfInqMsg.message || "No additional message."}`,
               </div>
             </div>
 
-            {/* What happens next */}
-            <div style={{ background:"#f8f8f6", borderRadius:10, padding:"12px 16px", marginBottom:18, fontSize:13, color:"var(--muted)", lineHeight:1.6 }}>
-              📬 Your inquiry will be sent directly to <strong>{applyTarget.shelterName}</strong>. They'll contact you as soon as they can.
+            {/* Agreement */}
+            <div style={{ background:"#f8f8f6", border:"1px solid #e8e8e6", borderRadius:12, padding:"16px 18px", marginBottom:14 }}>
+              <div style={{ fontSize:13, fontWeight:700, color:"#1a1c18", marginBottom:8 }}>Important — Please Read & Agree</div>
+              <p style={{ fontSize:12, color:"#4e5449", lineHeight:1.7, marginBottom:12 }}>
+                By submitting this application, I understand and agree that:
+              </p>
+              <ul style={{ fontSize:12, color:"#4e5449", lineHeight:1.8, paddingLeft:18, marginBottom:14 }}>
+                <li>All adoptions and foster placements are completed <strong>directly through {applyTarget.shelterName}</strong> — not through RescuPawLink.</li>
+                <li>The shelter or rescue will use their own <strong>official adoption/foster documentation</strong>, agreements, and screening processes.</li>
+                <li>RescuPawLink is a coordination platform only and is <strong>not a party to any adoption or foster agreement</strong>.</li>
+                <li>I will never send money, gift cards, or any payment to anyone claiming to facilitate an adoption through RescuPawLink. All fees are paid <strong>directly to the shelter</strong>.</li>
+                <li>Attempting to bypass the shelter's process or engage in fraudulent activity may result in removal from the platform.</li>
+              </ul>
+              <label style={{ display:"flex", alignItems:"flex-start", gap:10, cursor:"pointer" }}>
+                <input type="checkbox" checked={applyAgreed} onChange={e=>setApplyAgreed(e.target.checked)}
+                  style={{ width:16, height:16, marginTop:2, accentColor:"#6b8f71", flexShrink:0 }}/>
+                <span style={{ fontSize:13, fontWeight:600, color:"#1a1c18", lineHeight:1.5 }}>
+                  I have read and agree to complete this adoption/foster directly through {applyTarget.shelterName} using their official process.
+                </span>
+              </label>
+            </div>
+
+            <div style={{ background:"#eef4ef", borderRadius:10, padding:"10px 14px", marginBottom:16, fontSize:12, color:"#4a6b50", lineHeight:1.6 }}>
+              📬 Your inquiry will be sent to <strong>{applyTarget.shelterName}</strong>. They will contact you to begin their official process.
             </div>
 
             <div style={{ display:"flex", gap:10 }}>
               <button className="btn btn-primary btn-md" style={{ flex:1, padding:13 }}
-                disabled={!applyF.name || !applyF.email || !applyF.message}
+                disabled={!applyF.name || !applyF.email || !applyF.message || !applyAgreed}
                 onClick={async ()=>{
                   const ok = await sendAdoptionEmail({
                     applicantName:  applyF.name,
@@ -3615,6 +3638,7 @@ Message: ${lfInqMsg.message || "No additional message."}`,
                   });
                   setApplyTarget(null); setSelectedAnimal(null);
                   setApplyF({ name:"", email:"", phone:"", message:"", type:"adopt" });
+                  setApplyAgreed(false);
                   showToast(ok
                     ? `✓ Application sent to ${applyTarget.shelterName}! They'll be in touch soon.`
                     : `Application received! ${applyTarget.shelterName} will be in touch with you soon.`
