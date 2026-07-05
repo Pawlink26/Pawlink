@@ -287,31 +287,11 @@ try {
 // ── Constants ──────────────────────────────────────────────
 const US_STATES = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"];
 
-const SEED_SHELTERS = [
-  { id:"s1", name:"Austin Animal Center", city:"Austin", state:"TX", type:"Municipal Shelter", email:"intake@austinanimals.org", phone:"(512) 978-0500", website:"austinanimals.org", totalSpace:120, availableSpace:34, needsHelp:false, canTake:["Dogs","Cats"], bio:"Austin's largest open-intake shelter, committed to a no-kill community.", verified:true },
-  { id:"s2", name:"Houston SPCA", city:"Houston", state:"TX", type:"Non-Profit Rescue", email:"intake@houstonspca.org", phone:"(713) 869-7722", website:"houstonspca.org", totalSpace:200, availableSpace:82, needsHelp:false, canTake:["Dogs","Cats","Small Animals"], bio:"Serving Houston since 1924. Dedicated to ending animal cruelty and finding loving homes.", verified:true },
-  { id:"s3", name:"Dallas Animal Services", city:"Dallas", state:"TX", type:"Municipal Shelter", email:"DAS@dallas.gov", phone:"(214) 670-8246", website:"", totalSpace:150, availableSpace:6, needsHelp:true, canTake:[], bio:"City of Dallas animal shelter. Currently at critical capacity and seeking transfer partners.", verified:true },
-  { id:"s4", name:"Denver Dumb Friends League", city:"Denver", state:"CO", type:"Non-Profit Rescue", email:"info@ddfl.org", phone:"(303) 751-5772", website:"ddfl.org", totalSpace:180, availableSpace:55, needsHelp:false, canTake:["Dogs","Cats"], bio:"Colorado's largest animal welfare organization, helping pets and people since 1910.", verified:true },
-  { id:"s5", name:"LA Animal Services", city:"Los Angeles", state:"CA", type:"Municipal Shelter", email:"info@laanimalservices.com", phone:"(888) 452-7381", website:"laanimalservices.com", totalSpace:300, availableSpace:12, needsHelp:true, canTake:[], bio:"Six shelters across LA County. Currently over capacity and seeking urgent transfer partners.", verified:true },
-];
+const SEED_SHELTERS = [];
 
-const SEED_ANIMALS = [
-  { id:"a1", name:"Bruno", species:"Dog", breed:"Pit Bull Mix", age:"3 years", sex:"Male", weight:"52 lbs", color:"Brindle", shelterId:"s3", shelterName:"Dallas Animal Services", shelterCity:"Dallas", shelterState:"TX", shelterPhone:"(214) 670-8246", shelterEmail:"DAS@dallas.gov", daysLeft:2, status:"critical", description:"Bruno is a sweet, house-trained boy who has been patiently waiting for his forever home. He gets along with other dogs and loves belly rubs. Knows basic commands.", photos:[], vaccinated:true, neutered:true, goodWithKids:true, goodWithDogs:true, goodWithCats:false, fee:"$50", id_num:"DAS-2024-4421" },
-  { id:"a2", name:"Mittens", species:"Cat", breed:"Domestic Shorthair", age:"5 years", sex:"Female", weight:"9 lbs", color:"Gray Tabby", shelterId:"s3", shelterName:"Dallas Animal Services", shelterCity:"Dallas", shelterState:"TX", shelterPhone:"(214) 670-8246", shelterEmail:"DAS@dallas.gov", daysLeft:2, status:"critical", description:"Mittens is a gentle, quiet lady who loves slow mornings and lap time. Perfect for a calm household looking for a low-maintenance companion.", photos:[], vaccinated:true, neutered:true, goodWithKids:true, goodWithDogs:false, goodWithCats:true, fee:"$35", id_num:"DAS-2024-4398" },
-  { id:"a3", name:"Rex", species:"Dog", breed:"German Shepherd Mix", age:"2 years", sex:"Male", weight:"68 lbs", color:"Black & Tan", shelterId:"s1", shelterName:"Austin Animal Center", shelterCity:"Austin", shelterState:"TX", shelterPhone:"(512) 978-0500", shelterEmail:"intake@austinanimals.org", daysLeft:5, status:"urgent", description:"Rex is active, intelligent, and eager to please. Knows sit, stay, and shake. Loves fetch and long hikes. Best with an active family who has a yard.", photos:[], vaccinated:true, neutered:false, goodWithKids:true, goodWithDogs:true, goodWithCats:false, fee:"$75", id_num:"AAC-2024-8812" },
-  { id:"a4", name:"Luna", species:"Cat", breed:"Siamese Mix", age:"1 year", sex:"Female", weight:"7 lbs", color:"Seal Point", shelterId:"s1", shelterName:"Austin Animal Center", shelterCity:"Austin", shelterState:"TX", shelterPhone:"(512) 978-0500", shelterEmail:"intake@austinanimals.org", daysLeft:4, status:"urgent", description:"Luna is playful, social, and incredibly chatty — a true Siamese personality. She loves interactive toys and would thrive with another cat for companionship.", photos:[], vaccinated:true, neutered:true, goodWithKids:true, goodWithDogs:false, goodWithCats:true, fee:"$50", id_num:"AAC-2024-9001" },
-  { id:"a5", name:"Biscuit", species:"Dog", breed:"Beagle", age:"6 years", sex:"Male", weight:"28 lbs", color:"Tricolor", shelterId:"s5", shelterName:"LA Animal Services", shelterCity:"Los Angeles", shelterState:"CA", shelterPhone:"(888) 452-7381", shelterEmail:"info@laanimalservices.com", daysLeft:3, status:"critical", description:"Biscuit is a calm, loving senior who just wants a couch to call his own. House trained, great with kids, and perfectly content with short daily walks.", photos:[], vaccinated:true, neutered:true, goodWithKids:true, goodWithDogs:true, goodWithCats:true, fee:"$25", id_num:"LAAS-2024-1122" },
-  { id:"a6", name:"Shadow", species:"Cat", breed:"Domestic Longhair", age:"3 years", sex:"Male", weight:"11 lbs", color:"Black", shelterId:"s5", shelterName:"LA Animal Services", shelterCity:"Los Angeles", shelterState:"CA", shelterPhone:"(888) 452-7381", shelterEmail:"info@laanimalservices.com", daysLeft:3, status:"critical", description:"Shadow is a stunning black longhair who is shy at first but becomes incredibly affectionate once he trusts you. Loves windows, bird watching, and chin scratches.", photos:[], vaccinated:true, neutered:true, goodWithKids:false, goodWithDogs:false, goodWithCats:true, fee:"$35", id_num:"LAAS-2024-1130" },
-  { id:"a7", name:"Pepper", species:"Dog", breed:"Beagle Mix", age:"4 years", sex:"Female", weight:"28 lbs", color:"Tri-color", shelterId:"s1", shelterName:"Austin Animal Center", shelterCity:"Austin", shelterState:"TX", shelterPhone:"(512) 978-0500", shelterEmail:"intake@austinanimals.org", daysLeft:10, status:"urgent", description:"Pepper is gentle, house-trained, and great with kids. She needs a temporary foster home while we prepare for her adoption. A quiet home preferred.", photos:[], vaccinated:true, neutered:true, goodWithKids:true, goodWithDogs:false, goodWithCats:true, fee:"No fee", id_num:"AAC-2024-0077", listingType:"foster" },
-  { id:"a8", name:"Oliver", species:"Cat", breed:"Tabby Mix", age:"1 year", sex:"Male", weight:"9 lbs", color:"Orange", shelterId:"s2", shelterName:"Houston SPCA", shelterCity:"Houston", shelterState:"TX", shelterPhone:"(713) 869-7722", shelterEmail:"info@houstonspca.org", daysLeft:14, status:"good", description:"Oliver is a playful, energetic kitten who loves toys and cuddles. Looking for a foster home while we find his forever family. Great with other cats.", photos:[], vaccinated:true, neutered:false, goodWithKids:true, goodWithDogs:false, goodWithCats:true, fee:"No fee", id_num:"HSPCA-2024-0522", listingType:"foster" },
-];
+const SEED_ANIMALS = [];
 
-const MSGS_SEED = [
-  { id:1, from:"Dallas Animal Services", fromId:"s3", time:"10:32 AM", text:"We're at critical capacity — can anyone take 3 dogs this week? Two pit mixes and a shepherd. All vetted and vaccinated." },
-  { id:2, from:"Houston SPCA", fromId:"s2", time:"10:45 AM", text:"Yes! We can take up to 5 dogs. Can you arrange transport by Thursday?" },
-  { id:3, from:"Dallas Animal Services", fromId:"s3", time:"11:00 AM", text:"Thursday works. Sending health records over today. Thank you 🙏" },
-  { id:4, from:"Denver Dumb Friends League", fromId:"s4", time:"11:14 AM", text:"We can also take 2 small dogs if needed. Just DM us." },
-];
+const MSGS_SEED = [];
 
 // ── Brand Wordmark Logo ────────────────────────────────────
 
@@ -471,16 +451,12 @@ const CHANNELS = [
 ];
 
 const CHANNEL_SEED = {
-  all:       [{ id:1, from:"Dallas Animal Services", fromId:"s3", time:"10:32 AM", text:"We're at critical capacity — can anyone take 3 dogs? Two pit mixes and a shepherd. All vaccinated." }, { id:2, from:"Houston SPCA", fromId:"s2", time:"10:45 AM", text:"Yes! We can take up to 5 dogs. Can you arrange transport by Thursday?" }, { id:3, from:"Dallas Animal Services", fromId:"s3", time:"11:00 AM", text:"Thursday works. Sending health records today. Thank you 🙏" }, { id:4, from:"Denver Dumb Friends League", fromId:"s4", time:"11:14 AM", text:"We can also take 2 small dogs if needed. Just DM us." }],
-  urgent:    [{ id:1, from:"LA Animal Services", fromId:"s5", time:"8:00 AM", text:"URGENT: We have 6 dogs with 24-hour deadline. Looking for any foster or transfer partner in SoCal or willing to transport." }, { id:2, from:"Austin Animal Center", fromId:"s1", time:"8:22 AM", text:"We can take 2 if transport is arranged. Please DM us directly." }],
-  transport: [{ id:1, from:"Houston SPCA", fromId:"s2", time:"Yesterday", text:"Anyone doing a run from DFW to Houston this week? We have 3 dogs lined up needing a ride." }, { id:2, from:"Dallas Animal Services", fromId:"s3", time:"Yesterday", text:"We might be able to arrange something. DMing you now." }],
-  medical:   [{ id:1, from:"Austin Animal Center", fromId:"s1", time:"Monday", text:"Looking for a rescue that can take a dog with a broken leg. Surgery already done, just needs recovery foster." }],
-  dogs:      [{ id:1, from:"Denver Dumb Friends League", fromId:"s4", time:"Tuesday", text:"We have 8 open dog kennels this week. Prioritizing bully breeds and large dogs. Send us a DM." }],
-  cats:      [{ id:1, from:"Houston SPCA", fromId:"s2", time:"Wednesday", text:"We pulled 14 cats from a hoarding situation. Looking for rescue partners to help place. All have been vet-checked." }],
-  // State channels — keyed by state code e.g. "state_TX"
-  state_TX:  [{ id:1, from:"Austin Animal Center", fromId:"s1", time:"9:00 AM", text:"Good morning TX shelters! We have 3 open dog kennels this week. Anyone needing transfers in-state?" }, { id:2, from:"Dallas Animal Services", fromId:"s3", time:"9:15 AM", text:"Dallas here — we're at 85% capacity. May need to move 2 dogs by Friday." }, { id:3, from:"Houston SPCA", fromId:"s2", time:"9:30 AM", text:"Houston can take small dogs. DM us with details." }],
-  state_CO:  [{ id:1, from:"Denver Dumb Friends League", fromId:"s4", time:"Monday", text:"Colorado shelters — we have a transport run to Pueblo on Thursday if anyone needs to move animals south." }],
-  state_CA:  [{ id:1, from:"LA Animal Services", fromId:"s5", time:"Yesterday", text:"LA shelters — critical overcrowding this week. Looking for any SoCal rescues with space for cats." }],
+  all:       [],
+  urgent:    [],
+  transport: [],
+  medical:   [],
+  dogs:      [],
+  cats:      [],
 };
 
 function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText, msgEndRef, sendMsg, isLoggedIn, onLogin, dmTarget, setDmTarget }) {
@@ -500,14 +476,10 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
   }, [user?.id]);
   const [view, setView] = useState("channels"); // channels | dms
   const [channelMsgs, setChannelMsgs] = useState(CHANNEL_SEED);
-  const [dmMsgs, setDmMsgs] = useState({
-    "s1-s3": [{ id:1, from:"Austin Animal Center", fromId:"s1", time:"9:15 AM", text:"Hey Dallas — we have a few dogs we're trying to place. Any foster connections in your area?" }],
-    "s2-s3": [{ id:1, from:"Dallas Animal Services", fromId:"s3", time:"10:32 AM", text:"We're critically over capacity. Can you take 3 dogs this week?" }, { id:2, from:"Houston SPCA", fromId:"s2", time:"10:45 AM", text:"Yes! We can take up to 5. Can you arrange transport by Thursday?" }],
-    "s1-s2": [{ id:1, from:"Houston SPCA", fromId:"s2", time:"Tuesday", text:"Quick question — do you have capacity for cats right now? We have overflow." }],
-  });
+  const [dmMsgs, setDmMsgs] = useState({});
   const [activeDm, setActiveDm] = useState(dmTarget || null);
   const [input, setInput] = useState(msgText || "");
-  const [unread, setUnread] = useState({ "s2-s3":1, "s1-s2":1, urgent:1 });
+  const [unread, setUnread] = useState({});
   const chatRef = useRef();
 
   useEffect(() => {
@@ -895,14 +867,7 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
 // ── MAIN APP ──────────────────────────────────────────────
 
 // ── Lost & Found Seed Data ─────────────────────────────
-const SEED_LF = [
-  { id:"lf1", type:"lost",  species:"Dog",  name:"Max",     breed:"Golden Retriever", color:"Golden",       area:"Austin, TX",      zip:"78701", lat:30.27, lng:-97.74,  description:"Lost near Zilker Park. Wearing blue collar with tag. Very friendly.",         contact:"owner@email.com",    date:"2026-05-20" },
-  { id:"lf2", type:"found", species:"Cat",  name:"Unknown", breed:"Tabby",            color:"Orange/White", area:"Houston, TX",     zip:"77001", lat:29.76, lng:-95.37,  description:"Found wandering near Memorial Park. No collar. Friendly and healthy.",        contact:"finder@email.com",   date:"2026-05-21" },
-  { id:"lf3", type:"lost",  species:"Dog",  name:"Bella",   breed:"Beagle",           color:"Tri-color",    area:"Denver, CO",      zip:"80201", lat:39.74, lng:-104.98, description:"Lost from backyard. Small dog, very shy. Answers to Bella.",                  contact:"bella@email.com",    date:"2026-05-19" },
-  { id:"lf4", type:"found", species:"Dog",  name:"Unknown", breed:"Lab Mix",          color:"Black",        area:"Dallas, TX",      zip:"75201", lat:32.78, lng:-96.80,  description:"Found on I-35 frontage road. Male, neutered, no chip. Friendly with kids.", contact:"shelter@dallas.org", date:"2026-05-22" },
-  { id:"lf5", type:"lost",  species:"Cat",  name:"Whiskers",breed:"Siamese",          color:"Cream/Brown",  area:"Los Angeles, CA", zip:"90001", lat:34.05, lng:-118.24, description:"Indoor cat, escaped through window. Microchipped. Very vocal.",               contact:"whiskers@email.com", date:"2026-05-18" },
-  { id:"lf6", type:"found", species:"Dog",  name:"Unknown", breed:"Pit Mix",          color:"Brindle",      area:"Austin, TX",      zip:"78704", lat:30.25, lng:-97.75,  description:"Found near South Congress. Sweet and well-behaved. No ID.",                  contact:"found@rescue.org",   date:"2026-05-21" },
-];
+const SEED_LF = [];
 
 export default function RescuPawLink() {
   const [page, setPage]           = useState("landing");
@@ -940,10 +905,7 @@ export default function RescuPawLink() {
   const [capF,    setCapF]    = useState({ total:"", available:"", needsHelp:false, canTakeDogs:false, canTakeCats:false, canTakeSmall:false, overflow:"" });
   const [msgText, setMsgText] = useState("");
   const [dmTarget, setDmTarget] = useState(null); // shelter id for active DM
-  const [dmMessages, setDmMessages] = useState({
-    "s1-s3": [{ id:1, from:"Austin Animal Center", fromId:"s1", to:"s3", time:"9:15 AM", text:"Hey Dallas — we have a few dogs we're trying to place. Any chance you have foster connections in your area?" }],
-    "s2-s3": [{ id:1, from:"Dallas Animal Services", fromId:"s3", to:"s2", time:"10:32 AM", text:"We're critically over capacity. Can you take 3 dogs this week?" }, { id:2, from:"Houston SPCA", fromId:"s2", to:"s3", time:"10:45 AM", text:"Yes! We can take up to 5. Arrange transport by Thursday?" }],
-  });
+  const [dmMessages, setDmMessages] = useState({});
   const [applyF,  setApplyF]  = useState({ name:"", email:"", phone:"", message:"", type:"adopt" });
   const [applyAgreed, setApplyAgreed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -1001,21 +963,16 @@ export default function RescuPawLink() {
   async function loadShelters() {
     try {
       const data = await sbFetch("shelters?order=name");
-      if (data?.length) {
-        setShelters(prev => {
-          const realIds = new Set(data.map(s => s.id));
-          const seedOnly = prev.filter(s => !realIds.has(s.id));
-          return [...data, ...seedOnly];
-        });
-      }
-    } catch(e) { console.log("Using seed shelters"); }
+      if (data?.length) setShelters(data);
+      else setShelters([]);
+    } catch(e) { console.log("Could not load shelters"); }
   }
 
   async function loadAnimals() {
     try {
       const data = await sbFetch("animals?order=days_left");
       if (data?.length) {
-        const realAnimals = data.map(a => ({
+        setAnimals(data.map(a => ({
           ...a,
           daysLeft: a.days_left,
           shelterName: a.shelter_name,
@@ -1026,15 +983,11 @@ export default function RescuPawLink() {
           goodWithKids: a.good_with_kids,
           goodWithDogs: a.good_with_dogs,
           goodWithCats: a.good_with_cats,
-        }));
-        // Merge: keep seed animals + add real ones (avoid duplicates by id)
-        setAnimals(prev => {
-          const realIds = new Set(realAnimals.map(a => a.id));
-          const seedOnly = prev.filter(a => !realIds.has(a.id));
-          return [...realAnimals, ...seedOnly].sort((a,b) => (a.daysLeft||99)-(b.daysLeft||99));
-        });
+        })));
+      } else {
+        setAnimals([]); // No real listings yet
       }
-    } catch(e) { console.log("Using seed animals"); }
+    } catch(e) { console.log("Could not load animals"); }
   }
 
   async function loadSheltersAndAnimals() {
@@ -1202,7 +1155,7 @@ export default function RescuPawLink() {
           needs_help: updates.needsHelp, can_take: updates.canTake,
         }),
       });
-    } catch(err) { console.log("Saved locally only"); }
+    } catch(err) { console.error("Capacity update failed:", err); showToast("⚠ Could not save capacity. Check your connection."); return; }
     setShelters(p => p.map(s => s.id===user.id ? { ...s, ...updates } : s));
     setUser(p => ({ ...p, ...updates }));
     showToast("Capacity updated and broadcast to network!");
@@ -1252,9 +1205,9 @@ export default function RescuPawLink() {
   const featuredAnimals = [...animals].sort((a,b) => a.daysLeft - b.daysLeft).slice(0,3);
 
   const SUCCESS_STORIES = [
-    { name:"Max & Daisy", outcome:"Transferred from Dallas to Houston — both adopted within 48 hours", shelters:"Dallas Animal Services → Houston SPCA", img:"https://i.imgur.com/9y1Muh4.png", date:"May 2025" },
-    { name:"The Tuxedo Trio", outcome:"3 bonded cats moved to Denver when LA hit capacity. All 3 found one home together.", shelters:"LA Animal Services → Denver Dumb Friends League", img:"https://i.imgur.com/gy1SBr3.png", date:"April 2025" },
-    { name:"Biscuit", outcome:"6-year-old beagle hours from deadline. Foster in Austin stepped up same day via RescuPawLink.", shelters:"Austin Animal Center + Foster Network", img:"https://i.imgur.com/9y1Muh4.png", date:"March 2025" },
+    { name:"Coming Soon", outcome:"Share your success story with us — we'd love to feature your animals.", shelters:"Your shelter network", img:"https://i.imgur.com/9y1Muh4.png", date:"2025" },
+    { name:"Your Story Here", outcome:"Every transfer, every foster, every adoption made through RescuPawLink is a life saved. Be the first success story.", shelters:"RescuPawLink Network", img:"https://i.imgur.com/gy1SBr3.png", date:"2025" },
+    { name:"Join the Network", outcome:"Register your shelter today and start connecting with rescues and fosters across the country.", shelters:"RescuPawLink.com", img:"https://i.imgur.com/9y1Muh4.png", date:"2025" },
   ];
 
   const BENEFITS = [
@@ -1659,9 +1612,9 @@ export default function RescuPawLink() {
           </div>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:20 }}>
             {[
-              { name:"Max & Daisy", outcome:"Transferred from Dallas to Houston — both adopted within 48 hours", shelters:"Dallas Animal Services → Houston SPCA", img:"https://i.imgur.com/9y1Muh4.png", date:"May 2025" },
-              { name:"The Tuxedo Trio", outcome:"3 bonded cats moved to Denver when LA hit capacity. All 3 found one home.", shelters:"LA Animal Services → Denver Dumb Friends League", img:"https://i.imgur.com/gy1SBr3.png", date:"April 2025" },
-              { name:"Biscuit", outcome:"6-year-old beagle hours from deadline. Foster stepped up same day.", shelters:"Austin Animal Center + Foster Network", img:"https://i.imgur.com/9y1Muh4.png", date:"March 2025" },
+              { name:"Coming Soon", outcome:"Share your success story with us — we'd love to feature your animals.", shelters:"Your shelter network", img:"https://i.imgur.com/9y1Muh4.png", date:"2025" },
+              { name:"Your Story Here", outcome:"Every transfer, every foster, every adoption is a life saved. Be the first success story.", shelters:"RescuPawLink Network", img:"https://i.imgur.com/gy1SBr3.png", date:"2025" },
+              { name:"Join the Network", outcome:"Register your shelter today and start connecting with rescues and fosters across the country.", shelters:"RescuPawLink.com", img:"https://i.imgur.com/9y1Muh4.png", date:"2025" },
             ].map((s,i)=>(
               <div key={s.name} className="fade-up" style={{ animationDelay:`${i*0.08}s`, background:"#ffffff", borderRadius:14, border:"1px solid #e8e8e6", padding:22, boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
                 <div style={{ width:56, height:56, borderRadius:12, overflow:"hidden", marginBottom:12 }}><img src={s.img} style={{ width:"100%", height:"100%", objectFit:"cover" }}/></div>
