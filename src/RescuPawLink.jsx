@@ -1013,6 +1013,7 @@ export default function RescuPawLink() {
     try {
       const result = await sbAuth("token?grant_type=password", loginF.email, loginF.password);
       if (result.error) { setAuthErr(result.error_description || "Invalid email or password."); setLoading(false); return; }
+      if (!result.access_token) { setAuthErr("Please verify your email address before signing in. Check your inbox for a confirmation link."); setLoading(false); return; }
       localStorage.setItem("rpl_token", result.access_token);
       // Find shelter by email
       const shelterData = await sbFetch(`shelters?email=eq.${encodeURIComponent(loginF.email)}`);
@@ -1021,8 +1022,15 @@ export default function RescuPawLink() {
         setUser(shelterData[0]);
         setPage("app"); setTab("dashboard");
         showToast(`Welcome back, ${shelterData[0].name}!`);
+      } else if (loginF.email === "rescupawlink@gmail.com") {
+        // Admin account — no shelter row needed
+        const adminUser = { id:"admin", name:"RescuPawLink Admin", email:"rescupawlink@gmail.com", verified:true, isAdmin:true };
+        localStorage.setItem("rpl_shelter_id", "admin");
+        setUser(adminUser);
+        setPage("app"); setTab("admin");
+        showToast("Welcome, Admin!");
       } else {
-        setAuthErr("Account found but shelter profile missing. Please register again.");
+        setAuthErr("No shelter profile found for this email. Please register your shelter.");
       }
     } catch(e) {
       setAuthErr("Login failed. Please try again.");
@@ -1036,9 +1044,9 @@ export default function RescuPawLink() {
     try {
       // Sign up with Supabase Auth
       const result = await sbAuth("signup", regF.email, regF.password);
-      if (result.error) { setAuthErr(result.error_description || "Registration failed."); setLoading(false); return; }
-      // Create shelter profile
-      const shelterData = await sbFetch("shelters", {
+      if (result.error) { setAuthErr(result.error_description || "Registration failed. This email may already be registered."); setLoading(false); return; }
+      // Create shelter profile in database
+      await sbFetch("shelters", {
         method: "POST",
         body: JSON.stringify({
           name: regF.orgName, type: regF.type, city: regF.city,
@@ -1047,17 +1055,11 @@ export default function RescuPawLink() {
           can_take: [], bio: "", verified: false,
         }),
       });
-      const newShelter = shelterData?.[0] || {
-        id: `s${Date.now()}`, name: regF.orgName, city: regF.city,
-        state: regF.state, type: regF.type, email: regF.email,
-        phone: regF.phone, totalSpace: 0, availableSpace: 0,
-        needsHelp: false, canTake: [], bio: "", verified: false,
-      };
-      if (result.access_token) localStorage.setItem("rpl_token", result.access_token);
-      localStorage.setItem("rpl_shelter_id", newShelter.id);
-      setShelters(p => [...p, newShelter]);
-      setUser(newShelter); setPage("app"); setTab("dashboard");
-      showToast(`Welcome to RescuPawLink, ${regF.orgName}!`);
+      // Show email verification message — do NOT auto-login
+      setAuthErr("");
+      setAuthMode("verify");
+      setLoading(false);
+      return;
     } catch(e) {
       // Fallback to local if Supabase tables not set up yet
       const ns = { id:`s${Date.now()}`, name:regF.orgName, city:regF.city, state:regF.state, type:regF.type, email:regF.email, phone:regF.phone, totalSpace:0, availableSpace:0, needsHelp:false, canTake:[], bio:"", verified:false };
@@ -1965,9 +1967,9 @@ export default function RescuPawLink() {
       <div className="card fade-up" style={{ width:"100%", maxWidth:460, padding:"36px 40px", boxShadow:"0 8px 40px rgba(0,0,0,0.1)", border:"1px solid var(--border)" }}>
         <div style={{ marginBottom:24 }}>
           <h1 style={{ fontFamily:"'Inter',sans-serif", fontSize:22, fontWeight:800, color:"#1a1c18", marginBottom:4 }}>
-            {authMode === "login" ? "Sign in to your account" : "Join RescuPawLink"}
+            {authMode === "verify" ? "Check Your Email" : authMode === "login" ? "Sign in to your account" : "Join RescuPawLink"}
           </h1>
-          <p style={{ fontSize:13, color:"#4e5449" }}>{authMode === "login" ? "Welcome back — sign in to your shelter account." : "Free for all shelters and rescues. No credit card."}</p>
+          <p style={{ fontSize:13, color:"#4e5449" }}>{authMode === "verify" ? "" : authMode === "login" ? "Welcome back — sign in to your shelter account." : "Free for all shelters and rescues. No credit card."}</p>
         </div>
 
         <div className="tab-bar" style={{ marginBottom:26 }}>
@@ -1979,7 +1981,23 @@ export default function RescuPawLink() {
         {authErr && <div style={{ background:"#fdf0eb", border:"1px solid #f0c4b4", color:"#dc2626", borderRadius:9, padding:"10px 14px", fontSize:13, marginBottom:18 }}>{authErr}</div>}
 
         {authMode === "login" ? (
-          <form onSubmit={handleLogin}>
+          {authMode === "verify" && (
+            <div style={{ textAlign:"center", padding:"20px 0" }}>
+              <div style={{ width:64, height:64, borderRadius:20, background:"#eef4ef", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 20px" }}>{I.check}</div>
+              <h3 style={{ fontFamily:"'Inter',sans-serif", fontSize:20, fontWeight:800, marginBottom:10 }}>Verify Your Email</h3>
+              <p style={{ fontSize:14, color:"#4e5449", lineHeight:1.7, marginBottom:24 }}>
+                We sent a confirmation link to <strong>{regF.email}</strong>. Click the link in your email to activate your account, then come back and sign in.
+              </p>
+              <div style={{ background:"#f4f4f2", borderRadius:12, padding:"14px 18px", fontSize:13, color:"#4e5449", marginBottom:24, textAlign:"left", lineHeight:1.65 }}>
+                <strong>Didn't get it?</strong> Check your spam folder or make sure you entered the right email address.
+              </div>
+              <button type="button" className="btn btn-primary btn-lg" style={{ width:"100%" }}
+                onClick={()=>setAuthMode("login")}>
+                Go to Sign In
+              </button>
+            </div>
+          )}
+          <form onSubmit={handleLogin} style={{ display: authMode==="login" ? "block" : "none" }}>
             <h2 style={{ fontSize:22, marginBottom:4 }}>Welcome back</h2>
             <p style={{ color:"#4e5449", fontSize:13, marginBottom:22 }}>Sign in to your shelter account.</p>
             <div style={{ marginBottom:14 }}><label className="label">Email</label><input className="input" type="email" required placeholder="intake@yourshelter.org" value={loginF.email} onChange={e=>setLoginF(p=>({...p,email:e.target.value}))} /></div>
@@ -2094,10 +2112,13 @@ export default function RescuPawLink() {
               { key:"lostfound", label:"Lost & Found" },
               { key:"about",     label:"About", action:()=>{setPage("about");setMobileOpen(false);} },
               ...(isLoggedIn ? [
-                { key:"chat",      label:"Coordinator Chat" },
-                { key:"post",      label:"Post Animal" },
-                { key:"dashboard", label:"Dashboard" },
-                ...(isAdmin ? [{ key:"admin", label:"⚙ Admin" }] : []),
+                ...(isAdmin ? [
+                  { key:"admin", label:"Admin Dashboard" },
+                ] : [
+                  { key:"chat",      label:"Coordinator Chat" },
+                  { key:"post",      label:"Post Animal" },
+                  { key:"dashboard", label:"Dashboard" },
+                ]),
               ] : []),
             ].map(t=>{
               const isActive = t.key==="foster"?(tab==="adopt"&&fSpecies==="Foster"):t.key==="adopt"?(tab==="adopt"&&fSpecies!=="Foster"):tab===t.key;
@@ -2475,7 +2496,7 @@ export default function RescuPawLink() {
         )}
 
         {/* ══ POST ANIMAL ════════════════════════════════════ */}
-        {tab === "post" && isLoggedIn && !user?.verified && (
+        {tab === "post" && isLoggedIn && !user?.verified && !isAdmin && (
           <div style={{ background:"#fdf6ec", border:"1px solid #f0c4b4", borderRadius:14, padding:"20px 24px", marginBottom:20, display:"flex", alignItems:"center", gap:12 }}>
             {I.alert}
             <div>
@@ -2642,9 +2663,8 @@ export default function RescuPawLink() {
 
             {/* Header */}
             <div style={{ marginBottom:28 }}>
-              <div style={{ fontSize:11, fontWeight:700, color:"#6b8f71", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:6 }}>RescuPawLink Admin</div>
               <h1 style={{ fontFamily:"'Inter',sans-serif", fontSize:26, fontWeight:900, letterSpacing:"-0.03em", marginBottom:4 }}>Admin Dashboard</h1>
-              <p style={{ color:"#4e5449", fontSize:14 }}>Oversee shelters, listings, and platform activity.</p>
+              <p style={{ color:"#4e5449", fontSize:14 }}>Oversee shelters, listings, and network activity. Logged in as <strong>rescupawlink@gmail.com</strong></p>
             </div>
 
             {/* ── Stats ── */}
