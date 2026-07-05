@@ -947,6 +947,7 @@ export default function RescuPawLink() {
   const [applyF,  setApplyF]  = useState({ name:"", email:"", phone:"", message:"", type:"adopt" });
   const [mobileOpen, setMobileOpen] = useState(false);
   const isAdmin = user?.email === "rescupawlink@gmail.com";
+  const [adminSelectedShelter, setAdminSelectedShelter] = useState(null);
   const [lostFound, setLostFound] = useState([]);
   const [lfForm, setLfForm] = useState({ type:"lost", species:"Dog", name:"", breed:"", color:"", area:"", description:"", contact:"", photo:"" });
   const [lfInquiry, setLfInquiry] = useState(null);
@@ -2447,7 +2448,23 @@ export default function RescuPawLink() {
         )}
 
         {/* ══ COORDINATOR CHAT ═══════════════════════════════ */}
-        {tab === "chat" && (
+        {tab === "chat" && !isLoggedIn && (
+          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"80px 24px", textAlign:"center" }}>
+            <div style={{ width:64, height:64, borderRadius:20, background:"#eef4ef", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:20 }}>{I.chat}</div>
+            <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:22, fontWeight:800, marginBottom:10 }}>Coordinator Chat is for Registered Shelters</h2>
+            <p style={{ fontSize:15, color:"#4e5449", lineHeight:1.7, maxWidth:420, marginBottom:28 }}>
+              The coordinator messaging system is available exclusively to verified shelters and rescues on RescuPawLink. Register your shelter to access network-wide channels and direct messaging.
+            </p>
+            <div style={{ display:"flex", gap:12, flexWrap:"wrap", justifyContent:"center" }}>
+              <button style={{ background:"rgba(107,143,113,0.88)", color:"#fff", border:"2px solid rgba(107,143,113,0.6)", backdropFilter:"blur(8px)", borderRadius:10, padding:"13px 28px", fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
+                onClick={()=>{setAuthMode("register");setPage("login");}}>Register Your Shelter</button>
+              <button style={{ background:"#fff", color:"#4a6b50", border:"2px solid #c7dfc9", borderRadius:10, padding:"13px 28px", fontSize:15, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}
+                onClick={()=>{setAuthMode("login");setPage("login");}}>Sign In</button>
+            </div>
+          </div>
+        )}
+
+        {tab === "chat" && isLoggedIn && (
           <ChatSystem
             user={user} shelters={shelters} messages={messages} setMessages={setMessages}
             msgText={msgText} setMsgText={setMsgText} msgEndRef={msgEndRef}
@@ -2619,97 +2636,132 @@ export default function RescuPawLink() {
         )}
 
         {/* ══ DASHBOARD ══════════════════════════════════════ */}
-        {/* ══ ADMIN TAB ══════════════════════════════════════ */}
+        {/* ══ ADMIN DASHBOARD ════════════════════════════════ */}
         {tab === "admin" && isAdmin && (
-          <div>
-            <div style={{ marginBottom:24 }}>
-              <h1 style={{ fontSize:26, fontWeight:800, marginBottom:6 }}>⚙ Admin Panel</h1>
-              <p style={{ color:"#4e5449", fontSize:14 }}>Manage shelters, verify listings, and oversee the network.</p>
+          <div className="fade-in">
+
+            {/* Header */}
+            <div style={{ marginBottom:28 }}>
+              <div style={{ fontSize:11, fontWeight:700, color:"#6b8f71", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:6 }}>RescuPawLink Admin</div>
+              <h1 style={{ fontFamily:"'Inter',sans-serif", fontSize:26, fontWeight:900, letterSpacing:"-0.03em", marginBottom:4 }}>Admin Dashboard</h1>
+              <p style={{ color:"#4e5449", fontSize:14 }}>Oversee shelters, listings, and platform activity.</p>
             </div>
 
-            {/* Stats row */}
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))", gap:14, marginBottom:28 }}>
+            {/* ── Stats ── */}
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))", gap:14, marginBottom:28 }}>
               {[
-                { label:"Total Shelters",    value:shelters.length,                                    color:"#6b8f71" },
-                { label:"Verified",          value:shelters.filter(s=>s.verified).length,              color:"#6b8f71" },
-                { label:"Pending Review",    value:shelters.filter(s=>!s.verified).length,             color:"#c47a1e" },
-                { label:"Total Listings",    value:animals.length,                                     color:"#6b8f71" },
-                { label:"Critical Animals",  value:animals.filter(a=>a.status==="critical").length,    color:"#c85a35" },
+                { label:"Total Shelters",   value:shelters.length,                                 icon:I.home,     color:"#6b8f71" },
+                { label:"Verified",         value:shelters.filter(s=>s.verified).length,           icon:I.check,    color:"#6b8f71" },
+                { label:"Pending Review",   value:shelters.filter(s=>!s.verified).length,          icon:I.alert,    color:"#c47a1e" },
+                { label:"Total Listings",   value:animals.length,                                  icon:I.heartPaw, color:"#6b8f71" },
+                { label:"Critical",         value:animals.filter(a=>a.status==="critical").length, icon:I.alert,    color:"#c85a35" },
+                { label:"Foster Listings",  value:animals.filter(a=>a.listingType==="foster"||a.listing_type==="foster").length, icon:I.paw, color:"#16a34a" },
               ].map(s=>(
-                <div key={s.label} className="card" style={{ padding:"14px 18px" }}>
-                  <div style={{ fontFamily:"'Inter',sans-serif", fontSize:24, fontWeight:700, color:s.color }}>{s.value}</div>
-                  <div style={{ fontSize:12, color:"#4e5449", marginTop:2 }}>{s.label}</div>
+                <div key={s.label} className="card" style={{ padding:"16px 18px", display:"flex", alignItems:"center", gap:12 }}>
+                  <div style={{ width:36, height:36, borderRadius:10, background:"#eef4ef", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{s.icon}</div>
+                  <div>
+                    <div style={{ fontFamily:"'Inter',sans-serif", fontSize:22, fontWeight:700, color:s.color, lineHeight:1 }}>{s.value}</div>
+                    <div style={{ fontSize:11, color:"#4e5449", marginTop:2 }}>{s.label}</div>
+                  </div>
                 </div>
               ))}
             </div>
 
-            {/* Shelter management */}
-            <div className="card" style={{ padding:24, marginBottom:20 }}>
-              <h2 style={{ fontSize:18, fontWeight:700, marginBottom:16 }}>Shelter Verification</h2>
-              <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-                {shelters.map(s=>(
-                  <div key={s.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 16px", background:s.verified?"#f4faf4":"#fdf6ec", borderRadius:12, border:`1px solid ${s.verified?"#c7dfc9":"#f0c4b4"}`, flexWrap:"wrap", gap:10 }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-                      <div style={{ width:36, height:36, borderRadius:9, background:s.verified?"#eef4ef":"#fdf0eb", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                        {s.verified ? I.check : I.alert}
-                      </div>
+            {/* ── Pending Verification — priority section ── */}
+            {shelters.filter(s=>!s.verified).length > 0 && (
+              <div className="card" style={{ padding:24, marginBottom:20, border:"1px solid #f0c4b4" }}>
+                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:16 }}>
+                  {I.alert}
+                  <h2 style={{ fontSize:17, fontWeight:700, color:"#c85a35" }}>Pending Verification ({shelters.filter(s=>!s.verified).length})</h2>
+                </div>
+                <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                  {shelters.filter(s=>!s.verified).map(s=>(
+                    <div key={s.id} onClick={()=>setAdminSelectedShelter(s)} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 16px", background:"#fdf6ec", borderRadius:12, border:"1px solid #f0c4b4", flexWrap:"wrap", gap:10, cursor:"pointer" }}>
                       <div>
                         <div style={{ fontWeight:700, fontSize:14 }}>{s.name}</div>
                         <div style={{ fontSize:12, color:"#4e5449" }}>{s.city}, {s.state} · {s.type}</div>
-                        <div style={{ fontSize:11, color:"#9a9e95", marginTop:1 }}>{s.email}</div>
+                        <div style={{ fontSize:11, color:"#9a9e95", marginTop:2 }}>{s.email} · {s.phone}</div>
                       </div>
-                    </div>
-                    <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-                      <span style={{ fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:20, background:s.verified?"#eef4ef":"#fdf0eb", color:s.verified?"#4a6b50":"#c85a35" }}>
-                        {s.verified ? "✓ Verified" : "⏳ Pending"}
-                      </span>
-                      {!s.verified && (
-                        <button style={{ background:"rgba(107,143,113,0.88)", color:"#fff", border:"none", borderRadius:8, padding:"7px 14px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
+                      <div style={{ display:"flex", gap:8 }}>
+                        <button style={{ background:"rgba(107,143,113,0.88)", color:"#fff", border:"none", borderRadius:8, padding:"8px 16px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
                           onClick={async ()=>{
                             setShelters(p=>p.map(sh=>sh.id===s.id?{...sh,verified:true}:sh));
                             try { await sbFetch(`shelters?id=eq.${s.id}`, { method:"PATCH", body:JSON.stringify({ verified:true }) }); } catch(e){}
                             showToast(`✅ ${s.name} verified!`);
-                          }}>
-                          Verify
-                        </button>
-                      )}
-                      {s.verified && (
-                        <button style={{ background:"#fff", color:"#c85a35", border:"1px solid #f0c4b4", borderRadius:8, padding:"7px 14px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
-                          onClick={async ()=>{
-                            setShelters(p=>p.map(sh=>sh.id===s.id?{...sh,verified:false}:sh));
-                            try { await sbFetch(`shelters?id=eq.${s.id}`, { method:"PATCH", body:JSON.stringify({ verified:false }) }); } catch(e){}
-                            showToast(`⚠ ${s.name} unverified`);
-                          }}>
-                          Revoke
-                        </button>
-                      )}
+                          }}>Verify ✓</button>
+                        <button style={{ background:"#fff", color:"#c85a35", border:"1px solid #f0c4b4", borderRadius:8, padding:"8px 14px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}
+                          onClick={()=>{
+                            setShelters(p=>p.filter(sh=>sh.id!==s.id));
+                            showToast(`🗑 ${s.name} removed`);
+                          }}>Remove</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── All Shelters ── */}
+            <div className="card" style={{ padding:24, marginBottom:20 }}>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:16 }}>
+                <h2 style={{ fontSize:17, fontWeight:700 }}>All Registered Shelters</h2>
+                <span style={{ fontSize:12, color:"#9a9e95" }}>{shelters.length} total</span>
+              </div>
+              <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                {shelters.map(s=>(
+                  <div key={s.id} onClick={()=>setAdminSelectedShelter(s)} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 16px", background:s.verified?"#f8f8f6":"#fdf6ec", borderRadius:10, border:`1px solid ${s.verified?"#e8e8e6":"#f0c4b4"}`, flexWrap:"wrap", gap:10, cursor:"pointer" }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                      <div style={{ width:32, height:32, borderRadius:8, background:s.verified?"#eef4ef":"#fdf0eb", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                        {s.verified ? I.check : I.alert}
+                      </div>
+                      <div>
+                        <div style={{ fontWeight:700, fontSize:13, display:"flex", alignItems:"center", gap:6 }}>
+                          {s.name}
+                          <span style={{ fontSize:10, fontWeight:700, padding:"2px 7px", borderRadius:20, background:s.verified?"#eef4ef":"#fdf0eb", color:s.verified?"#4a6b50":"#c85a35" }}>
+                            {s.verified?"✓ Verified":"⏳ Pending"}
+                          </span>
+                        </div>
+                        <div style={{ fontSize:11, color:"#4e5449" }}>{s.city}, {s.state} · {s.type}</div>
+                        <div style={{ fontSize:11, color:"#9a9e95" }}>{s.email}</div>
+                      </div>
+                    </div>
+                    <div style={{ display:"flex", gap:8 }}>
+                      {!s.verified
+                        ? <button style={{ background:"rgba(107,143,113,0.88)", color:"#fff", border:"none", borderRadius:7, padding:"6px 12px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
+                            onClick={async ()=>{ setShelters(p=>p.map(sh=>sh.id===s.id?{...sh,verified:true}:sh)); try{await sbFetch(`shelters?id=eq.${s.id}`,{method:"PATCH",body:JSON.stringify({verified:true})})}catch(e){} showToast(`✅ ${s.name} verified!`); }}>Verify</button>
+                        : <button style={{ background:"#fff", color:"#c85a35", border:"1px solid #f0c4b4", borderRadius:7, padding:"6px 12px", fontSize:12, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}
+                            onClick={async ()=>{ setShelters(p=>p.map(sh=>sh.id===s.id?{...sh,verified:false}:sh)); try{await sbFetch(`shelters?id=eq.${s.id}`,{method:"PATCH",body:JSON.stringify({verified:false})})}catch(e){} showToast(`⚠ ${s.name} unverified`); }}>Revoke</button>
+                      }
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Animal listings management */}
-            <div className="card" style={{ padding:24 }}>
-              <h2 style={{ fontSize:18, fontWeight:700, marginBottom:16 }}>All Animal Listings</h2>
+            {/* ── All Animal Listings ── */}
+            <div className="card" style={{ padding:24, marginBottom:20 }}>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:16 }}>
+                <h2 style={{ fontSize:17, fontWeight:700 }}>All Animal Listings</h2>
+                <span style={{ fontSize:12, color:"#9a9e95" }}>{animals.length} total</span>
+              </div>
               <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
                 {animals.map(a=>(
                   <div key={a.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 16px", background:"#f8f8f6", borderRadius:10, border:"1px solid #e8e8e6", flexWrap:"wrap", gap:10 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                      <div style={{ width:40, height:40, borderRadius:8, overflow:"hidden", flexShrink:0 }}>
+                      <div style={{ width:44, height:44, borderRadius:8, overflow:"hidden", flexShrink:0 }}>
                         <img src={a.photos?.[0]||(a.species==="Dog"?"https://i.imgur.com/9y1Muh4.png":"https://i.imgur.com/gy1SBr3.png")} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
                       </div>
                       <div>
-                        <div style={{ fontWeight:700, fontSize:14 }}>{a.name} <span style={{ fontSize:11, color:"#9a9e95" }}>· {a.species} · {a.breed}</span></div>
+                        <div style={{ fontWeight:700, fontSize:13 }}>{a.name} <span style={{ fontSize:11, color:"#9a9e95" }}>· {a.species} · {a.breed}</span></div>
                         <div style={{ fontSize:11, color:"#4e5449" }}>{a.shelterName} · {a.shelterCity}, {a.shelterState}</div>
-                        <div style={{ fontSize:11, color:a.status==="critical"?"#c85a35":a.status==="urgent"?"#c47a1e":"#6b8f71", fontWeight:600 }}>{a.daysLeft}d left · {a.status}</div>
+                        <div style={{ display:"flex", gap:6, marginTop:3, flexWrap:"wrap" }}>
+                          <span style={{ fontSize:10, fontWeight:700, padding:"2px 7px", borderRadius:20, background:a.status==="critical"?"#fdf0eb":a.status==="urgent"?"#fdf6ec":"#eef4ef", color:a.status==="critical"?"#c85a35":a.status==="urgent"?"#c47a1e":"#6b8f71" }}>{a.daysLeft}d · {a.status}</span>
+                          {(a.listingType==="foster"||a.listing_type==="foster") && <span style={{ fontSize:10, fontWeight:700, padding:"2px 7px", borderRadius:20, background:"#f0fdf4", color:"#16a34a" }}>Foster</span>}
+                        </div>
                       </div>
                     </div>
                     <button style={{ background:"#fff", color:"#c85a35", border:"1px solid #f0c4b4", borderRadius:8, padding:"6px 12px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
-                      onClick={()=>{
-                        setAnimals(p=>p.filter(x=>x.id!==a.id));
-                        showToast(`🗑 ${a.name}'s listing removed`);
-                      }}>
+                      onClick={()=>{ setAnimals(p=>p.filter(x=>x.id!==a.id)); showToast(`🗑 ${a.name}'s listing removed`); }}>
                       Remove
                     </button>
                   </div>
@@ -2717,6 +2769,34 @@ export default function RescuPawLink() {
                 {animals.length === 0 && <div style={{ fontSize:14, color:"#9a9e95", textAlign:"center", padding:24 }}>No listings yet.</div>}
               </div>
             </div>
+
+            {/* ── Lost & Found Reports ── */}
+            <div className="card" style={{ padding:24 }}>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:16 }}>
+                <h2 style={{ fontSize:17, fontWeight:700 }}>Lost & Found Reports</h2>
+                <span style={{ fontSize:12, color:"#9a9e95" }}>{lostFound.length} reports</span>
+              </div>
+              <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                {lostFound.map(r=>(
+                  <div key={r.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 16px", background:"#f8f8f6", borderRadius:10, border:"1px solid #e8e8e6", flexWrap:"wrap", gap:10 }}>
+                    <div>
+                      <div style={{ fontWeight:700, fontSize:13, display:"flex", alignItems:"center", gap:6 }}>
+                        {r.name === "Unknown" ? `${r.type==="found"?"Found":"Lost"} ${r.species}` : r.name}
+                        <span style={{ fontSize:10, fontWeight:700, padding:"2px 7px", borderRadius:20, background:r.type==="lost"?"#fdf0eb":"#f0fdf4", color:r.type==="lost"?"#c85a35":"#16a34a" }}>{r.type.toUpperCase()}</span>
+                      </div>
+                      <div style={{ fontSize:11, color:"#4e5449" }}>{r.breed} · {r.area} · {r.date}</div>
+                      <div style={{ fontSize:11, color:"#9a9e95" }}>{r.contact}</div>
+                    </div>
+                    <button style={{ background:"#fff", color:"#c85a35", border:"1px solid #f0c4b4", borderRadius:8, padding:"6px 12px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
+                      onClick={()=>{ setLostFound(p=>p.filter(x=>x.id!==r.id)); showToast("🗑 Report removed"); }}>
+                      Remove
+                    </button>
+                  </div>
+                ))}
+                {lostFound.length === 0 && <div style={{ fontSize:14, color:"#9a9e95", textAlign:"center", padding:24 }}>No reports.</div>}
+              </div>
+            </div>
+
           </div>
         )}
 
@@ -3264,6 +3344,103 @@ Message: ${lfInqMsg.message || "No additional message."}`,
               <p style={{ fontSize:11, color:"#9a9e95", textAlign:"center", lineHeight:1.5 }}>
                 Your inquiry will be sent directly to the person who submitted this report. Shelters in the area are also notified.
               </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {/* ══ ADMIN SHELTER PROFILE MODAL ══════════════════════ */}
+      {adminSelectedShelter && (
+        <div className="modal-backdrop" onClick={()=>setAdminSelectedShelter(null)}>
+          <div className="modal" style={{ width:"100%", maxWidth:540, padding:0, overflow:"hidden" }} onClick={e=>e.stopPropagation()}>
+            {/* Header */}
+            <div style={{ background:"#eef4ef", padding:"24px 28px", borderBottom:"1px solid #c7dfc9" }}>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
+                <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                  <div style={{ width:40, height:40, borderRadius:10, background:"#fff", display:"flex", alignItems:"center", justifyContent:"center" }}>{I.home}</div>
+                  <div>
+                    <h2 style={{ fontSize:18, fontWeight:800, marginBottom:2 }}>{adminSelectedShelter.name}</h2>
+                    <div style={{ fontSize:12, color:"#4e5449" }}>{adminSelectedShelter.type}</div>
+                  </div>
+                </div>
+                <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                  <span style={{ fontSize:11, fontWeight:700, padding:"4px 10px", borderRadius:20, background:adminSelectedShelter.verified?"#6b8f71":"#c85a35", color:"#fff" }}>
+                    {adminSelectedShelter.verified ? "✓ Verified" : "⏳ Pending"}
+                  </span>
+                  <button onClick={()=>setAdminSelectedShelter(null)} style={{ background:"#fff", border:"none", borderRadius:"50%", width:28, height:28, cursor:"pointer", fontSize:16, display:"flex", alignItems:"center", justifyContent:"center", color:"#4e5449" }}>×</button>
+                </div>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div style={{ padding:"24px 28px", display:"flex", flexDirection:"column", gap:16 }}>
+              {/* Info grid */}
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+                {[
+                  { label:"City", value:`${adminSelectedShelter.city}, ${adminSelectedShelter.state}` },
+                  { label:"Type", value:adminSelectedShelter.type },
+                  { label:"Email", value:adminSelectedShelter.email },
+                  { label:"Phone", value:adminSelectedShelter.phone || "Not provided" },
+                  { label:"Total Capacity", value:adminSelectedShelter.totalSpace||adminSelectedShelter.total_space||"Not set" },
+                  { label:"Available Space", value:adminSelectedShelter.availableSpace||adminSelectedShelter.available_space||"Not set" },
+                  { label:"Registered ID", value:adminSelectedShelter.id },
+                  { label:"Animals Listed", value:animals.filter(a=>a.shelterId===adminSelectedShelter.id||a.shelter_id===adminSelectedShelter.id).length },
+                ].map(f=>(
+                  <div key={f.label} style={{ background:"#f8f8f6", borderRadius:10, padding:"12px 14px" }}>
+                    <div style={{ fontSize:10, fontWeight:700, color:"#9a9e95", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:4 }}>{f.label}</div>
+                    <div style={{ fontSize:13, fontWeight:600, color:"#1a1c18", wordBreak:"break-all" }}>{f.value}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Bio */}
+              {(adminSelectedShelter.bio) && (
+                <div style={{ background:"#f8f8f6", borderRadius:10, padding:"14px 16px" }}>
+                  <div style={{ fontSize:10, fontWeight:700, color:"#9a9e95", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:6 }}>Bio</div>
+                  <p style={{ fontSize:13, color:"#4e5449", lineHeight:1.65 }}>{adminSelectedShelter.bio}</p>
+                </div>
+              )}
+
+              {/* Can Take */}
+              {(adminSelectedShelter.canTake||adminSelectedShelter.can_take||[]).length > 0 && (
+                <div>
+                  <div style={{ fontSize:10, fontWeight:700, color:"#9a9e95", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:8 }}>Can Accept</div>
+                  <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+                    {(adminSelectedShelter.canTake||adminSelectedShelter.can_take||[]).map(t=>(
+                      <span key={t} style={{ fontSize:12, fontWeight:600, padding:"4px 10px", borderRadius:20, background:"#eef4ef", color:"#4a6b50", border:"1px solid #c7dfc9" }}>{t}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div style={{ display:"flex", gap:10, paddingTop:8, borderTop:"1px solid #e8e8e6" }}>
+                {!adminSelectedShelter.verified
+                  ? <button style={{ flex:1, background:"rgba(107,143,113,0.88)", color:"#fff", border:"none", borderRadius:10, padding:"12px", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
+                      onClick={async ()=>{
+                        setShelters(p=>p.map(sh=>sh.id===adminSelectedShelter.id?{...sh,verified:true}:sh));
+                        setAdminSelectedShelter(s=>({...s,verified:true}));
+                        try{await sbFetch(`shelters?id=eq.${adminSelectedShelter.id}`,{method:"PATCH",body:JSON.stringify({verified:true})})}catch(e){}
+                        showToast(`✅ ${adminSelectedShelter.name} verified!`);
+                      }}>Verify Shelter ✓</button>
+                  : <button style={{ flex:1, background:"#fff", color:"#c85a35", border:"1px solid #f0c4b4", borderRadius:10, padding:"12px", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
+                      onClick={async ()=>{
+                        setShelters(p=>p.map(sh=>sh.id===adminSelectedShelter.id?{...sh,verified:false}:sh));
+                        setAdminSelectedShelter(s=>({...s,verified:false}));
+                        try{await sbFetch(`shelters?id=eq.${adminSelectedShelter.id}`,{method:"PATCH",body:JSON.stringify({verified:false})})}catch(e){}
+                        showToast(`⚠ ${adminSelectedShelter.name} unverified`);
+                      }}>Revoke Verification</button>
+                }
+                <button style={{ background:"#fdf0eb", color:"#c85a35", border:"1px solid #f0c4b4", borderRadius:10, padding:"12px 20px", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
+                  onClick={()=>{
+                    setShelters(p=>p.filter(sh=>sh.id!==adminSelectedShelter.id));
+                    setAdminSelectedShelter(null);
+                    showToast(`🗑 ${adminSelectedShelter.name} removed`);
+                  }}>Remove</button>
+                <button style={{ background:"#f8f8f6", color:"#4e5449", border:"1px solid #e8e8e6", borderRadius:10, padding:"12px 20px", fontSize:14, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}
+                  onClick={()=>setAdminSelectedShelter(null)}>Close</button>
+              </div>
             </div>
           </div>
         </div>
