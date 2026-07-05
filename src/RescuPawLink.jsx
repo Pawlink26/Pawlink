@@ -947,7 +947,7 @@ export default function RescuPawLink() {
   const [applyF,  setApplyF]  = useState({ name:"", email:"", phone:"", message:"", type:"adopt" });
   const [applyAgreed, setApplyAgreed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const isAdmin = user?.email === "rescupawlink@gmail.com";
+  const isAdmin = user?.email?.toLowerCase() === "rescupawlink@gmail.com";
   const [adminSelectedShelter, setAdminSelectedShelter] = useState(null);
   const [lostFound, setLostFound] = useState([]);
   const [lfForm, setLfForm] = useState({ type:"lost", species:"Dog", name:"", breed:"", color:"", area:"", description:"", contact:"", photo:"" });
@@ -1031,7 +1031,7 @@ export default function RescuPawLink() {
       localStorage.setItem("rpl_token", result.access_token);
       localStorage.setItem("rpl_login_time", Date.now().toString());
       // Check admin FIRST before any shelter lookup
-      if (loginF.email === "rescupawlink@gmail.com") {
+      if (loginF.email.toLowerCase() === "rescupawlink@gmail.com") {
         const adminUser = { id:"admin", name:"RescuPawLink Admin", email:"rescupawlink@gmail.com", verified:true, isAdmin:true };
         localStorage.setItem("rpl_shelter_id", "admin");
         setUser(adminUser);
@@ -2023,7 +2023,7 @@ export default function RescuPawLink() {
             <p style={{ color:"#4e5449", fontSize:13, marginBottom:22 }}>Sign in to your shelter account.</p>
             <div style={{ marginBottom:14 }}><label className="label">Email</label><input className="input" type="email" required placeholder="intake@yourshelter.org" value={loginF.email} onChange={e=>setLoginF(p=>({...p,email:e.target.value}))} /></div>
             <div style={{ marginBottom:6 }}><label className="label">Password</label><input className="input" type="password" required placeholder="••••••••" value={loginF.password} onChange={e=>setLoginF(p=>({...p,password:e.target.value}))} /></div>
-            <div style={{ fontSize:12, color:"#9a9e95", marginBottom:22 }}>Demo: any shelter email + password "demo"</div>
+            <div style={{ marginBottom:22 }}>
             <button className="btn btn-primary btn-md" type="submit" style={{ width:"100%", padding:13 }} disabled={loading}>{loading ? <Spinner /> : "Sign In"}</button>
           </form>
         )}
@@ -2136,7 +2136,7 @@ export default function RescuPawLink() {
               { key:"about",     label:"About", action:()=>{setPage("about");setMobileOpen(false);} },
               ...(isLoggedIn ? [
                 ...(isAdmin ? [
-                  { key:"admin", label:"Admin Dashboard" },
+                  { key:"dashboard", label:"Admin Dashboard" },
                 ] : [
                   { key:"chat",      label:"Coordinator Chat" },
                   { key:"post",      label:"Post Animal" },
@@ -2680,25 +2680,23 @@ export default function RescuPawLink() {
         )}
 
         {/* ══ DASHBOARD ══════════════════════════════════════ */}
-        {/* ══ ADMIN DASHBOARD ════════════════════════════════ */}
-        {tab === "admin" && isAdmin && (
-          <div className="fade-in">
 
-            {/* Header */}
+        {tab === "dashboard" && isLoggedIn && isAdmin && (
+          <div className="fade-in">
             <div style={{ marginBottom:28 }}>
               <h1 style={{ fontFamily:"'Inter',sans-serif", fontSize:26, fontWeight:900, letterSpacing:"-0.03em", marginBottom:4 }}>Admin Dashboard</h1>
               <p style={{ color:"#4e5449", fontSize:14 }}>Oversee shelters, listings, and network activity. Logged in as <strong>rescupawlink@gmail.com</strong></p>
             </div>
 
-            {/* ── Stats ── */}
+            {/* Stats */}
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))", gap:14, marginBottom:28 }}>
               {[
-                { label:"Total Shelters",   value:shelters.length,                                 icon:I.home,     color:"#6b8f71" },
-                { label:"Verified",         value:shelters.filter(s=>s.verified).length,           icon:I.check,    color:"#6b8f71" },
-                { label:"Pending Review",   value:shelters.filter(s=>!s.verified).length,          icon:I.alert,    color:"#c47a1e" },
-                { label:"Total Listings",   value:animals.length,                                  icon:I.heartPaw, color:"#6b8f71" },
-                { label:"Critical",         value:animals.filter(a=>a.status==="critical").length, icon:I.alert,    color:"#c85a35" },
-                { label:"Foster Listings",  value:animals.filter(a=>a.listingType==="foster"||a.listing_type==="foster").length, icon:I.paw, color:"#16a34a" },
+                { label:"Total Shelters",  value:shelters.length,                                                                          icon:I.home,     color:"#6b8f71" },
+                { label:"Verified",        value:shelters.filter(s=>s.verified).length,                                                    icon:I.check,    color:"#6b8f71" },
+                { label:"Pending Review",  value:shelters.filter(s=>!s.verified).length,                                                   icon:I.alert,    color:"#c47a1e" },
+                { label:"Total Listings",  value:animals.length,                                                                           icon:I.heartPaw, color:"#6b8f71" },
+                { label:"Critical",        value:animals.filter(a=>a.status==="critical").length,                                          icon:I.alert,    color:"#c85a35" },
+                { label:"Foster Listings", value:animals.filter(a=>a.listingType==="foster"||a.listing_type==="foster").length,            icon:I.paw,      color:"#16a34a" },
               ].map(s=>(
                 <div key={s.label} className="card" style={{ padding:"16px 18px", display:"flex", alignItems:"center", gap:12 }}>
                   <div style={{ width:36, height:36, borderRadius:10, background:"#eef4ef", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{s.icon}</div>
@@ -2710,7 +2708,7 @@ export default function RescuPawLink() {
               ))}
             </div>
 
-            {/* ── Pending Verification — priority section ── */}
+            {/* Pending Verification */}
             {shelters.filter(s=>!s.verified).length > 0 && (
               <div className="card" style={{ padding:24, marginBottom:20, border:"1px solid #f0c4b4" }}>
                 <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:16 }}>
@@ -2725,18 +2723,11 @@ export default function RescuPawLink() {
                         <div style={{ fontSize:12, color:"#4e5449" }}>{s.city}, {s.state} · {s.type}</div>
                         <div style={{ fontSize:11, color:"#9a9e95", marginTop:2 }}>{s.email} · {s.phone}</div>
                       </div>
-                      <div style={{ display:"flex", gap:8 }}>
+                      <div style={{ display:"flex", gap:8 }} onClick={e=>e.stopPropagation()}>
                         <button style={{ background:"rgba(107,143,113,0.88)", color:"#fff", border:"none", borderRadius:8, padding:"8px 16px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
-                          onClick={async ()=>{
-                            setShelters(p=>p.map(sh=>sh.id===s.id?{...sh,verified:true}:sh));
-                            try { await sbFetch(`shelters?id=eq.${s.id}`, { method:"PATCH", body:JSON.stringify({ verified:true }) }); } catch(e){}
-                            showToast(`✅ ${s.name} verified!`);
-                          }}>Verify ✓</button>
+                          onClick={async ()=>{ setShelters(p=>p.map(sh=>sh.id===s.id?{...sh,verified:true}:sh)); try{await sbFetch(`shelters?id=eq.${s.id}`,{method:"PATCH",body:JSON.stringify({verified:true})})}catch(e){} showToast(`✅ ${s.name} verified!`); }}>Verify ✓</button>
                         <button style={{ background:"#fff", color:"#c85a35", border:"1px solid #f0c4b4", borderRadius:8, padding:"8px 14px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}
-                          onClick={()=>{
-                            setShelters(p=>p.filter(sh=>sh.id!==s.id));
-                            showToast(`🗑 ${s.name} removed`);
-                          }}>Remove</button>
+                          onClick={()=>{ setShelters(p=>p.filter(sh=>sh.id!==s.id)); showToast(`🗑 ${s.name} removed`); }}>Remove</button>
                       </div>
                     </div>
                   ))}
@@ -2744,7 +2735,7 @@ export default function RescuPawLink() {
               </div>
             )}
 
-            {/* ── All Shelters ── */}
+            {/* All Shelters */}
             <div className="card" style={{ padding:24, marginBottom:20 }}>
               <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:16 }}>
                 <h2 style={{ fontSize:17, fontWeight:700 }}>All Registered Shelters</h2>
@@ -2754,21 +2745,17 @@ export default function RescuPawLink() {
                 {shelters.map(s=>(
                   <div key={s.id} onClick={()=>setAdminSelectedShelter(s)} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 16px", background:s.verified?"#f8f8f6":"#fdf6ec", borderRadius:10, border:`1px solid ${s.verified?"#e8e8e6":"#f0c4b4"}`, flexWrap:"wrap", gap:10, cursor:"pointer" }}>
                     <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                      <div style={{ width:32, height:32, borderRadius:8, background:s.verified?"#eef4ef":"#fdf0eb", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                        {s.verified ? I.check : I.alert}
-                      </div>
+                      <div style={{ width:32, height:32, borderRadius:8, background:s.verified?"#eef4ef":"#fdf0eb", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{s.verified?I.check:I.alert}</div>
                       <div>
                         <div style={{ fontWeight:700, fontSize:13, display:"flex", alignItems:"center", gap:6 }}>
                           {s.name}
-                          <span style={{ fontSize:10, fontWeight:700, padding:"2px 7px", borderRadius:20, background:s.verified?"#eef4ef":"#fdf0eb", color:s.verified?"#4a6b50":"#c85a35" }}>
-                            {s.verified?"✓ Verified":"⏳ Pending"}
-                          </span>
+                          <span style={{ fontSize:10, fontWeight:700, padding:"2px 7px", borderRadius:20, background:s.verified?"#eef4ef":"#fdf0eb", color:s.verified?"#4a6b50":"#c85a35" }}>{s.verified?"✓ Verified":"⏳ Pending"}</span>
                         </div>
                         <div style={{ fontSize:11, color:"#4e5449" }}>{s.city}, {s.state} · {s.type}</div>
                         <div style={{ fontSize:11, color:"#9a9e95" }}>{s.email}</div>
                       </div>
                     </div>
-                    <div style={{ display:"flex", gap:8 }}>
+                    <div onClick={e=>e.stopPropagation()}>
                       {!s.verified
                         ? <button style={{ background:"rgba(107,143,113,0.88)", color:"#fff", border:"none", borderRadius:7, padding:"6px 12px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
                             onClick={async ()=>{ setShelters(p=>p.map(sh=>sh.id===s.id?{...sh,verified:true}:sh)); try{await sbFetch(`shelters?id=eq.${s.id}`,{method:"PATCH",body:JSON.stringify({verified:true})})}catch(e){} showToast(`✅ ${s.name} verified!`); }}>Verify</button>
@@ -2781,7 +2768,7 @@ export default function RescuPawLink() {
               </div>
             </div>
 
-            {/* ── All Animal Listings ── */}
+            {/* All Animal Listings */}
             <div className="card" style={{ padding:24, marginBottom:20 }}>
               <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:16 }}>
                 <h2 style={{ fontSize:17, fontWeight:700 }}>All Animal Listings</h2>
@@ -2796,24 +2783,22 @@ export default function RescuPawLink() {
                       </div>
                       <div>
                         <div style={{ fontWeight:700, fontSize:13 }}>{a.name} <span style={{ fontSize:11, color:"#9a9e95" }}>· {a.species} · {a.breed}</span></div>
-                        <div style={{ fontSize:11, color:"#4e5449" }}>{isAdmin ? <button onClick={e=>{e.stopPropagation();const sh=shelters.find(s=>s.id===a.shelterId||s.id===a.shelter_id||s.name===a.shelterName);if(sh)setAdminSelectedShelter(sh);}} style={{background:"none",border:"none",color:"#6b8f71",fontWeight:700,cursor:"pointer",fontSize:11,fontFamily:"inherit",padding:0,textDecoration:"underline"}}>{a.shelterName}</button> : a.shelterName} · {a.shelterCity}, {a.shelterState}</div>
-                        <div style={{ display:"flex", gap:6, marginTop:3, flexWrap:"wrap" }}>
+                        <div style={{ fontSize:11, color:"#4e5449" }}>{isAdmin?<button onClick={()=>{const sh=shelters.find(s=>s.id===a.shelterId||s.name===a.shelterName);if(sh)setAdminSelectedShelter(sh);}} style={{background:"none",border:"none",color:"#6b8f71",fontWeight:700,cursor:"pointer",fontSize:11,fontFamily:"inherit",padding:0,textDecoration:"underline"}}>{a.shelterName}</button>:a.shelterName} · {a.shelterCity}, {a.shelterState}</div>
+                        <div style={{ display:"flex", gap:6, marginTop:3 }}>
                           <span style={{ fontSize:10, fontWeight:700, padding:"2px 7px", borderRadius:20, background:a.status==="critical"?"#fdf0eb":a.status==="urgent"?"#fdf6ec":"#eef4ef", color:a.status==="critical"?"#c85a35":a.status==="urgent"?"#c47a1e":"#6b8f71" }}>{a.daysLeft}d · {a.status}</span>
-                          {(a.listingType==="foster"||a.listing_type==="foster") && <span style={{ fontSize:10, fontWeight:700, padding:"2px 7px", borderRadius:20, background:"#f0fdf4", color:"#16a34a" }}>Foster</span>}
+                          {(a.listingType==="foster"||a.listing_type==="foster")&&<span style={{ fontSize:10, fontWeight:700, padding:"2px 7px", borderRadius:20, background:"#f0fdf4", color:"#16a34a" }}>Foster</span>}
                         </div>
                       </div>
                     </div>
                     <button style={{ background:"#fff", color:"#c85a35", border:"1px solid #f0c4b4", borderRadius:8, padding:"6px 12px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
-                      onClick={()=>{ setAnimals(p=>p.filter(x=>x.id!==a.id)); showToast(`🗑 ${a.name}'s listing removed`); }}>
-                      Remove
-                    </button>
+                      onClick={()=>{ setAnimals(p=>p.filter(x=>x.id!==a.id)); showToast(`🗑 ${a.name}'s listing removed`); }}>Remove</button>
                   </div>
                 ))}
-                {animals.length === 0 && <div style={{ fontSize:14, color:"#9a9e95", textAlign:"center", padding:24 }}>No listings yet.</div>}
+                {animals.length===0&&<div style={{ fontSize:14, color:"#9a9e95", textAlign:"center", padding:24 }}>No listings yet.</div>}
               </div>
             </div>
 
-            {/* ── Lost & Found Reports ── */}
+            {/* Lost & Found Reports */}
             <div className="card" style={{ padding:24 }}>
               <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:16 }}>
                 <h2 style={{ fontSize:17, fontWeight:700 }}>Lost & Found Reports</h2>
@@ -2824,26 +2809,22 @@ export default function RescuPawLink() {
                   <div key={r.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 16px", background:"#f8f8f6", borderRadius:10, border:"1px solid #e8e8e6", flexWrap:"wrap", gap:10 }}>
                     <div>
                       <div style={{ fontWeight:700, fontSize:13, display:"flex", alignItems:"center", gap:6 }}>
-                        {r.name === "Unknown" ? `${r.type==="found"?"Found":"Lost"} ${r.species}` : r.name}
+                        {r.name==="Unknown"?`${r.type==="found"?"Found":"Lost"} ${r.species}`:r.name}
                         <span style={{ fontSize:10, fontWeight:700, padding:"2px 7px", borderRadius:20, background:r.type==="lost"?"#fdf0eb":"#f0fdf4", color:r.type==="lost"?"#c85a35":"#16a34a" }}>{r.type.toUpperCase()}</span>
                       </div>
                       <div style={{ fontSize:11, color:"#4e5449" }}>{r.breed} · {r.area} · {r.date}</div>
                       <div style={{ fontSize:11, color:"#9a9e95" }}>{r.contact}</div>
                     </div>
                     <button style={{ background:"#fff", color:"#c85a35", border:"1px solid #f0c4b4", borderRadius:8, padding:"6px 12px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
-                      onClick={()=>{ setLostFound(p=>p.filter(x=>x.id!==r.id)); showToast("🗑 Report removed"); }}>
-                      Remove
-                    </button>
+                      onClick={()=>{ setLostFound(p=>p.filter(x=>x.id!==r.id)); showToast("🗑 Report removed"); }}>Remove</button>
                   </div>
                 ))}
-                {lostFound.length === 0 && <div style={{ fontSize:14, color:"#9a9e95", textAlign:"center", padding:24 }}>No reports.</div>}
+                {lostFound.length===0&&<div style={{ fontSize:14, color:"#9a9e95", textAlign:"center", padding:24 }}>No reports.</div>}
               </div>
             </div>
-
           </div>
         )}
-
-        {tab === "dashboard" && isLoggedIn && (
+        {tab === "dashboard" && isLoggedIn && !isAdmin && (
           <div className="fade-in">
 
             {/* ── Welcome / Onboarding banner for new shelters ── */}
