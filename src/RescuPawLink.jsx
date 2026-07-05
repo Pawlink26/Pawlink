@@ -488,6 +488,7 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
   const [pinnedStates, setPinnedStates] = useState([]);
   const [stateSearch, setStateSearch] = useState("");
   const [showStatePicker, setShowStatePicker] = useState(false);
+  const [channelStateFilter, setChannelStateFilter] = useState("all");
 
   // Auto-default to user's state channel on mount
   useEffect(() => {
@@ -690,7 +691,7 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
                 const hasUnread = !!unread[ch.id];
                 const isActive = activeChannel === ch.id && view === "channels";
                 return (
-                  <div key={ch.id} onClick={()=>{ setActiveChannel(ch.id); setView("channels"); setUnread(p=>{const n={...p};delete n[ch.id];return n;}); setInput(""); }}
+                  <div key={ch.id} onClick={()=>{ setActiveChannel(ch.id); setView("channels"); setUnread(p=>{const n={...p};delete n[ch.id];return n;}); setInput(""); setChannelStateFilter("all"); }}
                     style={{ padding:"9px 12px", borderRadius:9, marginBottom:2, cursor:"pointer", display:"flex", alignItems:"center", gap:9, justifyContent:"space-between", background:isActive?"#eef4ef":"transparent", transition:"background 0.15s", borderLeft:isActive?"3px solid #6b8f71":"3px solid transparent" }}
                     onMouseEnter={e=>{ if(!isActive) e.currentTarget.style.background="#f8f8f6"; }}
                     onMouseLeave={e=>{ if(!isActive) e.currentTarget.style.background="transparent"; }}>
@@ -775,12 +776,31 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
 
           {/* Channel header */}
           {view === "channels" && (
-            <div style={{ padding:"14px 20px", borderBottom:"1px solid var(--border)", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-              <div>
-                <div style={{ fontWeight:700, fontSize:16 }}>{[...CHANNELS, {id:activeChannel, label:activeChannel.startsWith("state_")?`${activeChannel.replace("state_","")} Shelters`:activeChannel}].find(c=>c.id===activeChannel)?.label}</div>
-                <div style={{ fontSize:12, color:"#9a9e95", marginTop:2 }}>{[...CHANNELS, {id:activeChannel, label:activeChannel.startsWith("state_")?`${activeChannel.replace("state_","")} Shelters`:activeChannel}].find(c=>c.id===activeChannel)?.desc}</div>
+            <div style={{ padding:"12px 20px", borderBottom:"1px solid #e8e8e6" }}>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom: channelStateFilter!=="all"||true ? 10 : 0 }}>
+                <div>
+                  <div style={{ fontWeight:700, fontSize:16 }}>{[...CHANNELS, {id:activeChannel, label:activeChannel.startsWith("state_")?`${activeChannel.replace("state_","")} Shelters`:activeChannel}].find(c=>c.id===activeChannel)?.label}</div>
+                  <div style={{ fontSize:12, color:"#9a9e95", marginTop:2 }}>{[...CHANNELS, {id:activeChannel, label:activeChannel.startsWith("state_")?`${activeChannel.replace("state_","")} Shelters`:activeChannel}].find(c=>c.id===activeChannel)?.desc}</div>
+                </div>
+                <div style={{ fontSize:12, color:"#9a9e95" }}>{shelters.length} members</div>
               </div>
-              <div style={{ fontSize:12, color:"#9a9e95" }}>{shelters.length} members</div>
+              {/* State filter — only show on global channels not state-specific ones */}
+              {!activeChannel.startsWith("state_") && (
+                <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                  <span style={{ fontSize:11, fontWeight:600, color:"#9a9e95", flexShrink:0 }}>Filter by state:</span>
+                  <select value={channelStateFilter} onChange={e=>setChannelStateFilter(e.target.value)}
+                    className="select" style={{ fontSize:12, padding:"5px 10px", borderRadius:8, height:"auto", flex:1, maxWidth:180 }}>
+                    <option value="all">All States</option>
+                    {US_STATES.map(s=><option key={s} value={s}>{s}</option>)}
+                  </select>
+                  {channelStateFilter !== "all" && (
+                    <button onClick={()=>setChannelStateFilter("all")}
+                      style={{ fontSize:11, fontWeight:700, color:"#6b8f71", background:"#eef4ef", border:"1px solid #c7dfc9", borderRadius:6, padding:"4px 8px", cursor:"pointer", fontFamily:"inherit", flexShrink:0 }}>
+                      Clear
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -814,13 +834,25 @@ function ChatSystem({ user, shelters, messages, setMessages, msgText, setMsgText
           {(view === "channels" || (view === "dms" && activeDmShelter)) && (
             <>
               <div ref={chatRef} style={{ flex:1, overflowY:"auto", padding:"20px", display:"flex", flexDirection:"column", gap:14 }}>
-                {(view === "channels" ? activeChannelMsgs : activeDmConvo).map(m => (
+                {(view === "channels"
+                  ? (channelStateFilter === "all" ? activeChannelMsgs : activeChannelMsgs.filter(m => {
+                      const senderShelter = shelters.find(s => s.id === m.fromId);
+                      return senderShelter?.state === channelStateFilter || senderShelter?.shelterState === channelStateFilter;
+                    }))
+                  : activeDmConvo
+                ).map(m => (
                   <MessageBubble key={m.id} m={m} myId={user?.id} />
                 ))}
-                {(view === "channels" ? activeChannelMsgs : activeDmConvo).length === 0 && (
+                {(view === "channels"
+                  ? (channelStateFilter === "all" ? activeChannelMsgs : activeChannelMsgs.filter(m => {
+                      const senderShelter = shelters.find(s => s.id === m.fromId);
+                      return senderShelter?.state === channelStateFilter;
+                    }))
+                  : activeDmConvo
+                ).length === 0 && (
                   <div style={{ textAlign:"center", padding:"40px", color:"#9a9e95" }}>
                     <div style={{ marginBottom:8, color:"#6b8f71" }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b8f71" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-                    <div style={{ fontSize:14 }}>No messages yet. Be the first to say something.</div>
+                    <div style={{ fontSize:14 }}>{channelStateFilter !== "all" ? `No messages from ${channelStateFilter} shelters yet.` : "No messages yet. Be the first to say something."}</div>
                   </div>
                 )}
               </div>
@@ -914,6 +946,7 @@ export default function RescuPawLink() {
   });
   const [applyF,  setApplyF]  = useState({ name:"", email:"", phone:"", message:"", type:"adopt" });
   const [mobileOpen, setMobileOpen] = useState(false);
+  const isAdmin = user?.email === "rescupawlink@gmail.com";
   const [lostFound, setLostFound] = useState([]);
   const [lfForm, setLfForm] = useState({ type:"lost", species:"Dog", name:"", breed:"", color:"", area:"", description:"", contact:"", photo:"" });
   const [lfInquiry, setLfInquiry] = useState(null);
@@ -1053,11 +1086,14 @@ export default function RescuPawLink() {
   // ── Post animal ─────────────────────────────────
   async function submitPost(e) {
     e.preventDefault();
+    if (!postF.photos || postF.photos.length === 0) {
+      showToast("⚠ Please upload at least 1 photo before posting.");
+      return;
+    }
     const a = {
       id:`a${Date.now()}`, ...postF,
       shelterId:user.id, shelterName:user.name,
       shelterCity:user.city, shelterState:user.state,
-      shelterPhone:user.phone, shelterEmail:user.email,
       status: postF.daysLeft<=2?"critical":postF.daysLeft<=5?"urgent":"good",
       postedAt:new Date().toISOString().split("T")[0]
     };
@@ -1075,7 +1111,6 @@ export default function RescuPawLink() {
           fee: postF.fee, photos: postF.photos, listing_type: postF.listingType||"adopt",
           shelter_id: user.id, shelter_name: user.name,
           shelter_city: user.city, shelter_state: user.state,
-          shelter_phone: user.phone, shelter_email: user.email,
           status: a.status,
         }),
       });
@@ -2061,6 +2096,7 @@ export default function RescuPawLink() {
                 { key:"chat",      label:"Coordinator Chat" },
                 { key:"post",      label:"Post Animal" },
                 { key:"dashboard", label:"Dashboard" },
+                ...(isAdmin ? [{ key:"admin", label:"⚙ Admin" }] : []),
               ] : []),
             ].map(t=>{
               const isActive = t.key==="foster"?(tab==="adopt"&&fSpecies==="Foster"):t.key==="adopt"?(tab==="adopt"&&fSpecies!=="Foster"):tab===t.key;
@@ -2422,6 +2458,15 @@ export default function RescuPawLink() {
         )}
 
         {/* ══ POST ANIMAL ════════════════════════════════════ */}
+        {tab === "post" && isLoggedIn && !user?.verified && (
+          <div style={{ background:"#fdf6ec", border:"1px solid #f0c4b4", borderRadius:14, padding:"20px 24px", marginBottom:20, display:"flex", alignItems:"center", gap:12 }}>
+            {I.alert}
+            <div>
+              <div style={{ fontWeight:700, fontSize:15, color:"#c85a35", marginBottom:4 }}>Verification Pending</div>
+              <div style={{ fontSize:13, color:"#4e5449", lineHeight:1.6 }}>Your shelter is pending admin verification. You can still post animals but they will be reviewed before going live to the public.</div>
+            </div>
+          </div>
+        )}
         {tab === "post" && isLoggedIn && (
           <div className="fade-in" style={{ maxWidth:660, margin:"0 auto" }}>
             <div style={{ marginBottom:24 }}>
@@ -2574,6 +2619,107 @@ export default function RescuPawLink() {
         )}
 
         {/* ══ DASHBOARD ══════════════════════════════════════ */}
+        {/* ══ ADMIN TAB ══════════════════════════════════════ */}
+        {tab === "admin" && isAdmin && (
+          <div>
+            <div style={{ marginBottom:24 }}>
+              <h1 style={{ fontSize:26, fontWeight:800, marginBottom:6 }}>⚙ Admin Panel</h1>
+              <p style={{ color:"#4e5449", fontSize:14 }}>Manage shelters, verify listings, and oversee the network.</p>
+            </div>
+
+            {/* Stats row */}
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))", gap:14, marginBottom:28 }}>
+              {[
+                { label:"Total Shelters",    value:shelters.length,                                    color:"#6b8f71" },
+                { label:"Verified",          value:shelters.filter(s=>s.verified).length,              color:"#6b8f71" },
+                { label:"Pending Review",    value:shelters.filter(s=>!s.verified).length,             color:"#c47a1e" },
+                { label:"Total Listings",    value:animals.length,                                     color:"#6b8f71" },
+                { label:"Critical Animals",  value:animals.filter(a=>a.status==="critical").length,    color:"#c85a35" },
+              ].map(s=>(
+                <div key={s.label} className="card" style={{ padding:"14px 18px" }}>
+                  <div style={{ fontFamily:"'Inter',sans-serif", fontSize:24, fontWeight:700, color:s.color }}>{s.value}</div>
+                  <div style={{ fontSize:12, color:"#4e5449", marginTop:2 }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Shelter management */}
+            <div className="card" style={{ padding:24, marginBottom:20 }}>
+              <h2 style={{ fontSize:18, fontWeight:700, marginBottom:16 }}>Shelter Verification</h2>
+              <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                {shelters.map(s=>(
+                  <div key={s.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 16px", background:s.verified?"#f4faf4":"#fdf6ec", borderRadius:12, border:`1px solid ${s.verified?"#c7dfc9":"#f0c4b4"}`, flexWrap:"wrap", gap:10 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+                      <div style={{ width:36, height:36, borderRadius:9, background:s.verified?"#eef4ef":"#fdf0eb", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                        {s.verified ? I.check : I.alert}
+                      </div>
+                      <div>
+                        <div style={{ fontWeight:700, fontSize:14 }}>{s.name}</div>
+                        <div style={{ fontSize:12, color:"#4e5449" }}>{s.city}, {s.state} · {s.type}</div>
+                        <div style={{ fontSize:11, color:"#9a9e95", marginTop:1 }}>{s.email}</div>
+                      </div>
+                    </div>
+                    <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+                      <span style={{ fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:20, background:s.verified?"#eef4ef":"#fdf0eb", color:s.verified?"#4a6b50":"#c85a35" }}>
+                        {s.verified ? "✓ Verified" : "⏳ Pending"}
+                      </span>
+                      {!s.verified && (
+                        <button style={{ background:"rgba(107,143,113,0.88)", color:"#fff", border:"none", borderRadius:8, padding:"7px 14px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
+                          onClick={async ()=>{
+                            setShelters(p=>p.map(sh=>sh.id===s.id?{...sh,verified:true}:sh));
+                            try { await sbFetch(`shelters?id=eq.${s.id}`, { method:"PATCH", body:JSON.stringify({ verified:true }) }); } catch(e){}
+                            showToast(`✅ ${s.name} verified!`);
+                          }}>
+                          Verify
+                        </button>
+                      )}
+                      {s.verified && (
+                        <button style={{ background:"#fff", color:"#c85a35", border:"1px solid #f0c4b4", borderRadius:8, padding:"7px 14px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
+                          onClick={async ()=>{
+                            setShelters(p=>p.map(sh=>sh.id===s.id?{...sh,verified:false}:sh));
+                            try { await sbFetch(`shelters?id=eq.${s.id}`, { method:"PATCH", body:JSON.stringify({ verified:false }) }); } catch(e){}
+                            showToast(`⚠ ${s.name} unverified`);
+                          }}>
+                          Revoke
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Animal listings management */}
+            <div className="card" style={{ padding:24 }}>
+              <h2 style={{ fontSize:18, fontWeight:700, marginBottom:16 }}>All Animal Listings</h2>
+              <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                {animals.map(a=>(
+                  <div key={a.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 16px", background:"#f8f8f6", borderRadius:10, border:"1px solid #e8e8e6", flexWrap:"wrap", gap:10 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                      <div style={{ width:40, height:40, borderRadius:8, overflow:"hidden", flexShrink:0 }}>
+                        <img src={a.photos?.[0]||(a.species==="Dog"?"https://i.imgur.com/9y1Muh4.png":"https://i.imgur.com/gy1SBr3.png")} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                      </div>
+                      <div>
+                        <div style={{ fontWeight:700, fontSize:14 }}>{a.name} <span style={{ fontSize:11, color:"#9a9e95" }}>· {a.species} · {a.breed}</span></div>
+                        <div style={{ fontSize:11, color:"#4e5449" }}>{a.shelterName} · {a.shelterCity}, {a.shelterState}</div>
+                        <div style={{ fontSize:11, color:a.status==="critical"?"#c85a35":a.status==="urgent"?"#c47a1e":"#6b8f71", fontWeight:600 }}>{a.daysLeft}d left · {a.status}</div>
+                      </div>
+                    </div>
+                    <button style={{ background:"#fff", color:"#c85a35", border:"1px solid #f0c4b4", borderRadius:8, padding:"6px 12px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
+                      onClick={()=>{
+                        setAnimals(p=>p.filter(x=>x.id!==a.id));
+                        showToast(`🗑 ${a.name}'s listing removed`);
+                      }}>
+                      Remove
+                    </button>
+                  </div>
+                ))}
+                {animals.length === 0 && <div style={{ fontSize:14, color:"#9a9e95", textAlign:"center", padding:24 }}>No listings yet.</div>}
+              </div>
+            </div>
+          </div>
+        )}
+
         {tab === "dashboard" && isLoggedIn && (
           <div className="fade-in">
 
