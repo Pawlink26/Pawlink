@@ -948,6 +948,7 @@ export default function RescuPawLink() {
   const [applyAgreed, setApplyAgreed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const isAdmin = user?.email?.toLowerCase() === "rescupawlink@gmail.com";
+  const isLoggedIn = !!user;
   const [adminSelectedShelter, setAdminSelectedShelter] = useState(null);
   const [lostFound, setLostFound] = useState([]);
   const [lfForm, setLfForm] = useState({ type:"lost", species:"Dog", name:"", breed:"", color:"", area:"", description:"", contact:"", photo:"" });
@@ -1250,8 +1251,20 @@ export default function RescuPawLink() {
             ))}
           </div>
           <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-            <button className="hide-mobile btn btn-ghost btn-sm" style={{ borderColor:"#e0e0de" }} onClick={()=>{setAuthMode("login");setPage("login");}}>Login</button>
-            <button className="hide-mobile btn btn-primary btn-sm" style={{ fontWeight:700 }} onClick={()=>{setAuthMode("register");setPage("login");}}>Register Your Shelter</button>
+            {isLoggedIn ? (
+              <>
+                <span className="hide-mobile" style={{ fontSize:13, color:"#4e5449", fontWeight:500 }}>{user.name}</span>
+                <button className="hide-mobile btn btn-primary btn-sm" style={{ fontWeight:700 }} onClick={()=>setPage("app")}>
+                  {isAdmin ? "Admin Dashboard" : "My Dashboard"}
+                </button>
+                <button className="hide-mobile btn btn-ghost btn-sm" onClick={handleSignOut}>Sign Out</button>
+              </>
+            ) : (
+              <>
+                <button className="hide-mobile btn btn-ghost btn-sm" style={{ borderColor:"#e0e0de" }} onClick={()=>{setAuthMode("login");setPage("login");}}>Login</button>
+                <button className="hide-mobile btn btn-primary btn-sm" style={{ fontWeight:700 }} onClick={()=>{setAuthMode("register");setPage("login");}}>Register Your Shelter</button>
+              </>
+            )}
             <button className="show-mobile-only" onClick={()=>setMobileOpen(o=>!o)}
               style={{ background:"none", border:"1px solid #d0c8bc", borderRadius:8, padding:"7px 10px", cursor:"pointer", display:"none", alignItems:"center", justifyContent:"center" }}>
               {mobileOpen
@@ -1270,8 +1283,20 @@ export default function RescuPawLink() {
               </button>
             ))}
             <div style={{ display:"flex", flexDirection:"column", gap:10, marginTop:16 }}>
-              <button className="btn btn-ghost btn-md" style={{ width:"100%", borderColor:"#e0e0de", justifyContent:"center" }} onClick={()=>{setAuthMode("login");setPage("login");setMobileOpen(false);}}>Login</button>
-              <button style={{ width:"100%", padding:"12px 22px", fontSize:14, fontWeight:700, borderRadius:10, border:"2px solid rgba(107,143,113,0.6)", background:"rgba(107,143,113,0.88)", color:"#fff", cursor:"pointer", fontFamily:"inherit" }} onClick={()=>{setAuthMode("register");setPage("login");setMobileOpen(false);}}>Register Your Shelter</button>
+              {isLoggedIn ? (
+                <>
+                  <div style={{ fontSize:13, color:"#9a9e95", padding:"4px 4px" }}>Signed in as {user.name}</div>
+                  <button className="btn btn-primary btn-md" style={{ width:"100%", justifyContent:"center" }}
+                    onClick={()=>{ setPage("app"); setMobileOpen(false); }}>{isAdmin?"Admin Dashboard":"My Dashboard"}</button>
+                  <button className="btn btn-ghost btn-md" style={{ width:"100%", justifyContent:"center" }}
+                    onClick={()=>{ handleSignOut(); setMobileOpen(false); }}>Sign Out</button>
+                </>
+              ) : (
+                <>
+                  <button className="btn btn-ghost btn-md" style={{ width:"100%", borderColor:"#e0e0de", justifyContent:"center" }} onClick={()=>{setAuthMode("login");setPage("login");setMobileOpen(false);}}>Login</button>
+                  <button style={{ width:"100%", padding:"12px 22px", fontSize:14, fontWeight:700, borderRadius:10, border:"2px solid rgba(107,143,113,0.6)", background:"rgba(107,143,113,0.88)", color:"#fff", cursor:"pointer", fontFamily:"inherit" }} onClick={()=>{setAuthMode("register");setPage("login");setMobileOpen(false);}}>Register Your Shelter</button>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -1962,7 +1987,6 @@ export default function RescuPawLink() {
     </div>
   );
 
-  const isLoggedIn = !!user;
   if (page === "login") return (
     <div style={{ minHeight:"100vh", background:"#f8f8f6", display:"flex", flexDirection:"column", fontFamily:"'DM Sans',sans-serif" }}>
       {/* Auth Nav */}
