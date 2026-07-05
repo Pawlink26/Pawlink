@@ -976,7 +976,20 @@ export default function RescuPawLink() {
     try {
       const token = localStorage.getItem("rpl_token");
       const shelterId = localStorage.getItem("rpl_shelter_id");
+      const loginTime = localStorage.getItem("rpl_login_time");
       if (!token || !shelterId) return;
+      // Auto logout after 24 hours
+      if (loginTime && Date.now() - parseInt(loginTime) > 24 * 60 * 60 * 1000) {
+        localStorage.removeItem("rpl_token");
+        localStorage.removeItem("rpl_shelter_id");
+        localStorage.removeItem("rpl_login_time");
+        return;
+      }
+      // Restore admin session
+      if (shelterId === "admin") {
+        setUser({ id:"admin", name:"RescuPawLink Admin", email:"rescupawlink@gmail.com", verified:true, isAdmin:true });
+        return;
+      }
       const data = await sbFetch(`shelters?id=eq.${shelterId}`);
       if (data?.[0]) setUser(data[0]);
     } catch(e) { console.log("No session"); }
