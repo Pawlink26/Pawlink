@@ -2023,7 +2023,6 @@ export default function RescuPawLink() {
             <p style={{ color:"#4e5449", fontSize:13, marginBottom:22 }}>Sign in to your shelter account.</p>
             <div style={{ marginBottom:14 }}><label className="label">Email</label><input className="input" type="email" required placeholder="intake@yourshelter.org" value={loginF.email} onChange={e=>setLoginF(p=>({...p,email:e.target.value}))} /></div>
             <div style={{ marginBottom:6 }}><label className="label">Password</label><input className="input" type="password" required placeholder="••••••••" value={loginF.password} onChange={e=>setLoginF(p=>({...p,password:e.target.value}))} /></div>
-            <div style={{ marginBottom:22 }}>
             <button className="btn btn-primary btn-md" type="submit" style={{ width:"100%", padding:13 }} disabled={loading}>{loading ? <Spinner /> : "Sign In"}</button>
           </form>
         )}
