@@ -1675,6 +1675,64 @@ If you cannot access the URL, return an empty array [].`
       </div>
 
 
+      {/* ── TWO AUDIENCE CARDS ── */}
+      <div style={{ maxWidth:1400, margin:"0 auto", padding:"clamp(48px,6vw,80px) clamp(16px,4vw,48px)" }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:20 }}>
+
+          {/* Card 1 — For Rescues & Shelters (light) */}
+          <div style={{ background:"#f4f4f2", border:"1px solid #e8e8e6", borderRadius:20, padding:"clamp(32px,4vw,48px)", position:"relative", overflow:"hidden" }}>
+            <div style={{ width:44, height:44, borderRadius:12, background:"#fff", border:"1px solid #e8e8e6", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:20 }}>
+              {I.network}
+            </div>
+            <div style={{ fontSize:10, fontWeight:700, color:"#6b8f71", letterSpacing:"0.16em", textTransform:"uppercase", marginBottom:14, fontFamily:"'DM Sans',sans-serif" }}>For Rescues & Shelters</div>
+            <h2 style={{ fontFamily:"'Lora', Georgia, serif", fontSize:"clamp(22px,3vw,34px)", fontWeight:700, lineHeight:1.1, marginBottom:16 }}>See every resource<br/>available to <span style={{ color:"#6b8f71", fontStyle:"italic" }}>your rescue.</span></h2>
+            <p style={{ fontSize:14, color:"#4e5449", lineHeight:1.75, marginBottom:24 }}>
+              Share live capacity, coordinate animal transfers, post urgent listings, connect with fosters, and message coordinators across the country — all in one free platform.
+            </p>
+            <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:28 }}>
+              {["Transfers","Capacity","Urgent Alerts","Foster Network","Coordinator Chat","Lost & Found"].map(t=>(
+                <span key={t} style={{ fontSize:12, fontWeight:500, padding:"5px 12px", borderRadius:20, background:"#fff", border:"1px solid #e8e8e6", color:"#4e5449" }}>{t}</span>
+              ))}
+            </div>
+            <button style={{ background:"none", border:"none", color:"#6b8f71", fontWeight:700, fontSize:14, cursor:"pointer", fontFamily:"inherit", padding:0, display:"flex", alignItems:"center", gap:6 }}
+              onClick={()=>{setAuthMode("register");setPage("login");}}>
+              Register your shelter →
+            </button>
+          </div>
+
+          {/* Card 2 — For Adopters & Fosters (dark sage) */}
+          <div style={{ background:"#4a6b50", border:"none", borderRadius:20, padding:"clamp(32px,4vw,48px)", position:"relative", overflow:"hidden" }}>
+            {/* Decorative circle */}
+            <div style={{ position:"absolute", top:-40, right:-40, width:180, height:180, borderRadius:"50%", background:"rgba(255,255,255,0.06)" }}/>
+            <div style={{ position:"absolute", bottom:-60, right:20, width:240, height:240, borderRadius:"50%", background:"rgba(255,255,255,0.04)" }}/>
+            <div style={{ width:44, height:44, borderRadius:12, background:"rgba(255,255,255,0.15)", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:20, position:"relative" }}>
+              {I.heartPaw}
+            </div>
+            <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.6)", letterSpacing:"0.16em", textTransform:"uppercase", marginBottom:14, fontFamily:"'DM Sans',sans-serif", position:"relative" }}>For Adopters & Fosters</div>
+            <h2 style={{ fontFamily:"'Lora', Georgia, serif", fontSize:"clamp(22px,3vw,34px)", fontWeight:700, lineHeight:1.1, marginBottom:16, color:"#fff", position:"relative" }}>Find your perfect<br/><span style={{ fontStyle:"italic", color:"rgba(255,255,255,0.75)" }}>match in minutes.</span></h2>
+            <p style={{ fontSize:14, color:"rgba(255,255,255,0.72)", lineHeight:1.75, marginBottom:24, position:"relative" }}>
+              Browse adoptable pets and animals needing foster homes from verified shelters nationwide. Filter by species, location, and more — and apply directly from any listing.
+            </p>
+            <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:28, position:"relative" }}>
+              {["Adopt","Foster","Lost & Found","Search by State","Direct Applications","Urgent Animals"].map(t=>(
+                <span key={t} style={{ fontSize:12, fontWeight:500, padding:"5px 12px", borderRadius:20, background:"rgba(255,255,255,0.12)", border:"1px solid rgba(255,255,255,0.2)", color:"rgba(255,255,255,0.9)" }}>{t}</span>
+              ))}
+            </div>
+            <div style={{ display:"flex", gap:12, flexWrap:"wrap", position:"relative" }}>
+              <button style={{ background:"#fff", border:"none", color:"#4a6b50", fontWeight:700, fontSize:14, cursor:"pointer", fontFamily:"inherit", padding:"10px 20px", borderRadius:10 }}
+                onClick={()=>{setPage("app");setTab("adopt");setFSpecies("All");}}>
+                Browse adoptable pets →
+              </button>
+              <button style={{ background:"rgba(255,255,255,0.12)", border:"1px solid rgba(255,255,255,0.3)", color:"#fff", fontWeight:600, fontSize:14, cursor:"pointer", fontFamily:"inherit", padding:"10px 20px", borderRadius:10 }}
+                onClick={()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}}>
+                Find a foster pet
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
       {/* ── NETWORK SECTION — merged For Shelters + How It Works ── */}
       <div style={{ background:"#f4f4f2", padding:"clamp(48px,7vw,80px) clamp(16px,4vw,48px)" }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
