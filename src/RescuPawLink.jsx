@@ -85,6 +85,22 @@ async function sendTransferEmail(data) {
   });
 }
 
+async function sendPartnerEmail(data) {
+  return sendEmail(EMAILJS_TEMPLATE_ADOPTION, {
+    to_email:        "rescupawlink@gmail.com",
+    to_name:         "RescuPawLink Team",
+    from_name:       data.orgName,
+    from_email:      data.email,
+    inquiry_type:    `Partnership Inquiry — ${data.partnerType}`,
+    animal_name:     data.orgName,
+    animal_breed:    data.website || "No website provided",
+    animal_species:  data.location,
+    shelter_name:    data.orgName,
+    message:         `Organization: ${data.orgName}\nType: ${data.partnerType}\nLocation: ${data.location}\nWebsite: ${data.website||"N/A"}\nContact: ${data.contactName}\nEmail: ${data.email}\nPhone: ${data.phone||"N/A"}\n\nMessage:\n${data.message}`,
+    reply_to:        data.email,
+  });
+}
+
 // ── Google Fonts ──────────────────────────────────────────
 const fontLink = document.createElement("link");
 fontLink.rel = "stylesheet";
@@ -872,6 +888,8 @@ const SEED_LF = [];
 
 export default function RescuPawLink() {
   const [page, setPage]           = useState("landing");
+  const [partnerF, setPartnerF]     = useState({ orgName:"", partnerType:"Shelter/Rescue", location:"", website:"", contactName:"", email:"", phone:"", message:"" });
+  const [partnerSent, setPartnerSent] = useState(false);
   const [authMode, setAuthMode]   = useState("login");
   const [tab, setTab]             = useState("adopt");
   const [user, setUser]           = useState(null);
@@ -916,6 +934,144 @@ export default function RescuPawLink() {
   const [applyAgreed, setApplyAgreed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const isAdmin = user?.email?.toLowerCase() === "rescupawlink@gmail.com";
+
+  if (page === "partner") return (
+    <div style={{ fontFamily:"'DM Sans',sans-serif", color:"#1a1c18", background:"#f8f8f6", minHeight:"100vh" }}>
+
+      {/* Nav */}
+      <nav style={{ background:"#fff", borderBottom:"1px solid #e8e8e6", padding:"0 clamp(16px,3vw,48px)", height:72, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100, boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
+        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", padding:0 }}>
+          <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:48, width:"auto", display:"block" }}/>
+        </button>
+        <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:0 }}>
+          {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["About",()=>setPage("about")],["Become a Partner",()=>setPage("partner")]].map(([l,fn],i,arr)=>(
+            <span key={l} style={{ display:"flex", alignItems:"center" }}>
+              <button onClick={fn} style={{ background:"none", border:"none", cursor:"pointer", fontFamily:"inherit", fontSize:13, fontWeight:l==="Become a Partner"?700:500, color:l==="Become a Partner"?"#6b8f71":"#4e5449", padding:"6px 14px", borderRadius:6 }}
+                onMouseEnter={e=>e.currentTarget.style.color="#1a1c18"} onMouseLeave={e=>e.currentTarget.style.color=l==="Become a Partner"?"#6b8f71":"#4e5449"}>{l}</button>
+              {i < arr.length-1 && <span style={{ color:"#ddd", fontSize:12 }}>|</span>}
+            </span>
+          ))}
+        </div>
+        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer", fontSize:13, color:"#4e5449", fontFamily:"inherit" }}>← Back</button>
+      </nav>
+
+      {/* Hero */}
+      <div style={{ background:"#1a1c18", padding:"clamp(56px,8vw,96px) clamp(16px,4vw,48px)", textAlign:"center" }}>
+        <div style={{ maxWidth:680, margin:"0 auto" }}>
+          <div style={{ fontSize:10, fontWeight:700, color:"#6b8f71", letterSpacing:"0.18em", textTransform:"uppercase", marginBottom:16, fontFamily:"'DM Sans',sans-serif" }}>Partnership Inquiry</div>
+          <h1 style={{ fontFamily:"'Lora', Georgia, serif", fontSize:"clamp(30px,5vw,54px)", fontWeight:700, color:"#fff", lineHeight:1.08, marginBottom:16 }}>
+            Become a <span style={{ fontStyle:"italic", color:"#a8d4ab" }}>Partner.</span>
+          </h1>
+          <p style={{ fontSize:"clamp(14px,1.6vw,17px)", color:"rgba(255,255,255,0.68)", lineHeight:1.75, maxWidth:520, margin:"0 auto" }}>
+            Whether you're a shelter, rescue, veterinary clinic, pet brand, or animal welfare organization — we'd love to connect and explore how we can work together.
+          </p>
+        </div>
+      </div>
+
+      {/* Form */}
+      <div style={{ maxWidth:700, margin:"0 auto", padding:"clamp(48px,6vw,72px) clamp(16px,4vw,48px)" }}>
+        {partnerSent ? (
+          <div style={{ textAlign:"center", background:"#fff", borderRadius:20, padding:"56px 40px", border:"1px solid #c7dfc9", boxShadow:"0 2px 12px rgba(0,0,0,0.06)" }}>
+            <div style={{ width:64, height:64, borderRadius:"50%", background:"#eef4ef", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 20px" }}>
+              {I.check}
+            </div>
+            <h2 style={{ fontFamily:"'Lora', Georgia, serif", fontSize:28, fontWeight:700, marginBottom:12 }}>We got your inquiry!</h2>
+            <p style={{ fontSize:15, color:"#4e5449", lineHeight:1.7, marginBottom:28, maxWidth:420, margin:"0 auto 28px" }}>
+              Thank you for reaching out. Our team will review your inquiry and get back to you at <strong>{partnerF.email}</strong> within 2–3 business days.
+            </p>
+            <button style={{ background:"rgba(107,143,113,0.88)", color:"#fff", border:"none", borderRadius:10, padding:"12px 28px", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
+              onClick={()=>{ setPartnerSent(false); setPartnerF({ orgName:"", partnerType:"Shelter/Rescue", location:"", website:"", contactName:"", email:"", phone:"", message:"" }); setPage("landing"); }}>
+              Back to Home
+            </button>
+          </div>
+        ) : (
+          <div style={{ background:"#fff", borderRadius:20, padding:"clamp(28px,4vw,48px)", border:"1px solid #e8e8e6", boxShadow:"0 2px 12px rgba(0,0,0,0.06)" }}>
+            <h2 style={{ fontFamily:"'Lora', Georgia, serif", fontSize:22, fontWeight:700, marginBottom:6 }}>Tell us about your organization</h2>
+            <p style={{ fontSize:13, color:"#9a9e95", marginBottom:28 }}>All fields marked * are required.</p>
+
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))", gap:16, marginBottom:16 }}>
+              <div>
+                <label className="label">Organization Name *</label>
+                <input className="input" placeholder="e.g. Tucson Animal Rescue" value={partnerF.orgName} onChange={e=>setPartnerF(p=>({...p,orgName:e.target.value}))}/>
+              </div>
+              <div>
+                <label className="label">Partnership Type *</label>
+                <select className="select" value={partnerF.partnerType} onChange={e=>setPartnerF(p=>({...p,partnerType:e.target.value}))}>
+                  <option>Shelter/Rescue</option>
+                  <option>Veterinary Clinic</option>
+                  <option>Pet Brand / Sponsor</option>
+                  <option>Animal Welfare Nonprofit</option>
+                  <option>Media / Press</option>
+                  <option>Technology Partner</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))", gap:16, marginBottom:16 }}>
+              <div>
+                <label className="label">Location (City, State) *</label>
+                <input className="input" placeholder="e.g. Tucson, AZ" value={partnerF.location} onChange={e=>setPartnerF(p=>({...p,location:e.target.value}))}/>
+              </div>
+              <div>
+                <label className="label">Website</label>
+                <input className="input" placeholder="https://yourorg.com" value={partnerF.website} onChange={e=>setPartnerF(p=>({...p,website:e.target.value}))}/>
+              </div>
+            </div>
+
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))", gap:16, marginBottom:16 }}>
+              <div>
+                <label className="label">Contact Name *</label>
+                <input className="input" placeholder="Your name" value={partnerF.contactName} onChange={e=>setPartnerF(p=>({...p,contactName:e.target.value}))}/>
+              </div>
+              <div>
+                <label className="label">Email Address *</label>
+                <input className="input" type="email" placeholder="you@yourorg.com" value={partnerF.email} onChange={e=>setPartnerF(p=>({...p,email:e.target.value}))}/>
+              </div>
+            </div>
+
+            <div style={{ marginBottom:16 }}>
+              <label className="label">Phone Number</label>
+              <input className="input" placeholder="(555) 000-0000" value={partnerF.phone} onChange={e=>setPartnerF(p=>({...p,phone:e.target.value}))} style={{ maxWidth:260 }}/>
+            </div>
+
+            <div style={{ marginBottom:28 }}>
+              <label className="label">Tell us about the partnership you have in mind *</label>
+              <textarea className="input" rows={5} placeholder="Describe how you'd like to collaborate with RescuPawLink — what you're looking for, what you offer, and any relevant context about your organization." value={partnerF.message} onChange={e=>setPartnerF(p=>({...p,message:e.target.value}))} style={{ resize:"vertical", minHeight:120 }}/>
+            </div>
+
+            <div style={{ background:"#f8f8f6", borderRadius:12, padding:"14px 18px", marginBottom:24, fontSize:13, color:"#4e5449", lineHeight:1.65 }}>
+              📬 Your inquiry will be sent directly to the RescuPawLink team at rescupawlink@gmail.com. We typically respond within 2–3 business days.
+            </div>
+
+            <button style={{ width:"100%", background:"rgba(107,143,113,0.88)", color:"#fff", border:"2px solid rgba(107,143,113,0.6)", borderRadius:12, padding:"15px", fontSize:16, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all 0.2s" }}
+              disabled={!partnerF.orgName||!partnerF.location||!partnerF.contactName||!partnerF.email||!partnerF.message}
+              onMouseEnter={e=>e.currentTarget.style.background="rgba(74,107,80,0.95)"}
+              onMouseLeave={e=>e.currentTarget.style.background="rgba(107,143,113,0.88)"}
+              onClick={async ()=>{
+                const ok = await sendPartnerEmail(partnerF);
+                if (ok || true) { setPartnerSent(true); window.scrollTo(0,0); }
+                else showToast("⚠ Could not send — please email us directly at rescupawlink@gmail.com");
+              }}>
+              Submit Partnership Inquiry →
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <footer style={{ background:"#1a1c18", padding:"28px clamp(16px,4vw,48px)" }}>
+        <div style={{ maxWidth:1400, margin:"0 auto", fontSize:11, color:"rgba(255,255,255,0.25)", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:8 }}>
+          <span>© 2026 RescuPawLink Network · All rights reserved</span>
+          <div style={{ display:"flex", gap:16 }}>
+            <button onClick={()=>setPage("privacy")} style={{ background:"none", border:"none", color:"rgba(255,255,255,0.35)", cursor:"pointer", fontSize:11, fontFamily:"inherit" }}>Privacy Policy</button>
+            <button onClick={()=>setPage("terms")} style={{ background:"none", border:"none", color:"rgba(255,255,255,0.35)", cursor:"pointer", fontSize:11, fontFamily:"inherit" }}>Terms of Service</button>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+
   const isLoggedIn = !!user;
   const [adminSelectedShelter, setAdminSelectedShelter] = useState(null);
   const [lostFound, setLostFound] = useState([]);
@@ -1351,10 +1507,9 @@ export default function RescuPawLink() {
       const months = ageStr.includes("month") ? parseInt(ageStr) : null;
       const years  = ageStr.includes("year")  ? parseInt(ageStr) : null;
       const ageNum = months != null ? months/12 : years != null ? years : null;
-      if (fAge === "puppy"  && !(ageNum != null && ageNum < 1))  return false;
-      if (fAge === "young"  && !(ageNum != null && ageNum >= 1 && ageNum < 3)) return false;
-      if (fAge === "adult"  && !(ageNum != null && ageNum >= 3 && ageNum < 8)) return false;
-      if (fAge === "senior" && !(ageNum != null && ageNum >= 8))  return false;
+      if (fAge === "puppy"  && !(ageNum != null && ageNum < 1))   return false;
+      if (fAge === "young"  && !(ageNum != null && ageNum < 3))   return false;
+      if (fAge === "adult"  && !(ageNum != null && ageNum >= 3))  return false;
     }
     return true;
   }).sort((a,b) => a.daysLeft - b.daysLeft);
@@ -1401,6 +1556,7 @@ export default function RescuPawLink() {
     ["Shelters",     ()=>{setPage("app");setTab("network");setMobileOpen(false);}],
     ["Lost & Found", ()=>{setPage("app");setTab("lostfound");setMobileOpen(false);}],
     ["About",        ()=>{setPage("about");setMobileOpen(false);}],
+    ["Become a Partner", ()=>{setPage("partner");setMobileOpen(false);}],
   ];
 
   if (page === "landing") return (
