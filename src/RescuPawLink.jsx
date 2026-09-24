@@ -88,7 +88,7 @@ async function sendTransferEmail(data) {
 // ── Google Fonts ──────────────────────────────────────────
 const fontLink = document.createElement("link");
 fontLink.rel = "stylesheet";
-fontLink.href = "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@400;500;600;700;800;900&display=swap";
+fontLink.href = "https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap";
 document.head.appendChild(fontLink);
 
 
@@ -1310,10 +1310,10 @@ export default function RescuPawLink() {
 
           {/* Content pinned to bottom */}
           <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-end", padding:"0 clamp(20px,5vw,64px) clamp(32px,5vw,56px)" }}>
-            <h1 className="fade-up" style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(24px,4vw,52px)", fontWeight:900, color:"#fff", textAlign:"center", lineHeight:1.08, letterSpacing:"-0.03em", textShadow:"0 2px 16px rgba(0,0,0,0.4)", marginBottom:12 }}>
-              Connecting Shelters. Saving Lives.
+            <h1 className="fade-up" style={{ fontFamily:"'Lora', Georgia, serif", fontSize:"clamp(28px,4.5vw,58px)", fontWeight:700, color:"#fff", textAlign:"center", lineHeight:1.1, textShadow:"0 2px 20px rgba(0,0,0,0.35)", marginBottom:12 }}>
+              Connecting Shelters.<br/><span style={{ fontStyle:"italic", color:"#a8d4ab" }}>Saving Lives.</span>
             </h1>
-            <p className="fade-up-1" style={{ fontSize:"clamp(13px,1.6vw,16px)", color:"rgba(255,255,255,0.88)", textAlign:"center", marginBottom:24, textShadow:"0 1px 8px rgba(0,0,0,0.4)", maxWidth:500, lineHeight:1.6 }}>
+            <p className="fade-up-1" style={{ fontSize:"clamp(14px,1.6vw,17px)", color:"rgba(255,255,255,0.82)", textAlign:"center", marginBottom:24, textShadow:"0 1px 8px rgba(0,0,0,0.3)", maxWidth:520, lineHeight:1.75, fontFamily:"'DM Sans',sans-serif", fontWeight:400 }}>
               Share capacity, coordinate transfers, and get animals placed — before time runs out. Free for every shelter and rescue.
             </p>
             {/* Two frosted CTA buttons */}
@@ -1411,7 +1411,7 @@ export default function RescuPawLink() {
         <div style={{ marginBottom:24 }}>
           <div>
             <div style={{ fontSize:11, fontWeight:800, color:"#c85a35", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>⚠ Needs You Now</div>
-            <h2 style={{ fontSize:26, fontWeight:800 }}>Animals Running Out of Time</h2>
+            <h2 style={{ fontFamily:"'Lora', Georgia, serif", fontSize:"clamp(24px,3vw,36px)", fontWeight:700, letterSpacing:"-0.01em", lineHeight:1.1 }}>Animals Running Out of Time</h2>
           </div>
           <button onClick={()=>{setPage("app");setTab("adopt");}} style={{ fontSize:13, fontWeight:700, color:"#6b8f71", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit", padding:0 }}>See All →</button>
         </div>
@@ -1454,7 +1454,7 @@ export default function RescuPawLink() {
             <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:20 }}>
               <div>
                 <div style={{ fontSize:11, fontWeight:700, color:"#c85a35", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>🏡 Find a Home</div>
-                <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(20px,2.5vw,26px)", fontWeight:800, letterSpacing:"-0.03em", lineHeight:1.1 }}>Adoptable Pets</h2>
+                <h2 style={{ fontFamily:"'Lora', Georgia, serif", fontSize:"clamp(22px,2.5vw,30px)", fontWeight:700, letterSpacing:"-0.01em", lineHeight:1.1 }}>Adoptable Pets</h2>
               </div>
               <button onClick={()=>{setPage("app");setTab("adopt");setFSpecies("All");}}
                 style={{ background:"rgba(107,143,113,0.88)", color:"#fff", border:"2px solid rgba(107,143,113,0.6)", backdropFilter:"blur(8px)", borderRadius:10, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", flexShrink:0, whiteSpace:"nowrap" }}>
@@ -1467,14 +1467,14 @@ export default function RescuPawLink() {
                   onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
                   onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 12px 32px rgba(0,0,0,0.12)"; }}
                   onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,0.06)"; }}>
-                  <div style={{ height:180, position:"relative", overflow:"hidden" }}>
+                  <div style={{ height:220, position:"relative", overflow:"hidden" }}>
                     <img src={a.species==="Dog"?"https://i.imgur.com/9y1Muh4.png":"https://i.imgur.com/gy1SBr3.png"} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
                     <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 55%)" }}/>
                     <div style={{ position:"absolute", top:10, left:10 }}>
                       <span style={{ background:a.status==="critical"?"#c85a35":"#c47a1e", color:"#fff", fontSize:9, fontWeight:800, padding:"3px 8px", borderRadius:20, textTransform:"uppercase" }}>{a.daysLeft}d left</span>
                     </div>
                     <div style={{ position:"absolute", bottom:10, left:12, right:12 }}>
-                      <div style={{ fontSize:15, fontWeight:700, color:"#fff", marginBottom:1 }}>{a.name}</div>
+                      <div style={{ fontFamily:"'Lora', Georgia, serif", fontSize:17, fontWeight:600, color:"#fff", marginBottom:1 }}>{a.name}</div>
                       <div style={{ fontSize:11, color:"rgba(255,255,255,0.8)" }}>{a.breed}</div>
                     </div>
                   </div>
@@ -1492,7 +1492,7 @@ export default function RescuPawLink() {
             <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:20 }}>
               <div>
                 <div style={{ fontSize:11, fontWeight:700, color:"#16a34a", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>💚 Foster Needed</div>
-                <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(20px,2.5vw,26px)", fontWeight:800, letterSpacing:"-0.03em", lineHeight:1.1 }}>Temporary Homes</h2>
+                <h2 style={{ fontFamily:"'Lora', Georgia, serif", fontSize:"clamp(22px,2.5vw,30px)", fontWeight:700, letterSpacing:"-0.01em", lineHeight:1.1 }}>Temporary Homes</h2>
               </div>
               <button onClick={()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}}
                 style={{ background:"rgba(22,163,74,0.88)", color:"#fff", border:"2px solid rgba(22,163,74,0.5)", backdropFilter:"blur(8px)", borderRadius:10, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", flexShrink:0, whiteSpace:"nowrap" }}>
@@ -1512,14 +1512,14 @@ export default function RescuPawLink() {
                   onClick={()=>{setPage("app");setTab("adopt");setSelectedAnimal(a);}}
                   onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 12px 32px rgba(22,163,74,0.18)"; }}
                   onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="0 2px 8px rgba(22,163,74,0.08)"; }}>
-                  <div style={{ height:180, position:"relative", overflow:"hidden" }}>
+                  <div style={{ height:220, position:"relative", overflow:"hidden" }}>
                     <img src={a.species==="Dog"?"https://i.imgur.com/9y1Muh4.png":"https://i.imgur.com/gy1SBr3.png"} alt={a.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
                     <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 55%)" }}/>
                     <div style={{ position:"absolute", top:10, left:10 }}>
                       <span style={{ background:"#16a34a", color:"#fff", fontSize:9, fontWeight:800, padding:"3px 8px", borderRadius:20, textTransform:"uppercase" }}>💚 Foster</span>
                     </div>
                     <div style={{ position:"absolute", bottom:10, left:12, right:12 }}>
-                      <div style={{ fontSize:15, fontWeight:700, color:"#fff", marginBottom:1 }}>{a.name}</div>
+                      <div style={{ fontFamily:"'Lora', Georgia, serif", fontSize:17, fontWeight:600, color:"#fff", marginBottom:1 }}>{a.name}</div>
                       <div style={{ fontSize:11, color:"rgba(255,255,255,0.8)" }}>{a.breed}</div>
                     </div>
                   </div>
@@ -1704,8 +1704,8 @@ export default function RescuPawLink() {
       <div style={{ background:"#1a1c18", padding:"clamp(64px,10vw,110px) clamp(16px,4vw,48px)", position:"relative", overflow:"hidden" }}>
         <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse at 20% 50%, rgba(107,143,113,0.16) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(107,143,113,0.08) 0%, transparent 50%)" }}/>
         <div style={{ maxWidth:760, margin:"0 auto", textAlign:"center", position:"relative" }}>
-          <div style={{ fontSize:11, fontWeight:700, color:"#6b8f71", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:16 }}>Our Story</div>
-          <h1 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(32px,5vw,58px)", fontWeight:900, color:"#fff", marginBottom:20, lineHeight:1.08, letterSpacing:"-0.03em" }}>
+          <div style={{ fontSize:10, fontWeight:700, color:"#6b8f71", letterSpacing:"0.16em", textTransform:"uppercase", marginBottom:16, fontFamily:"'DM Sans',sans-serif" }}>A Global Rescue Network</div>
+          <h1 style={{ fontFamily:"'Lora', Georgia, serif", fontSize:"clamp(32px,5vw,58px)", fontWeight:700, color:"#fff", marginBottom:20, lineHeight:1.1 }}>
             A Network Built to <span style={{ color:"#6b8f71" }}>Save Lives</span>
           </h1>
           <p style={{ fontSize:"clamp(15px,2vw,18px)", color:"rgba(255,255,255,0.62)", lineHeight:1.75, maxWidth:560, margin:"0 auto" }}>
@@ -1850,7 +1850,7 @@ export default function RescuPawLink() {
 
       {/* ── CTA ── */}
       <div style={{ background:"#6b8f71", padding:"clamp(56px,7vw,80px) clamp(16px,4vw,48px)", textAlign:"center" }}>
-        <h2 style={{ fontFamily:"'Inter',sans-serif", fontSize:"clamp(24px,3.5vw,40px)", fontWeight:800, color:"#fff", marginBottom:12, letterSpacing:"-0.02em", lineHeight:1.1 }}>Join the Network. Save a Life.</h2>
+        <h2 style={{ fontFamily:"'Lora', Georgia, serif", fontSize:"clamp(26px,3.5vw,44px)", fontWeight:700, color:"#fff", marginBottom:12, lineHeight:1.1, fontStyle:"italic" }}>Join the Network. Save a Life.</h2>
         <p style={{ fontSize:16, color:"rgba(255,255,255,0.78)", marginBottom:32, maxWidth:440, margin:"0 auto 32px", lineHeight:1.7 }}>Register your shelter today and connect with hundreds of facilities already working together to give animals a second chance.</p>
         <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
           <button className="btn btn-lg" style={{ background:"#fff", color:"#4a6b50", border:"none", fontWeight:700 }} onClick={()=>{setAuthMode("register");setPage("login");}}>Register Your Shelter →</button>
@@ -2199,7 +2199,7 @@ export default function RescuPawLink() {
           <div className="fade-in">
             <div className="section-header">
               <div>
-                <h1 style={{ fontSize:26, marginBottom:5, fontFamily:"'Inter',sans-serif", fontWeight:800, letterSpacing:"-0.5px" }}>{fSpecies==="Foster"?"Animals Needing Foster":"Adoptable Animals"}</h1>
+                <h1 style={{ fontSize:"clamp(24px,3vw,36px)", marginBottom:5, fontFamily:"'Lora', Georgia, serif", fontWeight:700, letterSpacing:"-0.01em", lineHeight:1.1 }}>{fSpecies==="Foster"?"Animals Needing Foster":"Adoptable Animals"}</h1>
                 <p style={{ color:"#4e5449", fontSize:14 }}>Real listings from verified shelters — sorted by urgency. Apply directly from any listing.</p>
               </div>
               <div style={{ fontSize:13, color:"#4e5449", background:"#ffffff", border:"1px solid var(--border)", borderRadius:10, padding:"8px 14px" }}>
@@ -2722,7 +2722,7 @@ export default function RescuPawLink() {
                 <div key={s.label} className="card" style={{ padding:"16px 18px", display:"flex", alignItems:"center", gap:12 }}>
                   <div style={{ width:36, height:36, borderRadius:10, background:"#eef4ef", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{s.icon}</div>
                   <div>
-                    <div style={{ fontFamily:"'Inter',sans-serif", fontSize:22, fontWeight:700, color:s.color, lineHeight:1 }}>{s.value}</div>
+                    <div style={{ fontFamily:"'Lora', Georgia, serif", fontSize:28, fontWeight:700, color:s.color, lineHeight:1 }}>{s.value}</div>
                     <div style={{ fontSize:11, color:"#4e5449", marginTop:2 }}>{s.label}</div>
                   </div>
                 </div>
@@ -3114,7 +3114,7 @@ export default function RescuPawLink() {
           <div>
             {/* Header */}
             <div style={{ marginBottom:20 }}>
-              <h1 style={{ fontSize:26, fontWeight:800, marginBottom:6 }}>Lost & Found</h1>
+              <h1 style={{ fontSize:"clamp(24px,3vw,36px)", fontFamily:"'Lora', Georgia, serif", fontWeight:700, marginBottom:6, letterSpacing:"-0.01em" }}>Lost & Found</h1>
               <p style={{ color:"#4e5449", fontSize:14 }}>Help reunite lost pets with their families. Showing reports nearest to you first.</p>
             </div>
 
