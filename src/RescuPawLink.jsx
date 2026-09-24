@@ -902,6 +902,9 @@ export default function RescuPawLink() {
   const [loginF,  setLoginF]  = useState({ email:"", password:"" });
   const [regF,    setRegF]    = useState({ orgName:"", type:"", city:"", state:"", email:"", phone:"", password:"", confirm:"" });
   const [postF,   setPostF]   = useState({ name:"", species:"Dog", breed:"", age:"", sex:"", weight:"", color:"", description:"", daysLeft:7, vaccinated:false, neutered:false, goodWithKids:false, goodWithDogs:false, goodWithCats:false, fee:"", photos:[], listingType:"adopt" });
+  const [importUrl, setImportUrl] = useState("");
+  const [importLoading, setImportLoading] = useState(false);
+  const [importPreview, setImportPreview] = useState(null); // array of animals to review
   const [capF,    setCapF]    = useState({ total:"", available:"", needsHelp:false, canTakeDogs:false, canTakeCats:false, canTakeSmall:false, overflow:"" });
   const [msgText, setMsgText] = useState("");
   const [dmTarget, setDmTarget] = useState(null); // shelter id for active DM
@@ -935,6 +938,115 @@ export default function RescuPawLink() {
     loadAnimals();
     checkSession();
   }, []);
+
+
+  // ── SEO Meta Tags ──────────────────────────────────────
+  useEffect(() => {
+    const setMeta = (name, content, prop=false) => {
+      const sel = prop ? `meta[property="${name}"]` : `meta[name="${name}"]`;
+      let el = document.querySelector(sel);
+      if (!el) { el = document.createElement("meta"); prop ? el.setAttribute("property", name) : el.setAttribute("name", name); document.head.appendChild(el); }
+      el.setAttribute("content", content);
+    };
+    const titles = {
+      landing: "RescuPawLink — Connecting Shelters. Saving Lives.",
+      about:   "About RescuPawLink — A Network Built to Save Lives",
+      app:     "Adoptable Animals & Shelter Network — RescuPawLink",
+      login:   "Sign In — RescuPawLink",
+      privacy: "Privacy Policy — RescuPawLink",
+      terms:   "Terms of Service — RescuPawLink",
+    };
+    const descs = {
+      landing: "RescuPawLink connects animal shelters and rescues nationwide to share capacity, coordinate transfers, and get animals placed before deadlines hit. Free for every shelter.",
+      about:   "Built by rescuers. RescuPawLink is a free platform connecting shelters across the country to save animals before time runs out.",
+      app:     "Browse adoptable dogs and cats from verified shelters. Find animals available for adoption or foster near you on RescuPawLink.",
+      login:   "Sign in to your RescuPawLink shelter account to manage listings, coordinate transfers, and connect with the network.",
+      privacy: "RescuPawLink Privacy Policy — how we collect, use, and protect your data.",
+      terms:   "RescuPawLink Terms of Service — rules and guidelines for using the platform.",
+    };
+    document.title = titles[page] || titles.landing;
+    setMeta("description", descs[page] || descs.landing);
+    setMeta("keywords", "animal shelter network, rescue coordination, adopt pets, foster animals, shelter capacity sharing, animal transfer, RescuPawLink");
+    setMeta("robots", "index, follow");
+    setMeta("author", "RescuPawLink");
+    // Open Graph
+    setMeta("og:title", titles[page] || titles.landing, true);
+    setMeta("og:description", descs[page] || descs.landing, true);
+    setMeta("og:type", "website", true);
+    setMeta("og:url", `https://rescupawlink.com${page !== "landing" ? `/${page}` : ""}`, true);
+    setMeta("og:image", "https://i.imgur.com/Ek2yDNL.png", true);
+    setMeta("og:site_name", "RescuPawLink", true);
+    // Twitter Card
+    setMeta("twitter:card", "summary_large_image");
+    setMeta("twitter:title", titles[page] || titles.landing);
+    setMeta("twitter:description", descs[page] || descs.landing);
+    setMeta("twitter:image", "https://i.imgur.com/Ek2yDNL.png");
+    // Canonical
+    let canonical = document.querySelector("link[rel='canonical']");
+    if (!canonical) { canonical = document.createElement("link"); canonical.setAttribute("rel", "canonical"); document.head.appendChild(canonical); }
+    canonical.setAttribute("href", `https://rescupawlink.com${page !== "landing" ? `/${page}` : ""}`);
+  }, [page]);
+
+
+  async function handleUrlImport() {
+    if (!importUrl.trim()) return;
+    setImportLoading(true);
+    try {
+      // Use Claude API to extract animal info from the URL
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 2000,
+          messages: [{
+            role: "user",
+            content: `Visit this shelter/rescue website and extract all adoptable animals listed. URL: ${importUrl}
+Return a JSON array only, no other text. Each animal object should have:
+{ name, species, breed, age, sex, description, photos (array of image URLs if visible), vaccinated (bool if mentioned), neutered (bool if mentioned), goodWithKids (bool), goodWithDogs (bool), goodWithCats (bool), fee }
+If you cannot access the URL, return an empty array [].`
+          }]
+        })
+      });
+      const data = await response.json();
+      const text = data.content?.[0]?.text || "[]";
+      const clean = text.replace(/\`\`\`json|\`\`\`/g, "").trim();
+      const animals = JSON.parse(clean);
+      if (Array.isArray(animals) && animals.length > 0) {
+        setImportPreview(animals);
+        showToast(`✅ Found ${animals.length} animal${animals.length!==1?"s":""} — review before importing`);
+      } else {
+        showToast("⚠ No animals found at that URL. Try a direct listing page.");
+      }
+    } catch(e) {
+      console.error("Import error:", e);
+      showToast("⚠ Could not read that URL. Try pasting a direct link to the animals page.");
+    }
+    setImportLoading(false);
+  }
+
+  function importSingleAnimal(a) {
+    setPostF(p => ({
+      ...p,
+      name: a.name || "",
+      species: a.species || "Dog",
+      breed: a.breed || "",
+      age: a.age || "",
+      sex: a.sex || "",
+      description: a.description || "",
+      photos: a.photos || [],
+      vaccinated: !!a.vaccinated,
+      neutered: !!a.neutered,
+      goodWithKids: !!a.goodWithKids,
+      goodWithDogs: !!a.goodWithDogs,
+      goodWithCats: !!a.goodWithCats,
+      fee: a.fee || "",
+    }));
+    setImportPreview(null);
+    setImportUrl("");
+    setPostStep(1);
+    showToast(`✅ ${a.name} loaded — review and submit`);
+  }
 
   async function checkSession() {
     try {
@@ -2594,6 +2706,46 @@ export default function RescuPawLink() {
             </div>
 
             <form onSubmit={submitPost}>
+              {/* ── URL Import Tool ── */}
+              <div className="card fade-in" style={{ padding:24, marginBottom:20, border:"1px solid #c7dfc9", background:"#f0fdf4" }}>
+                <div style={{ fontSize:11, fontWeight:700, color:"#16a34a", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:10 }}>⚡ Quick Import from Your Website</div>
+                <p style={{ fontSize:13, color:"#4e5449", lineHeight:1.6, marginBottom:14 }}>Paste a link to your shelter's pet listing page and we'll pull the animal info automatically. You can review and edit before posting.</p>
+                <div style={{ display:"flex", gap:10 }}>
+                  <input className="input" placeholder="https://yourshelter.org/available-pets" value={importUrl} onChange={e=>setImportUrl(e.target.value)} style={{ flex:1 }}/>
+                  <button type="button" style={{ background:"rgba(107,143,113,0.88)", color:"#fff", border:"none", borderRadius:10, padding:"10px 18px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", whiteSpace:"nowrap", flexShrink:0 }}
+                    onClick={handleUrlImport} disabled={importLoading}>
+                    {importLoading ? "Scanning…" : "Import →"}
+                  </button>
+                </div>
+
+                {/* Preview imported animals */}
+                {importPreview && importPreview.length > 0 && (
+                  <div style={{ marginTop:20 }}>
+                    <div style={{ fontSize:13, fontWeight:700, marginBottom:12, color:"#1a1c18" }}>Found {importPreview.length} animal{importPreview.length!==1?"s":""}. Click one to load it for posting:</div>
+                    <div style={{ display:"flex", flexDirection:"column", gap:10, maxHeight:340, overflowY:"auto" }}>
+                      {importPreview.map((a,i)=>(
+                        <div key={i} style={{ background:"#fff", borderRadius:12, padding:"14px 16px", border:"1px solid #c7dfc9", display:"flex", alignItems:"center", gap:14 }}>
+                          {a.photos?.[0] && <img src={a.photos[0]} alt={a.name} style={{ width:60, height:60, borderRadius:8, objectFit:"cover", flexShrink:0 }} onError={e=>e.target.style.display="none"}/>}
+                          <div style={{ flex:1, minWidth:0 }}>
+                            <div style={{ fontFamily:"'Lora', Georgia, serif", fontSize:16, fontWeight:600, marginBottom:2 }}>{a.name||"Unknown"}</div>
+                            <div style={{ fontSize:12, color:"#4e5449" }}>{a.species} · {a.breed} · {a.age}</div>
+                            <div style={{ fontSize:11, color:"#9a9e95", marginTop:2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{a.description?.slice(0,80)}{a.description?.length>80?"…":""}</div>
+                          </div>
+                          <div style={{ display:"flex", gap:8, flexShrink:0 }}>
+                            <button type="button" style={{ background:"rgba(107,143,113,0.88)", color:"#fff", border:"none", borderRadius:8, padding:"7px 14px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
+                              onClick={()=>importSingleAnimal(a)}>Use This</button>
+                            <button type="button" style={{ background:"#fdf0eb", color:"#c85a35", border:"1px solid #f0c4b4", borderRadius:8, padding:"7px 10px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
+                              onClick={()=>setImportPreview(p=>p.filter((_,j)=>j!==i))}>✕</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <button type="button" style={{ marginTop:12, fontSize:12, color:"#9a9e95", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit" }}
+                      onClick={()=>setImportPreview(null)}>Clear all</button>
+                  </div>
+                )}
+              </div>
+
               {/* Step 1 */}
               {postStep === 1 && (
                 <div className="card fade-in" style={{ padding:28 }}>
