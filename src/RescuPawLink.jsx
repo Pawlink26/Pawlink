@@ -924,6 +924,8 @@ export default function RescuPawLink() {
   const [regF,    setRegF]    = useState({ orgName:"", type:"", city:"", state:"", email:"", phone:"", password:"", confirm:"" });
   const [postF,   setPostF]   = useState({ name:"", species:"Dog", breed:"", age:"", sex:"", weight:"", color:"", description:"", daysLeft:7, vaccinated:false, neutered:false, goodWithKids:false, goodWithDogs:false, goodWithCats:false, fee:"", photos:[], listingType:"adopt" });
   const [importUrl, setImportUrl] = useState("");
+  const [postMode, setPostMode] = useState("manual"); // "manual" | "url" | "csv"
+  const [csvPreview, setCsvPreview] = useState([]); // parsed CSV animals
   const [importLoading, setImportLoading] = useState(false);
   const [importPreview, setImportPreview] = useState(null); // array of animals to review
   const [capF,    setCapF]    = useState({ total:"", available:"", needsHelp:false, canTakeDogs:false, canTakeCats:false, canTakeSmall:false, overflow:"" });
@@ -1257,6 +1259,95 @@ export default function RescuPawLink() {
     showToast(`✅ ${a.name} loaded — review and submit`);
   }
 
+
+  function downloadCsvTemplate() {
+    const headers = ["name","species","breed","age","sex","description","vaccinated","neutered","good_with_kids","good_with_dogs","good_with_cats","fee"];
+    const example = ["Buddy","Dog","Lab Mix","3 years","Male","Friendly and energetic dog who loves walks","yes","yes","yes","yes","no","$50"];
+    const csv = [headers.join(","), example.join(",")].join("\n");
+    const blob = new Blob([csv], { type:"text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "RescuPawLink_Animal_Template.csv";
+    a.click(); URL.revokeObjectURL(url);
+  }
+
+  function handleCsvUpload(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target.result;
+      const lines = text.trim().split("\n");
+      const headers = lines[0].split(",").map(h=>h.trim().toLowerCase().replace(/\s+/g,"_"));
+      const animals = lines.slice(1).filter(l=>l.trim()).map(line => {
+        const vals = line.split(",").map(v=>v.trim().replace(/^"|"$/g,""));
+        const obj = {};
+        headers.forEach((h,i) => obj[h] = vals[i] || "");
+        const isBool = v => ["yes","true","1","y"].includes((v||"").toLowerCase());
+        return {
+          name: obj.name || "",
+          species: obj.species || "Dog",
+          breed: obj.breed || "",
+          age: obj.age || "",
+          sex: obj.sex || "",
+          description: obj.description || "",
+          photos: [],
+          vaccinated: isBool(obj.vaccinated),
+          neutered: isBool(obj.neutered),
+          goodWithKids: isBool(obj.good_with_kids),
+          goodWithDogs: isBool(obj.good_with_dogs),
+          goodWithCats: isBool(obj.good_with_cats),
+          fee: obj.fee || "",
+          listingType: obj.listing_type || "adopt",
+        };
+      }).filter(a => a.name);
+      if (animals.length > 0) {
+        setCsvPreview(animals);
+        showToast(`✅ Found ${animals.length} animal${animals.length!==1?"s":""} — review and post`);
+      } else {
+        showToast("⚠ No animals found in file. Make sure it matches the template format.");
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  async function submitCsvBatch() {
+    if (!csvPreview.length) return;
+    let success = 0;
+    for (const a of csvPreview) {
+      if (!a.name) continue;
+      const animal = {
+        ...a,
+        id: `local_${Date.now()}_${Math.random()}`,
+        shelterId: user.id,
+        shelterName: user.name,
+        shelterCity: user.city,
+        shelterState: user.state,
+        daysLeft: 7,
+        status: "good",
+      };
+      try {
+        const res = await sbFetch("animals", {
+          method:"POST",
+          body: JSON.stringify({
+            name:a.name, species:a.species, breed:a.breed, age:a.age, sex:a.sex,
+            description:a.description, photos:[], vaccinated:a.vaccinated,
+            neutered:a.neutered, good_with_kids:a.goodWithKids,
+            good_with_dogs:a.goodWithDogs, good_with_cats:a.goodWithCats,
+            fee:a.fee, listing_type:a.listingType||"adopt",
+            shelter_id:user.id, shelter_name:user.name,
+            shelter_city:user.city, shelter_state:user.state,
+            days_left:7, status:"good",
+          }),
+        });
+        if (res && !res.error) { setAnimals(p=>[...p, {...animal, id:res[0]?.id||animal.id}]); success++; }
+      } catch(e) { console.error("CSV post error:", e); }
+    }
+    setCsvPreview([]);
+    setPostMode("manual");
+    showToast(`✅ ${success} animal${success!==1?"s":""} posted successfully!`);
+    setTab("dashboard");
+  }
+
   async function checkSession() {
     try {
       const token = localStorage.getItem("rpl_token");
@@ -1556,7 +1647,6 @@ export default function RescuPawLink() {
     ["Shelters",     ()=>{setPage("app");setTab("network");setMobileOpen(false);}],
     ["Lost & Found", ()=>{setPage("app");setTab("lostfound");setMobileOpen(false);}],
     ["About",        ()=>{setPage("about");setMobileOpen(false);}],
-    ["Become a Partner", ()=>{setPage("partner");setMobileOpen(false);}],
   ];
 
   if (page === "landing") return (
@@ -2076,36 +2166,58 @@ export default function RescuPawLink() {
       </div>
 
       {/* ── FOOTER ── */}
-      <footer style={{ background:"#1a1c18", padding:"28px clamp(16px,4vw,48px)" }}>
-        <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 clamp(16px,4vw,48px)" }}>
-          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:20, marginBottom:16 }}>
+      <footer style={{ background:"#1a1c18", padding:"clamp(40px,5vw,64px) clamp(16px,4vw,48px) 28px" }}>
+        <div style={{ maxWidth:1400, margin:"0 auto" }}>
+
+          {/* Top — Logo + 3 link columns */}
+          <div style={{ display:"grid", gridTemplateColumns:"auto repeat(3,1fr)", gap:"clamp(24px,4vw,48px)", marginBottom:40, alignItems:"start" }}>
+
+            {/* Logo + tagline */}
             <div>
-              <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:10, padding:"8px 14px", display:"inline-block", marginBottom:8 }}>
-<img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:58, width:"auto", maxWidth:200, display:"block" }}/>
+              <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:10, padding:"8px 14px", display:"inline-block", marginBottom:12 }}>
+                <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:48, width:"auto", maxWidth:180, display:"block" }}/>
               </div>
-              <div style={{ fontSize:12, color:"rgba(255,255,255,0.38)" }}>Every animal deserves a second chance.</div>
+              <div style={{ fontSize:12, color:"rgba(255,255,255,0.38)", lineHeight:1.6, maxWidth:180 }}>Every animal deserves a second chance.</div>
+              <div style={{ fontSize:11, color:"rgba(255,255,255,0.25)", marginTop:8 }}>rescupawlink.com</div>
             </div>
-            <div style={{ display:"flex", gap:0, alignItems:"center", fontSize:12, color:"rgba(255,255,255,0.45)" }}>
-              {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["About",()=>setPage("about")],].map(([l,fn],i,arr)=>(
-                <span key={l} style={{ display:"flex", alignItems:"center" }}>
-                  <button onClick={fn||undefined} style={{ background:"none", border:"none", color:"rgba(255,255,255,0.45)", cursor:fn?"pointer":"default", fontFamily:"inherit", fontSize:12, padding:"4px 10px" }}
-                    onMouseEnter={e=>{ if(fn) e.currentTarget.style.color="#fff"; }}
-                    onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.45)"}>{l}</button>
-                  {i < arr.length-1 && <span style={{ color:"rgba(255,255,255,0.2)" }}>|</span>}
-                </span>
+
+            {/* Platform */}
+            <div>
+              <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.4)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:14, fontFamily:"'DM Sans',sans-serif" }}>Platform</div>
+              {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelter Network",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["Coordinator Chat",()=>{setPage("app");setTab("chat");}]].map(([l,fn])=>(
+                <button key={l} onClick={fn} style={{ display:"block", background:"none", border:"none", color:"rgba(255,255,255,0.48)", cursor:"pointer", fontFamily:"inherit", fontSize:13, padding:"4px 0", textAlign:"left", transition:"color 0.15s" }}
+                  onMouseEnter={e=>e.currentTarget.style.color="#fff"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.48)"}>{l}</button>
               ))}
             </div>
-          </div>
-          <div style={{ paddingTop:14, borderTop:"1px solid rgba(255,255,255,0.07)", fontSize:11, color:"rgba(255,255,255,0.22)" }}>
-            © 2026 RescuPawLink Network · All rights reserved · rescupawlink.com
+
+            {/* Organization */}
+            <div>
+              <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.4)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:14, fontFamily:"'DM Sans',sans-serif" }}>Organization</div>
+              {[["About RescuPawLink",()=>setPage("about")],["Become a Partner",()=>setPage("partner")],["Register Your Shelter",()=>{setAuthMode("register");setPage("login");}],["Sign In",()=>{setAuthMode("login");setPage("login");}]].map(([l,fn])=>(
+                <button key={l} onClick={fn} style={{ display:"block", background:"none", border:"none", color:"rgba(255,255,255,0.48)", cursor:"pointer", fontFamily:"inherit", fontSize:13, padding:"4px 0", textAlign:"left", transition:"color 0.15s" }}
+                  onMouseEnter={e=>e.currentTarget.style.color="#fff"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.48)"}>{l}</button>
+              ))}
             </div>
-            <div style={{ display:"flex", gap:16, marginTop:8 }}>
-              <button onClick={()=>setPage("privacy")} style={{ background:"none", border:"none", fontSize:11, color:"rgba(255,255,255,0.35)", cursor:"pointer", fontFamily:"inherit", padding:0 }}
-                onMouseEnter={e=>e.currentTarget.style.color="rgba(255,255,255,0.7)"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.35)"}>Privacy Policy</button>
-              <span style={{ color:"rgba(255,255,255,0.15)", fontSize:11 }}>·</span>
-              <button onClick={()=>setPage("terms")} style={{ background:"none", border:"none", fontSize:11, color:"rgba(255,255,255,0.35)", cursor:"pointer", fontFamily:"inherit", padding:0 }}
-                onMouseEnter={e=>e.currentTarget.style.color="rgba(255,255,255,0.7)"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.35)"}>Terms of Service</button>
+
+            {/* Legal */}
+            <div>
+              <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.4)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:14, fontFamily:"'DM Sans',sans-serif" }}>Legal & Contact</div>
+              {[["Privacy Policy",()=>setPage("privacy")],["Terms of Service",()=>setPage("terms")],["Contact Us",null]].map(([l,fn])=>(
+                <button key={l} onClick={fn||undefined} style={{ display:"block", background:"none", border:"none", color:"rgba(255,255,255,0.48)", cursor:fn?"pointer":"default", fontFamily:"inherit", fontSize:13, padding:"4px 0", textAlign:"left", transition:"color 0.15s" }}
+                  onMouseEnter={e=>{ if(fn) e.currentTarget.style.color="#fff"; }} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.48)"}>{l}</button>
+              ))}
+              <a href="mailto:rescupawlink@gmail.com" style={{ display:"block", color:"rgba(255,255,255,0.48)", fontSize:13, padding:"4px 0", textDecoration:"none", transition:"color 0.15s" }}
+                onMouseEnter={e=>e.currentTarget.style.color="#fff"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.48)"}>rescupawlink@gmail.com</a>
+            </div>
+
           </div>
+
+          {/* Bottom bar */}
+          <div style={{ paddingTop:20, borderTop:"1px solid rgba(255,255,255,0.07)", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:8 }}>
+            <div style={{ fontSize:11, color:"rgba(255,255,255,0.22)" }}>© 2026 RescuPawLink Network · All rights reserved</div>
+            <div style={{ fontSize:11, color:"rgba(255,255,255,0.22)" }}>Built for the animals. Free for every shelter.</div>
+          </div>
+
         </div>
       </footer>
 
@@ -2294,9 +2406,47 @@ export default function RescuPawLink() {
         </div>
       </div>
 
-      {/* ── FOOTER ── */}
-      <footer style={{ background:"#1a1c18", padding:"28px clamp(16px,4vw,48px)" }}>
-        <div style={{ maxWidth:1400, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:20, marginBottom:16 }}>
+      {/* Footer */}
+      <footer style={{ background:"#1a1c18", padding:"clamp(40px,5vw,64px) clamp(16px,4vw,48px) 28px" }}>
+        <div style={{ maxWidth:1400, margin:"0 auto" }}>
+          <div style={{ display:"grid", gridTemplateColumns:"auto repeat(3,1fr)", gap:"clamp(24px,4vw,48px)", marginBottom:32, alignItems:"start" }}>
+            <div>
+              <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:10, padding:"8px 14px", display:"inline-block", marginBottom:10 }}>
+                <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:48, width:"auto", display:"block" }}/>
+              </div>
+              <div style={{ fontSize:12, color:"rgba(255,255,255,0.35)", lineHeight:1.6 }}>Every animal deserves a second chance.</div>
+            </div>
+            <div>
+              <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.4)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:12 }}>Platform</div>
+              {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelter Network",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}]].map(([l,fn])=>(
+                <button key={l} onClick={fn} style={{ display:"block", background:"none", border:"none", color:"rgba(255,255,255,0.45)", cursor:"pointer", fontFamily:"inherit", fontSize:13, padding:"3px 0", textAlign:"left" }}
+                  onMouseEnter={e=>e.currentTarget.style.color="#fff"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.45)"}>{l}</button>
+              ))}
+            </div>
+            <div>
+              <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.4)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:12 }}>Organization</div>
+              {[["About",()=>setPage("about")],["Become a Partner",()=>setPage("partner")],["Register Shelter",()=>{setAuthMode("register");setPage("login");}]].map(([l,fn])=>(
+                <button key={l} onClick={fn} style={{ display:"block", background:"none", border:"none", color:"rgba(255,255,255,0.45)", cursor:"pointer", fontFamily:"inherit", fontSize:13, padding:"3px 0", textAlign:"left" }}
+                  onMouseEnter={e=>e.currentTarget.style.color="#fff"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.45)"}>{l}</button>
+              ))}
+            </div>
+            <div>
+              <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.4)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:12 }}>Legal</div>
+              {[["Privacy Policy",()=>setPage("privacy")],["Terms of Service",()=>setPage("terms")]].map(([l,fn])=>(
+                <button key={l} onClick={fn} style={{ display:"block", background:"none", border:"none", color:"rgba(255,255,255,0.45)", cursor:"pointer", fontFamily:"inherit", fontSize:13, padding:"3px 0", textAlign:"left" }}
+                  onMouseEnter={e=>e.currentTarget.style.color="#fff"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.45)"}>{l}</button>
+              ))}
+              <a href="mailto:rescupawlink@gmail.com" style={{ display:"block", color:"rgba(255,255,255,0.45)", fontSize:13, padding:"3px 0", textDecoration:"none" }}
+                onMouseEnter={e=>e.currentTarget.style.color="#fff"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.45)"}>rescupawlink@gmail.com</a>
+            </div>
+          </div>
+          <div style={{ paddingTop:16, borderTop:"1px solid rgba(255,255,255,0.07)", fontSize:11, color:"rgba(255,255,255,0.22)", display:"flex", justifyContent:"space-between", flexWrap:"wrap", gap:8 }}>
+            <span>© 2026 RescuPawLink Network · All rights reserved</span>
+            <span>Built for the animals. Free for every shelter.</span>
+          </div>
+        </div>
+      </footer>
+      {/* old about footer replaced */
           <div>
             <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:10, padding:"8px 14px", display:"inline-block", marginBottom:8 }}>
               <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:38, width:"auto", display:"block" }}/>
@@ -3003,25 +3153,31 @@ export default function RescuPawLink() {
         {tab === "post" && isLoggedIn && (
           <div className="fade-in" style={{ maxWidth:660, margin:"0 auto" }}>
             <div style={{ marginBottom:24 }}>
-              <h1 style={{ fontSize:30, marginBottom:5, fontFamily:"'Playfair Display',serif", fontWeight:700 }}>Post an Animal</h1>
-              <p style={{ color:"#4e5449", fontSize:14 }}>Real photos and complete info dramatically increase placement speed.</p>
+              <h1 style={{ fontFamily:"'Lora',Georgia,serif", fontSize:28, fontWeight:700, marginBottom:5 }}>Post an Animal</h1>
+              <p style={{ color:"#4e5449", fontSize:14 }}>Choose how you'd like to add your animals to the network.</p>
             </div>
 
-            {/* Step indicator */}
-            <div style={{ display:"flex", gap:0, marginBottom:28, background:"#ffffff", borderRadius:12, border:"1px solid var(--border)", padding:4 }}>
-              {[["1","Details"],["2","Photos"],["3","Health & Traits"]].map(([n,l]) => (
-                <div key={n} onClick={()=>setPostStep(+n)} style={{ flex:1, padding:"10px 6px", textAlign:"center", borderRadius:9, cursor:"pointer", transition:"all 0.18s", background:postStep===+n?"#6b8f71":"transparent" }}>
-                  <div style={{ fontSize:11, fontWeight:700, color:postStep===+n?"rgba(255,255,255,0.7)":postStep>+n?"#6b8f71":"#9a9e95" }}>STEP {n}</div>
-                  <div style={{ fontSize:13, fontWeight:600, color:postStep===+n?"#fff":postStep>+n?"#4a6b50":"#4e5449" }}>{l}</div>
-                </div>
+            {/* ── Mode Tabs ── */}
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10, marginBottom:24 }}>
+              {[
+                { id:"manual", icon:"✏️", label:"Manual Entry",  desc:"Add one animal at a time" },
+                { id:"url",    icon:"⚡", label:"Import from URL", desc:"Scrape your website" },
+                { id:"csv",    icon:"📋", label:"Upload CSV",     desc:"Bulk upload from spreadsheet" },
+              ].map(m=>(
+                <button key={m.id} type="button" onClick={()=>setPostMode(m.id)}
+                  style={{ padding:"14px 12px", borderRadius:14, border:`2px solid ${postMode===m.id?"#6b8f71":"#e8e8e6"}`, background:postMode===m.id?"#eef4ef":"#fff", cursor:"pointer", fontFamily:"inherit", textAlign:"center", transition:"all 0.18s" }}>
+                  <div style={{ fontSize:20, marginBottom:6 }}>{m.icon}</div>
+                  <div style={{ fontSize:13, fontWeight:700, color:postMode===m.id?"#4a6b50":"#1a1c18", marginBottom:2 }}>{m.label}</div>
+                  <div style={{ fontSize:11, color:"#9a9e95" }}>{m.desc}</div>
+                </button>
               ))}
             </div>
 
-            <form onSubmit={submitPost}>
-              {/* ── URL Import Tool ── */}
+            {/* ── URL Import Mode ── */}
+            {postMode === "url" && (
               <div className="card fade-in" style={{ padding:24, marginBottom:20, border:"1px solid #c7dfc9", background:"#f0fdf4" }}>
-                <div style={{ fontSize:11, fontWeight:700, color:"#16a34a", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:10 }}>⚡ Quick Import from Your Website</div>
-                <p style={{ fontSize:13, color:"#4e5449", lineHeight:1.6, marginBottom:14 }}>Paste a link to your shelter's pet listing page and we'll pull the animal info automatically. You can review and edit before posting.</p>
+                <div style={{ fontSize:11, fontWeight:700, color:"#16a34a", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:10 }}>Import from Your Website</div>
+                <p style={{ fontSize:13, color:"#4e5449", lineHeight:1.6, marginBottom:14 }}>Paste a link to your shelter's pet listing page and we'll pull the animal info automatically. Review and edit before posting.</p>
                 <div style={{ display:"flex", gap:10 }}>
                   <input className="input" placeholder="https://yourshelter.org/available-pets" value={importUrl} onChange={e=>setImportUrl(e.target.value)} style={{ flex:1 }}/>
                   <button type="button" style={{ background:"rgba(107,143,113,0.88)", color:"#fff", border:"none", borderRadius:10, padding:"10px 18px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", whiteSpace:"nowrap", flexShrink:0 }}
