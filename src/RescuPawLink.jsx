@@ -992,35 +992,85 @@ export default function RescuPawLink() {
     if (!importUrl.trim()) return;
     setImportLoading(true);
     try {
-      // Use Claude API to extract animal info from the URL
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-6",
-          max_tokens: 2000,
-          messages: [{
-            role: "user",
-            content: `Visit this shelter/rescue website and extract all adoptable animals listed. URL: ${importUrl}
-Return a JSON array only, no other text. Each animal object should have:
-{ name, species, breed, age, sex, description, photos (array of image URLs if visible), vaccinated (bool if mentioned), neutered (bool if mentioned), goodWithKids (bool), goodWithDogs (bool), goodWithCats (bool), fee }
-If you cannot access the URL, return an empty array [].`
-          }]
-        })
-      });
-      const data = await response.json();
-      const text = data.content?.[0]?.text || "[]";
-      const clean = text.replace(/\`\`\`json|\`\`\`/g, "").trim();
-      const animals = JSON.parse(clean);
-      if (Array.isArray(animals) && animals.length > 0) {
+      // Use allorigins.win as a CORS proxy to fetch the page HTML
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(importUrl)}`;
+      const res = await fetch(proxyUrl);
+      const data = await res.json();
+      const html = data.contents || "";
+
+      if (!html) { showToast("⚠ Could not reach that URL. Check the address and try again."); setImportLoading(false); return; }
+
+      // Parse the HTML in a sandboxed iframe-style using DOMParser
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+
+      // ── Extract animals from common shelter website patterns ──
+      const animals = [];
+      const baseUrl = new URL(importUrl).origin;
+
+      // Try common selectors used by shelter websites (Shelterluv, PetPoint, custom sites)
+      const cardSelectors = [
+        ".pet-card", ".animal-card", ".dog-card", ".cat-card",
+        ".pet-listing", ".animal-listing", ".adoptable-pet",
+        "[class*='pet-card']", "[class*='animal-card']", "[class*='adoptable']",
+        ".pet", ".animal", ".dog", ".puppy", ".cat", ".kitten",
+        "article", ".card", ".listing-item", ".grid-item"
+      ];
+
+      let cards = [];
+      for (const sel of cardSelectors) {
+        const found = Array.from(doc.querySelectorAll(sel));
+        if (found.length >= 2 && found.length < 200) { cards = found; break; }
+      }
+
+      // Extract info from each card
+      for (const card of cards.slice(0, 20)) {
+        const nameEl = card.querySelector("h1,h2,h3,h4,h5,.name,.pet-name,[class*='name']");
+        const name = nameEl?.textContent?.trim();
+        if (!name || name.length < 2 || name.length > 50) continue;
+
+        // Skip obvious non-animal names
+        if (["adopt","foster","dogs","cats","animals","available","home"].includes(name.toLowerCase())) continue;
+
+        const descEl = card.querySelector("p,.description,.bio,.about,[class*='desc']");
+        const desc = descEl?.textContent?.trim() || "";
+
+        const imgEl = card.querySelector("img");
+        let photoUrl = imgEl?.src || imgEl?.getAttribute("data-src") || imgEl?.getAttribute("data-lazy-src") || "";
+        if (photoUrl && !photoUrl.startsWith("http")) photoUrl = baseUrl + (photoUrl.startsWith("/") ? "" : "/") + photoUrl;
+
+        const text = card.textContent?.toLowerCase() || "";
+        const breedMatch = text.match(/(?:breed|mix)[:\s]+([a-z\s]+?)(?:\n|,|\.|age|sex|gender)/);
+        const ageMatch = text.match(/(\d+[\.\d]*\s*(?:year|month|week|yr|mo)[s]?(?:\s+old)?)/i);
+        const species = text.includes("cat") || text.includes("kitten") || text.includes("feline") ? "Cat" : "Dog";
+
+        animals.push({
+          name,
+          species,
+          breed: breedMatch?.[1]?.trim() || "",
+          age: ageMatch?.[0]?.trim() || "",
+          sex: text.includes(" male") || text.includes("male,") ? "Male" : text.includes("female") ? "Female" : "",
+          description: desc.slice(0, 500),
+          photos: photoUrl ? [photoUrl] : [],
+          vaccinated: text.includes("vaccinated") || text.includes("up to date") || text.includes("utd"),
+          neutered: text.includes("neutered") || text.includes("spayed") || text.includes("altered") || text.includes("fixed"),
+          goodWithKids: text.includes("good with kid") || text.includes("great with kid") || text.includes("loves kid"),
+          goodWithDogs: text.includes("good with dog") || text.includes("great with dog"),
+          goodWithCats: text.includes("good with cat") || text.includes("great with cat"),
+          fee: "",
+        });
+      }
+
+      if (animals.length > 0) {
         setImportPreview(animals);
-        showToast(`✅ Found ${animals.length} animal${animals.length!==1?"s":""} — review before importing`);
+        showToast(`✅ Found ${animals.length} animal${animals.length!==1?"s":""} — review and select below`);
       } else {
-        showToast("⚠ No animals found at that URL. Try a direct listing page.");
+        // Fallback: show a manual entry prompt
+        showToast("⚠ Could not auto-detect animals on that page. Try a direct link to a single pet's page, or enter details manually.");
       }
     } catch(e) {
       console.error("Import error:", e);
-      showToast("⚠ Could not read that URL. Try pasting a direct link to the animals page.");
+      showToast("⚠ Could not read that page. The site may block external access — try entering details manually.");
     }
     setImportLoading(false);
   }
@@ -1676,54 +1726,73 @@ If you cannot access the URL, return an empty array [].`
 
 
       {/* ── TWO AUDIENCE CARDS ── */}
-      <div style={{ maxWidth:1400, margin:"0 auto", padding:"clamp(48px,6vw,80px) clamp(16px,4vw,48px)" }}>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:20 }}>
+      <div style={{ padding:"clamp(32px,4vw,56px) clamp(16px,3vw,32px)" }}>
+        <div style={{ maxWidth:1400, margin:"0 auto", display:"flex", flexDirection:"column", gap:16 }}>
 
-          {/* Card 1 — For Rescues & Shelters (light) */}
-          <div style={{ background:"#f4f4f2", border:"1px solid #e8e8e6", borderRadius:20, padding:"clamp(32px,4vw,48px)", position:"relative", overflow:"hidden" }}>
-            <div style={{ width:44, height:44, borderRadius:12, background:"#fff", border:"1px solid #e8e8e6", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:20 }}>
-              {I.network}
+          {/* Card 1 — For Rescues & Shelters */}
+          <div style={{ background:"#f0f0ee", border:"2px solid transparent", borderRadius:24, padding:"clamp(40px,6vw,64px)", position:"relative", overflow:"hidden", minHeight:320, display:"flex", flexDirection:"column", justifyContent:"space-between", transition:"all 0.3s ease", cursor:"default" }}
+            onMouseEnter={e=>{ e.currentTarget.style.border="2px solid #6b8f71"; e.currentTarget.style.boxShadow="0 12px 48px rgba(107,143,113,0.15)"; e.currentTarget.style.transform="translateY(-3px)"; }}
+            onMouseLeave={e=>{ e.currentTarget.style.border="2px solid transparent"; e.currentTarget.style.boxShadow="none"; e.currentTarget.style.transform="translateY(0)"; }}>
+            <div style={{ position:"absolute", bottom:-60, right:-40, width:320, height:320, borderRadius:"50%", background:"rgba(107,143,113,0.06)" }}/>
+            <div style={{ position:"absolute", top:-40, right:100, width:180, height:180, borderRadius:"50%", background:"rgba(107,143,113,0.04)" }}/>
+            <div>
+              <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:20 }}>
+                <div style={{ width:44, height:44, borderRadius:12, background:"#fff", border:"1px solid #e0e0de", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{I.network}</div>
+                <span style={{ fontSize:11, fontWeight:700, color:"#6b8f71", letterSpacing:"0.16em", textTransform:"uppercase", fontFamily:"'DM Sans',sans-serif" }}>For Rescues & Shelters</span>
+              </div>
+              <h2 style={{ fontFamily:"'Lora', Georgia, serif", fontSize:"clamp(28px,4vw,52px)", fontWeight:700, lineHeight:1.05, marginBottom:16, maxWidth:640 }}>
+                See every resource<br/>available to <span style={{ color:"#6b8f71", fontStyle:"italic" }}>your rescue.</span>
+              </h2>
+              <p style={{ fontSize:"clamp(14px,1.5vw,16px)", color:"#4e5449", lineHeight:1.8, marginBottom:28, maxWidth:560 }}>
+                Share live capacity, coordinate animal transfers, post urgent listings, connect with fosters, and message coordinators across the country — all in one free platform.
+              </p>
+              <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:32 }}>
+                {["Transfers","Capacity Sharing","Urgent Alerts","Foster Network","Coordinator Chat","Lost & Found"].map(t=>(
+                  <span key={t} style={{ fontSize:13, padding:"6px 14px", borderRadius:20, background:"#fff", border:"1px solid #e0e0de", color:"#4e5449", fontWeight:500 }}>{t}</span>
+                ))}
+              </div>
             </div>
-            <div style={{ fontSize:10, fontWeight:700, color:"#6b8f71", letterSpacing:"0.16em", textTransform:"uppercase", marginBottom:14, fontFamily:"'DM Sans',sans-serif" }}>For Rescues & Shelters</div>
-            <h2 style={{ fontFamily:"'Lora', Georgia, serif", fontSize:"clamp(22px,3vw,34px)", fontWeight:700, lineHeight:1.1, marginBottom:16 }}>See every resource<br/>available to <span style={{ color:"#6b8f71", fontStyle:"italic" }}>your rescue.</span></h2>
-            <p style={{ fontSize:14, color:"#4e5449", lineHeight:1.75, marginBottom:24 }}>
-              Share live capacity, coordinate animal transfers, post urgent listings, connect with fosters, and message coordinators across the country — all in one free platform.
-            </p>
-            <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:28 }}>
-              {["Transfers","Capacity","Urgent Alerts","Foster Network","Coordinator Chat","Lost & Found"].map(t=>(
-                <span key={t} style={{ fontSize:12, fontWeight:500, padding:"5px 12px", borderRadius:20, background:"#fff", border:"1px solid #e8e8e6", color:"#4e5449" }}>{t}</span>
-              ))}
-            </div>
-            <button style={{ background:"none", border:"none", color:"#6b8f71", fontWeight:700, fontSize:14, cursor:"pointer", fontFamily:"inherit", padding:0, display:"flex", alignItems:"center", gap:6 }}
+            <button style={{ alignSelf:"flex-start", background:"#1a1c18", color:"#fff", border:"none", borderRadius:12, padding:"14px 28px", fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"background 0.2s" }}
+              onMouseEnter={e=>e.currentTarget.style.background="#6b8f71"}
+              onMouseLeave={e=>e.currentTarget.style.background="#1a1c18"}
               onClick={()=>{setAuthMode("register");setPage("login");}}>
               Register your shelter →
             </button>
           </div>
 
-          {/* Card 2 — For Adopters & Fosters (dark sage) */}
-          <div style={{ background:"#4a6b50", border:"none", borderRadius:20, padding:"clamp(32px,4vw,48px)", position:"relative", overflow:"hidden" }}>
-            {/* Decorative circle */}
-            <div style={{ position:"absolute", top:-40, right:-40, width:180, height:180, borderRadius:"50%", background:"rgba(255,255,255,0.06)" }}/>
-            <div style={{ position:"absolute", bottom:-60, right:20, width:240, height:240, borderRadius:"50%", background:"rgba(255,255,255,0.04)" }}/>
-            <div style={{ width:44, height:44, borderRadius:12, background:"rgba(255,255,255,0.15)", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:20, position:"relative" }}>
-              {I.heartPaw}
-            </div>
-            <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.6)", letterSpacing:"0.16em", textTransform:"uppercase", marginBottom:14, fontFamily:"'DM Sans',sans-serif", position:"relative" }}>For Adopters & Fosters</div>
-            <h2 style={{ fontFamily:"'Lora', Georgia, serif", fontSize:"clamp(22px,3vw,34px)", fontWeight:700, lineHeight:1.1, marginBottom:16, color:"#fff", position:"relative" }}>Find your perfect<br/><span style={{ fontStyle:"italic", color:"rgba(255,255,255,0.75)" }}>match in minutes.</span></h2>
-            <p style={{ fontSize:14, color:"rgba(255,255,255,0.72)", lineHeight:1.75, marginBottom:24, position:"relative" }}>
-              Browse adoptable pets and animals needing foster homes from verified shelters nationwide. Filter by species, location, and more — and apply directly from any listing.
-            </p>
-            <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:28, position:"relative" }}>
-              {["Adopt","Foster","Lost & Found","Search by State","Direct Applications","Urgent Animals"].map(t=>(
-                <span key={t} style={{ fontSize:12, fontWeight:500, padding:"5px 12px", borderRadius:20, background:"rgba(255,255,255,0.12)", border:"1px solid rgba(255,255,255,0.2)", color:"rgba(255,255,255,0.9)" }}>{t}</span>
-              ))}
+          {/* Card 2 — For Adopters & Fosters */}
+          <div style={{ background:"#6b8f71", borderRadius:24, padding:"clamp(40px,6vw,64px)", position:"relative", overflow:"hidden", minHeight:320, display:"flex", flexDirection:"column", justifyContent:"space-between", transition:"all 0.3s ease", cursor:"default" }}
+            onMouseEnter={e=>{ e.currentTarget.style.background="#5a7a60"; e.currentTarget.style.boxShadow="0 16px 56px rgba(107,143,113,0.35)"; e.currentTarget.style.transform="translateY(-3px)"; }}
+            onMouseLeave={e=>{ e.currentTarget.style.background="#6b8f71"; e.currentTarget.style.boxShadow="none"; e.currentTarget.style.transform="translateY(0)"; }}>
+            <div style={{ position:"absolute", top:-80, right:-40, width:400, height:400, borderRadius:"50%", background:"rgba(255,255,255,0.06)" }}/>
+            <div style={{ position:"absolute", bottom:-60, left:-40, width:280, height:280, borderRadius:"50%", background:"rgba(255,255,255,0.04)" }}/>
+            <div>
+              <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:20 }}>
+                <div style={{ width:44, height:44, borderRadius:12, background:"rgba(255,255,255,0.15)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{I.heartPaw}</div>
+                <span style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.75)", letterSpacing:"0.16em", textTransform:"uppercase", fontFamily:"'DM Sans',sans-serif" }}>For Adopters & Fosters</span>
+              </div>
+              <h2 style={{ fontFamily:"'Lora', Georgia, serif", fontSize:"clamp(28px,4vw,52px)", fontWeight:700, lineHeight:1.05, marginBottom:16, color:"#fff", maxWidth:640, position:"relative" }}>
+                Find your perfect<br/><span style={{ fontStyle:"italic", color:"rgba(255,255,255,0.75)" }}>match in minutes.</span>
+              </h2>
+              <p style={{ fontSize:"clamp(14px,1.5vw,16px)", color:"rgba(255,255,255,0.78)", lineHeight:1.8, marginBottom:28, maxWidth:560, position:"relative" }}>
+                Browse adoptable pets and animals needing foster homes from verified shelters nationwide. Filter by species, location, and more — and apply directly from any listing.
+              </p>
+              <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:32, position:"relative" }}>
+                {["Adopt","Foster","Lost & Found","Search by State","Direct Applications","Urgent Animals"].map(t=>(
+                  <span key={t} style={{ fontSize:13, padding:"6px 14px", borderRadius:20, background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"rgba(255,255,255,0.9)", fontWeight:500 }}>{t}</span>
+                ))}
+              </div>
             </div>
             <div style={{ display:"flex", gap:12, flexWrap:"wrap", position:"relative" }}>
-              <button style={{ background:"#fff", border:"none", color:"#4a6b50", fontWeight:700, fontSize:14, cursor:"pointer", fontFamily:"inherit", padding:"10px 20px", borderRadius:10 }}
+              <button style={{ background:"#fff", border:"none", color:"#4a6b50", fontWeight:700, fontSize:15, cursor:"pointer", fontFamily:"inherit", padding:"14px 28px", borderRadius:12, transition:"all 0.2s" }}
+                onMouseEnter={e=>{ e.currentTarget.style.background="#eef4ef"; e.currentTarget.style.transform="translateY(-2px)"; }}
+                onMouseLeave={e=>{ e.currentTarget.style.background="#fff"; e.currentTarget.style.transform="none"; }}
                 onClick={()=>{setPage("app");setTab("adopt");setFSpecies("All");}}>
                 Browse adoptable pets →
               </button>
-              <button style={{ background:"rgba(255,255,255,0.12)", border:"1px solid rgba(255,255,255,0.3)", color:"#fff", fontWeight:600, fontSize:14, cursor:"pointer", fontFamily:"inherit", padding:"10px 20px", borderRadius:10 }}
+              <button style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.35)", color:"#fff", fontWeight:600, fontSize:15, cursor:"pointer", fontFamily:"inherit", padding:"14px 24px", borderRadius:12, transition:"all 0.2s" }}
+                onMouseEnter={e=>{ e.currentTarget.style.background="rgba(255,255,255,0.25)"; e.currentTarget.style.transform="translateY(-2px)"; }}
+                onMouseLeave={e=>{ e.currentTarget.style.background="rgba(255,255,255,0.15)"; e.currentTarget.style.transform="none"; }}
                 onClick={()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}}>
                 Find a foster pet
               </button>
