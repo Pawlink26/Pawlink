@@ -893,6 +893,8 @@ export default function RescuPawLink() {
   const [fState,   setFState]   = useState("");
   const [fCity,    setFCity]    = useState("");
   const [fSearch,  setFSearch]  = useState("");
+  const [fAge,     setFAge]     = useState(""); // "puppy"|"young"|"adult"|"senior"
+  const [fGender,  setFGender]  = useState(""); // "Male"|"Female"
 
   // Filters — network page
   const [nState,   setNState]   = useState("");
@@ -1343,6 +1345,17 @@ export default function RescuPawLink() {
     if (fState  && a.shelterState !== fState) return false;
     if (fCity   && !a.shelterCity.toLowerCase().includes(fCity.toLowerCase())) return false;
     if (fSearch && !a.name.toLowerCase().includes(fSearch.toLowerCase()) && !a.breed.toLowerCase().includes(fSearch.toLowerCase())) return false;
+    if (fGender && a.sex !== fGender) return false;
+    if (fAge) {
+      const ageStr = (a.age||"").toLowerCase();
+      const months = ageStr.includes("month") ? parseInt(ageStr) : null;
+      const years  = ageStr.includes("year")  ? parseInt(ageStr) : null;
+      const ageNum = months != null ? months/12 : years != null ? years : null;
+      if (fAge === "puppy"  && !(ageNum != null && ageNum < 1))  return false;
+      if (fAge === "young"  && !(ageNum != null && ageNum >= 1 && ageNum < 3)) return false;
+      if (fAge === "adult"  && !(ageNum != null && ageNum >= 3 && ageNum < 8)) return false;
+      if (fAge === "senior" && !(ageNum != null && ageNum >= 8))  return false;
+    }
     return true;
   }).sort((a,b) => a.daysLeft - b.daysLeft);
 
@@ -2503,43 +2516,58 @@ export default function RescuPawLink() {
             )}
 
             {/* Filter bar */}
-            <div style={{ background:"#ffffff", border:"1px solid #e8e8e6", borderRadius:14, padding:"18px 22px", marginBottom:26, boxShadow:"var(--shadow-sm)" }}>
-              <div style={{ display:"flex", gap:12, flexWrap:"wrap", alignItems:"flex-end" }}>
-                {/* Search */}
-                <div style={{ flex:"1 1 180px", minWidth:160 }}>
+            <div style={{ background:"#fff", border:"1px solid #e8e8e6", borderRadius:16, padding:"20px 24px", marginBottom:26, boxShadow:"0 1px 6px rgba(0,0,0,0.05)" }}>
+              {/* Row 1 — Search + Location */}
+              <div style={{ display:"flex", gap:12, flexWrap:"wrap", marginBottom:14 }}>
+                <div style={{ flex:"2 1 220px", minWidth:180, position:"relative" }}>
                   <label className="label">Search</label>
-                  <div style={{ position:"relative" }}>
-                    <span style={{ position:"absolute", left:11, top:"50%", transform:"translateY(-50%)", color:"#9a9e95" }}>{I.search}</span>
-                    <input className="input" placeholder="Name or breed..." value={fSearch} onChange={e=>setFSearch(e.target.value)} style={{ paddingLeft:34 }} />
-                  </div>
+                  <span style={{ position:"absolute", left:11, bottom:11, color:"#9a9e95" }}>{I.search}</span>
+                  <input className="input" placeholder="Name or breed…" value={fSearch} onChange={e=>setFSearch(e.target.value)} style={{ paddingLeft:34 }}/>
                 </div>
-                {/* State */}
-                <div style={{ flex:"0 0 120px" }}>
+                <div style={{ flex:"1 1 130px", minWidth:110 }}>
+                  <label className="label">City</label>
+                  <input className="input" placeholder="Any city" value={fCity} onChange={e=>setFCity(e.target.value)}/>
+                </div>
+                <div style={{ flex:"0 0 110px" }}>
                   <label className="label">State</label>
                   <select className="select" value={fState} onChange={e=>setFState(e.target.value)}>
                     <option value="">All States</option>
                     {US_STATES.map(s=><option key={s}>{s}</option>)}
                   </select>
                 </div>
-                {/* City */}
-                <div style={{ flex:"1 1 140px", minWidth:120 }}>
-                  <label className="label">City</label>
-                  <input className="input" placeholder="Any city" value={fCity} onChange={e=>setFCity(e.target.value)} />
-                </div>
-                {/* Species chips */}
-                <div>
+              </div>
+              {/* Row 2 — Species + Age + Gender */}
+              <div style={{ display:"flex", gap:12, flexWrap:"wrap", alignItems:"flex-end" }}>
+                <div style={{ flex:"0 1 auto" }}>
                   <label className="label">Species</label>
-                  <div style={{ display:"flex", gap:6 }}>
+                  <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
                     {["All","Dog","Cat","Other","Foster"].map(sp=>(
-                      <button key={sp} className={`filter-chip ${fSpecies===sp?"active":""}`} onClick={()=>setFSpecies(sp)}>
-                        {sp}
-                      </button>
+                      <button key={sp} className={`filter-chip ${fSpecies===sp?"active":""}`} onClick={()=>setFSpecies(sp)}>{sp}</button>
                     ))}
                   </div>
                 </div>
-                {/* Clear */}
-                {(fSearch||fState||fCity||fSpecies!=="All") && (
-                  <button className="btn btn-ghost btn-sm" onClick={()=>{setFSearch("");setFState("");setFCity("");setFSpecies("All");}}>Clear filters</button>
+                <div style={{ flex:"1 1 140px", minWidth:130 }}>
+                  <label className="label">Age</label>
+                  <select className="select" value={fAge} onChange={e=>setFAge(e.target.value)}>
+                    <option value="">Any Age</option>
+                    <option value="puppy">Puppy / Kitten (under 1yr)</option>
+                    <option value="young">Young (under 3 yrs)</option>
+                    <option value="adult">Adult (3+ yrs)</option>
+                  </select>
+                </div>
+                <div style={{ flex:"1 1 120px", minWidth:110 }}>
+                  <label className="label">Gender</label>
+                  <select className="select" value={fGender} onChange={e=>setFGender(e.target.value)}>
+                    <option value="">Any Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </div>
+                {(fSearch||fState||fCity||fSpecies!=="All"||fAge||fGender) && (
+                  <button className="btn btn-ghost btn-sm" style={{ marginBottom:2 }}
+                    onClick={()=>{setFSearch("");setFState("");setFCity("");setFSpecies("All");setFAge("");setFGender("");}}>
+                    Clear all
+                  </button>
                 )}
               </div>
             </div>
