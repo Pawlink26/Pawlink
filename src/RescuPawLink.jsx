@@ -221,6 +221,7 @@ const css = `
   @media (max-width: 768px) {
     .hide-mobile { display: none !important; }
     .show-mobile-only { display: flex !important; }
+    .audience-cards { grid-template-columns: 1fr !important; }
     .animal-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
     .nav-link span { display: none; }
     .nav-link { padding: 8px 10px; }
@@ -1727,10 +1728,10 @@ export default function RescuPawLink() {
 
       {/* ── TWO AUDIENCE CARDS ── */}
       <div style={{ padding:"clamp(32px,4vw,56px) clamp(16px,3vw,32px)" }}>
-        <div style={{ maxWidth:1400, margin:"0 auto", display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
+        <div className="audience-cards" style={{ maxWidth:1400, margin:"0 auto", display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
 
           {/* Card 1 — For Rescues & Shelters */}
-          <div style={{ background:"#f0f0ee", border:"2px solid transparent", borderRadius:24, padding:"clamp(40px,6vw,64px)", position:"relative", overflow:"hidden", minHeight:320, display:"flex", flexDirection:"column", justifyContent:"space-between", transition:"all 0.3s ease", cursor:"default" }}
+          <div style={{ background:"#f0f0ee", border:"2px solid transparent", borderRadius:20, padding:"clamp(28px,3vw,42px)", position:"relative", overflow:"hidden", display:"flex", flexDirection:"column", justifyContent:"space-between", transition:"all 0.3s ease", cursor:"default" }}
             onMouseEnter={e=>{ e.currentTarget.style.border="2px solid #6b8f71"; e.currentTarget.style.boxShadow="0 12px 48px rgba(107,143,113,0.15)"; e.currentTarget.style.transform="translateY(-3px)"; }}
             onMouseLeave={e=>{ e.currentTarget.style.border="2px solid transparent"; e.currentTarget.style.boxShadow="none"; e.currentTarget.style.transform="translateY(0)"; }}>
             <div style={{ position:"absolute", bottom:-60, right:-40, width:320, height:320, borderRadius:"50%", background:"rgba(107,143,113,0.06)" }}/>
@@ -1740,19 +1741,19 @@ export default function RescuPawLink() {
                 <div style={{ width:44, height:44, borderRadius:12, background:"#fff", border:"1px solid #e0e0de", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{I.network}</div>
                 <span style={{ fontSize:11, fontWeight:700, color:"#6b8f71", letterSpacing:"0.16em", textTransform:"uppercase", fontFamily:"'DM Sans',sans-serif" }}>For Rescues & Shelters</span>
               </div>
-              <h2 style={{ fontFamily:"'Lora', Georgia, serif", fontSize:"clamp(28px,4vw,52px)", fontWeight:700, lineHeight:1.05, marginBottom:16, maxWidth:640 }}>
+              <h2 style={{ fontFamily:"'Lora', Georgia, serif", fontSize:"clamp(20px,2.2vw,32px)", fontWeight:700, lineHeight:1.1, marginBottom:12 }}>
                 See every resource<br/>available to <span style={{ color:"#6b8f71", fontStyle:"italic" }}>your rescue.</span>
               </h2>
-              <p style={{ fontSize:"clamp(14px,1.5vw,16px)", color:"#4e5449", lineHeight:1.8, marginBottom:28, maxWidth:560 }}>
+              <p style={{ fontSize:14, color:"#4e5449", lineHeight:1.7, marginBottom:18 }}>
                 Share live capacity, coordinate animal transfers, post urgent listings, connect with fosters, and message coordinators across the country — all in one free platform.
               </p>
               <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:32 }}>
                 {["Transfers","Capacity Sharing","Urgent Alerts","Foster Network","Coordinator Chat","Lost & Found"].map(t=>(
-                  <span key={t} style={{ fontSize:13, padding:"6px 14px", borderRadius:20, background:"#fff", border:"1px solid #e0e0de", color:"#4e5449", fontWeight:500 }}>{t}</span>
+                  <span key={t} style={{ fontSize:11, padding:"4px 10px", borderRadius:20, background:"#fff", border:"1px solid #e0e0de", color:"#4e5449", fontWeight:500 }}>{t}</span>
                 ))}
               </div>
             </div>
-            <button style={{ alignSelf:"flex-start", background:"#1a1c18", color:"#fff", border:"none", borderRadius:12, padding:"14px 28px", fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"background 0.2s" }}
+            <button style={{ alignSelf:"flex-start", background:"#1a1c18", color:"#fff", border:"none", borderRadius:12, padding:"10px 20px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"background 0.2s" }}
               onMouseEnter={e=>e.currentTarget.style.background="#6b8f71"}
               onMouseLeave={e=>e.currentTarget.style.background="#1a1c18"}
               onClick={()=>{setAuthMode("register");setPage("login");}}>
@@ -1761,7 +1762,7 @@ export default function RescuPawLink() {
           </div>
 
           {/* Card 2 — For Adopters & Fosters */}
-          <div style={{ background:"#6b8f71", borderRadius:24, padding:"clamp(40px,6vw,64px)", position:"relative", overflow:"hidden", minHeight:320, display:"flex", flexDirection:"column", justifyContent:"space-between", transition:"all 0.3s ease", cursor:"default" }}
+          <div style={{ background:"#6b8f71", borderRadius:20, padding:"clamp(28px,3vw,42px)", position:"relative", overflow:"hidden", display:"flex", flexDirection:"column", justifyContent:"space-between", transition:"all 0.3s ease", cursor:"default" }}
             onMouseEnter={e=>{ e.currentTarget.style.background="#5a7a60"; e.currentTarget.style.boxShadow="0 16px 56px rgba(107,143,113,0.35)"; e.currentTarget.style.transform="translateY(-3px)"; }}
             onMouseLeave={e=>{ e.currentTarget.style.background="#6b8f71"; e.currentTarget.style.boxShadow="none"; e.currentTarget.style.transform="translateY(0)"; }}>
             <div style={{ position:"absolute", top:-80, right:-40, width:400, height:400, borderRadius:"50%", background:"rgba(255,255,255,0.06)" }}/>
@@ -1771,26 +1772,26 @@ export default function RescuPawLink() {
                 <div style={{ width:44, height:44, borderRadius:12, background:"rgba(255,255,255,0.15)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{I.heartPaw}</div>
                 <span style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.75)", letterSpacing:"0.16em", textTransform:"uppercase", fontFamily:"'DM Sans',sans-serif" }}>For Adopters & Fosters</span>
               </div>
-              <h2 style={{ fontFamily:"'Lora', Georgia, serif", fontSize:"clamp(28px,4vw,52px)", fontWeight:700, lineHeight:1.05, marginBottom:16, color:"#fff", maxWidth:640, position:"relative" }}>
+              <h2 style={{ fontFamily:"'Lora', Georgia, serif", fontSize:"clamp(20px,2.2vw,32px)", fontWeight:700, lineHeight:1.1, marginBottom:12, color:"#fff", position:"relative" }}>
                 Find your perfect<br/><span style={{ fontStyle:"italic", color:"rgba(255,255,255,0.75)" }}>match in minutes.</span>
               </h2>
-              <p style={{ fontSize:"clamp(14px,1.5vw,16px)", color:"rgba(255,255,255,0.78)", lineHeight:1.8, marginBottom:28, maxWidth:560, position:"relative" }}>
+              <p style={{ fontSize:14, color:"rgba(255,255,255,0.78)", lineHeight:1.7, marginBottom:18, position:"relative" }}>
                 Browse adoptable pets and animals needing foster homes from verified shelters nationwide. Filter by species, location, and more — and apply directly from any listing.
               </p>
               <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:32, position:"relative" }}>
                 {["Adopt","Foster","Lost & Found","Search by State","Direct Applications","Urgent Animals"].map(t=>(
-                  <span key={t} style={{ fontSize:13, padding:"6px 14px", borderRadius:20, background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"rgba(255,255,255,0.9)", fontWeight:500 }}>{t}</span>
+                  <span key={t} style={{ fontSize:11, padding:"4px 10px", borderRadius:20, background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"rgba(255,255,255,0.9)", fontWeight:500 }}>{t}</span>
                 ))}
               </div>
             </div>
             <div style={{ display:"flex", gap:12, flexWrap:"wrap", position:"relative" }}>
-              <button style={{ background:"#fff", border:"none", color:"#4a6b50", fontWeight:700, fontSize:15, cursor:"pointer", fontFamily:"inherit", padding:"14px 28px", borderRadius:12, transition:"all 0.2s" }}
+              <button style={{ background:"#fff", border:"none", color:"#4a6b50", fontWeight:700, fontSize:13, cursor:"pointer", fontFamily:"inherit", padding:"10px 20px", borderRadius:10, transition:"all 0.2s" }}
                 onMouseEnter={e=>{ e.currentTarget.style.background="#eef4ef"; e.currentTarget.style.transform="translateY(-2px)"; }}
                 onMouseLeave={e=>{ e.currentTarget.style.background="#fff"; e.currentTarget.style.transform="none"; }}
                 onClick={()=>{setPage("app");setTab("adopt");setFSpecies("All");}}>
                 Browse adoptable pets →
               </button>
-              <button style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.35)", color:"#fff", fontWeight:600, fontSize:15, cursor:"pointer", fontFamily:"inherit", padding:"14px 24px", borderRadius:12, transition:"all 0.2s" }}
+              <button style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.35)", color:"#fff", fontWeight:600, fontSize:13, cursor:"pointer", fontFamily:"inherit", padding:"10px 18px", borderRadius:10, transition:"all 0.2s" }}
                 onMouseEnter={e=>{ e.currentTarget.style.background="rgba(255,255,255,0.25)"; e.currentTarget.style.transform="translateY(-2px)"; }}
                 onMouseLeave={e=>{ e.currentTarget.style.background="rgba(255,255,255,0.15)"; e.currentTarget.style.transform="none"; }}
                 onClick={()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}}>
