@@ -1727,7 +1727,7 @@ export default function RescuPawLink() {
 
       {/* ── TWO AUDIENCE CARDS ── */}
       <div style={{ padding:"clamp(32px,4vw,56px) clamp(16px,3vw,32px)" }}>
-        <div style={{ maxWidth:1400, margin:"0 auto", display:"flex", flexDirection:"column", gap:16 }}>
+        <div style={{ maxWidth:1400, margin:"0 auto", display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
 
           {/* Card 1 — For Rescues & Shelters */}
           <div style={{ background:"#f0f0ee", border:"2px solid transparent", borderRadius:24, padding:"clamp(40px,6vw,64px)", position:"relative", overflow:"hidden", minHeight:320, display:"flex", flexDirection:"column", justifyContent:"space-between", transition:"all 0.3s ease", cursor:"default" }}
