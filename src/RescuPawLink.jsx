@@ -23,11 +23,14 @@ async function sbFetch(path, opts = {}) {
   return text ? JSON.parse(text) : null;
 }
 
-async function sbAuth(action, email, password) {
+async function sbAuth(action, email, password, options = {}) {
+  const body = action === "signup"
+    ? { email, password, options: { emailRedirectTo: "https://rescupawlink.com" } }
+    : { email, password };
   const res = await fetch(`${SUPABASE_URL}/auth/v1/${action}`, {
     method: "POST",
     headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify(body),
   });
   return res.json();
 }
@@ -1475,7 +1478,19 @@ export default function RescuPawLink() {
         return;
       }
 
-      // Success — show email verification
+      // Success — notify admin and show email verification
+      try {
+        await sendEmail(EMAILJS_TEMPLATE_ADOPTION, {
+          to_email: "rescupawlink@gmail.com",
+          to_name: "RescuPawLink Admin",
+          from_name: regF.orgName,
+          from_email: regF.email,
+          animal_name: "New Shelter Registration",
+          shelter_name: regF.orgName,
+          message: `New shelter registered and pending verification:\n\nOrg: ${regF.orgName}\nType: ${regF.type}\nLocation: ${regF.city}, ${regF.state}\nEmail: ${regF.email}\nPhone: ${regF.phone}\n\nPlease review and verify in the Admin Dashboard at rescupawlink.com`,
+          reply_to: regF.email,
+        });
+      } catch(e) { console.log("Admin notify failed", e); }
       setAuthErr("");
       setAuthMode("verify");
       setLoading(false);
@@ -3392,7 +3407,7 @@ export default function RescuPawLink() {
                 </div>
               )}
             </form>
-            )} {/* end manual mode */}
+            )}
           </div>
         )}
 
@@ -3444,7 +3459,11 @@ export default function RescuPawLink() {
                         <button style={{ background:"rgba(107,143,113,0.88)", color:"#fff", border:"none", borderRadius:8, padding:"8px 16px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
                           onClick={async ()=>{ setShelters(p=>p.map(sh=>sh.id===s.id?{...sh,verified:true}:sh)); try{await sbFetch(`shelters?id=eq.${s.id}`,{method:"PATCH",body:JSON.stringify({verified:true})})}catch(e){} showToast(`✅ ${s.name} verified!`); }}>Verify ✓</button>
                         <button style={{ background:"#fff", color:"#c85a35", border:"1px solid #f0c4b4", borderRadius:8, padding:"8px 14px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}
-                          onClick={()=>{ setShelters(p=>p.filter(sh=>sh.id!==s.id)); showToast(`🗑 ${s.name} removed`); }}>Remove</button>
+                          onClick={async ()=>{
+                            setShelters(p=>p.filter(sh=>sh.id!==s.id));
+                            try { await sbFetch(`shelters?id=eq.${s.id}`, { method:"DELETE" }); } catch(e){}
+                            showToast(`🗑 ${s.name} removed`);
+                          }}>Remove</button>
                       </div>
                     </div>
                   ))}
@@ -3507,8 +3526,16 @@ export default function RescuPawLink() {
                         </div>
                       </div>
                     </div>
-                    <button style={{ background:"#fff", color:"#c85a35", border:"1px solid #f0c4b4", borderRadius:8, padding:"6px 12px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
-                      onClick={()=>{ setAnimals(p=>p.filter(x=>x.id!==a.id)); showToast(`🗑 ${a.name}'s listing removed`); }}>Remove</button>
+                    <div style={{ display:"flex", gap:6 }}>
+                      <button style={{ background:"#eef4ef", color:"#4a6b50", border:"1px solid #c7dfc9", borderRadius:8, padding:"6px 12px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
+                        onClick={()=>{ setSelectedAnimal(a); setTab("adopt"); showToast("Viewing listing — use admin panel to remove"); }}>View</button>
+                      <button style={{ background:"#fff", color:"#c85a35", border:"1px solid #f0c4b4", borderRadius:8, padding:"6px 12px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}
+                        onClick={async ()=>{
+                          setAnimals(p=>p.filter(x=>x.id!==a.id));
+                          try { await sbFetch(`animals?id=eq.${a.id}`, { method:"DELETE" }); } catch(e){}
+                          showToast(`🗑 ${a.name}'s listing removed`);
+                        }}>Remove</button>
+                    </div>
                   </div>
                 ))}
                 {animals.length===0&&<div style={{ fontSize:14, color:"#9a9e95", textAlign:"center", padding:24 }}>No listings yet.</div>}
