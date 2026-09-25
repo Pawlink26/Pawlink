@@ -2603,7 +2603,30 @@ export default function RescuPawLink() {
           ))}
         </div>
 
-        {authErr && <div style={{ background:"#fdf0eb", border:"1px solid #f0c4b4", color:"#dc2626", borderRadius:9, padding:"10px 14px", fontSize:13, marginBottom:18 }}>{authErr}</div>}
+        {authErr && (
+          <div style={{ background:"#fdf0eb", border:"1px solid #f0c4b4", borderRadius:9, padding:"12px 14px", fontSize:13, marginBottom:18 }}>
+            <div style={{ color:"#dc2626", marginBottom: authErr.toLowerCase().includes("verify") || authErr.toLowerCase().includes("confirm") ? 10 : 0 }}>{authErr}</div>
+            {(authErr.toLowerCase().includes("verify") || authErr.toLowerCase().includes("confirm") || authErr.toLowerCase().includes("email")) && (
+              <button type="button" style={{ background:"#fff", border:"1px solid #f0c4b4", color:"#c85a35", borderRadius:8, padding:"7px 14px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit", width:"100%" }}
+                onClick={async ()=>{
+                  const emailToUse = loginF.email || regF.email;
+                  if (!emailToUse) { showToast("⚠ Enter your email address above first."); return; }
+                  try {
+                    const res = await fetch(`${SUPABASE_URL}/auth/v1/resend`, {
+                      method:"POST",
+                      headers:{ "apikey":SUPABASE_KEY, "Content-Type":"application/json" },
+                      body:JSON.stringify({ type:"signup", email:emailToUse }),
+                    });
+                    const data = await res.json();
+                    if (data.error) showToast(`⚠ ${data.error_description || "Could not resend — try again shortly."}`);
+                    else showToast("✅ Confirmation email resent! Check your inbox and spam folder.");
+                  } catch(e) { showToast("⚠ Could not resend. Please try again."); }
+                }}>
+                📧 Resend confirmation email →
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Verify screen */}
         {authMode === "verify" && (
@@ -2640,7 +2663,6 @@ export default function RescuPawLink() {
           </div>
         )}
 
-        {/* Login form */}
         {authMode === "login" && (
           <form onSubmit={handleLogin}>
             <h2 style={{ fontSize:22, marginBottom:4 }}>Welcome back</h2>
@@ -2648,6 +2670,23 @@ export default function RescuPawLink() {
             <div style={{ marginBottom:14 }}><label className="label">Email</label><input className="input" type="email" required placeholder="intake@yourshelter.org" value={loginF.email} onChange={e=>setLoginF(p=>({...p,email:e.target.value}))} /></div>
             <div style={{ marginBottom:6 }}><label className="label">Password</label><input className="input" type="password" required placeholder="••••••••" value={loginF.password} onChange={e=>setLoginF(p=>({...p,password:e.target.value}))} /></div>
             <button className="btn btn-primary btn-md" type="submit" style={{ width:"100%", padding:13 }} disabled={loading}>{loading ? <Spinner /> : "Sign In"}</button>
+            <div style={{ textAlign:"center", marginTop:14, fontSize:13, color:"#4e5449" }}>
+              Need to verify your email?{" "}
+              <button type="button" style={{ background:"none", border:"none", color:"#6b8f71", fontWeight:700, cursor:"pointer", fontFamily:"inherit", fontSize:13, padding:0 }}
+                onClick={async ()=>{
+                  if (!loginF.email) { showToast("⚠ Enter your email address first."); return; }
+                  try {
+                    const res = await fetch(`${SUPABASE_URL}/auth/v1/resend`, {
+                      method:"POST",
+                      headers:{ "apikey":SUPABASE_KEY, "Content-Type":"application/json" },
+                      body:JSON.stringify({ type:"signup", email:loginF.email }),
+                    });
+                    const data = await res.json();
+                    if (data.error) showToast(`⚠ ${data.error_description || "Could not resend."}`);
+                    else showToast("✅ Confirmation email resent! Check your inbox and spam.");
+                  } catch(e) { showToast("⚠ Could not resend. Try again."); }
+                }}>Resend confirmation →</button>
+            </div>
           </form>
         )}
         {/* Register form */}
