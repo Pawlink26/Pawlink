@@ -3392,6 +3392,7 @@ export default function RescuPawLink() {
                 </div>
               )}
             </form>
+            )} {/* end manual mode */}
           </div>
         )}
 
@@ -4392,4 +4393,4 @@ Message: ${lfInqMsg.message || "No additional message."}`,
       )}
     </div>
   );
-} 
+}
