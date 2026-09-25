@@ -1414,8 +1414,20 @@ export default function RescuPawLink() {
     e.preventDefault(); setAuthErr(""); setLoading(true);
     try {
       const result = await sbAuth("token?grant_type=password", loginF.email, loginF.password);
-      if (result.error) { setAuthErr(result.error_description || "Invalid email or password."); setLoading(false); return; }
-      if (!result.access_token) { setAuthErr("Please verify your email address before signing in. Check your inbox for a confirmation link."); setLoading(false); return; }
+      console.log("Login result:", JSON.stringify(result));
+      if (result.error) {
+        // Supabase error codes
+        if (result.error === "invalid_grant" || result.error_description?.includes("Email not confirmed")) {
+          setAuthErr("Please verify your email address first. Check your inbox for a confirmation link — also check spam.");
+        } else {
+          setAuthErr(result.error_description || result.error || "Invalid email or password.");
+        }
+        setLoading(false); return;
+      }
+      if (!result.access_token) {
+        setAuthErr("Login failed. If you just confirmed your email, wait a moment and try again.");
+        setLoading(false); return;
+      }
       localStorage.setItem("rpl_token", result.access_token);
       localStorage.setItem("rpl_login_time", Date.now().toString());
       // Check admin FIRST before any shelter lookup
@@ -2601,9 +2613,26 @@ export default function RescuPawLink() {
             <p style={{ fontSize:14, color:"#4e5449", lineHeight:1.7, marginBottom:24 }}>
               We sent a confirmation link to <strong>{regF.email}</strong>. Click the link in your email to activate your account, then come back and sign in.
             </p>
-            <div style={{ background:"#f4f4f2", borderRadius:12, padding:"14px 18px", fontSize:13, color:"#4e5449", marginBottom:24, textAlign:"left", lineHeight:1.65 }}>
+            <div style={{ background:"#f4f4f2", borderRadius:12, padding:"14px 18px", fontSize:13, color:"#4e5449", marginBottom:16, textAlign:"left", lineHeight:1.65 }}>
               <strong>Didn't get it?</strong> Check your spam folder or make sure you entered the right email address.
             </div>
+            {/* Resend button */}
+            <button type="button" style={{ width:"100%", background:"#fff", border:"2px solid #c7dfc9", color:"#4a6b50", borderRadius:10, padding:"11px", fontSize:14, fontWeight:600, cursor:"pointer", fontFamily:"inherit", marginBottom:10 }}
+              onClick={async ()=>{
+                if (!regF.email) { showToast("⚠ No email address found — please register again."); return; }
+                try {
+                  const res = await fetch(`${SUPABASE_URL}/auth/v1/resend`, {
+                    method:"POST",
+                    headers:{ "apikey":SUPABASE_KEY, "Content-Type":"application/json" },
+                    body:JSON.stringify({ type:"signup", email:regF.email }),
+                  });
+                  const data = await res.json();
+                  if (data.error) { showToast(`⚠ ${data.error_description || "Could not resend. Try again shortly."}`); }
+                  else { showToast("✅ Confirmation email resent! Check your inbox and spam."); }
+                } catch(e) { showToast("⚠ Could not resend. Please try again."); }
+              }}>
+              Resend Confirmation Email
+            </button>
             <button type="button" className="btn btn-primary btn-lg" style={{ width:"100%" }}
               onClick={()=>setAuthMode("login")}>
               Go to Sign In
