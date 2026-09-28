@@ -176,23 +176,23 @@ const css = `
   .btn-lg  { padding:14px 30px; font-size:15px; font-weight:700; }
 
   .input, .select, .textarea { width:100%; padding:12px 16px; border:1.5px solid var(--border); border-radius:var(--radius-sm); background:var(--warm-white); font-family:'DM Sans',sans-serif; font-size:14px; color:var(--slate); outline:none; transition:border-color 0.2s, box-shadow 0.2s; }
-  .input:focus, .select:focus, .textarea:focus { border-color:var(--sage); box-shadow:0 0 0 3px rgba(107,143,113,0.12); }
+  .input:focus, .select:focus, .textarea:focus { border-color:var(--sage); box-shadow:0 0 0 4px rgba(107,143,113,0.14); outline:none; }
   .input::placeholder, .textarea::placeholder { color:var(--slate-light); }
   .select { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a9e95' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; cursor:pointer; padding-right:36px; }
   .textarea { resize:vertical; line-height:1.65; }
   .label { display:block; font-size:11px; font-weight:700; color:var(--slate-mid); margin-bottom:6px; letter-spacing:0.07em; text-transform:uppercase; }
 
-  .card { background:var(--warm-white); border-radius:var(--radius); border:1px solid var(--border); box-shadow:var(--shadow-sm); }
+  .card { background:var(--warm-white); border-radius:var(--radius); border:1px solid #dce9dd; box-shadow:0 1px 3px rgba(26,28,24,0.05), 0 4px 16px rgba(107,143,113,0.06); }
   .card-hover { transition:transform 0.28s var(--ease), box-shadow 0.28s var(--ease); cursor:pointer; }
   .card-hover:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); }
 
-  .animal-card { background:var(--warm-white); border-radius:var(--radius-lg); border:1px solid var(--border); overflow:hidden; cursor:pointer; box-shadow:var(--shadow-sm); transition:transform 0.32s var(--ease), box-shadow 0.32s var(--ease), border-color 0.2s; }
-  .animal-card:hover { transform:translateY(-6px); box-shadow:var(--shadow-xl); border-color:transparent; }
+  .animal-card { background:var(--warm-white); border-radius:var(--radius-lg); border:1px solid #dce9dd; overflow:hidden; cursor:pointer; box-shadow:0 2px 8px rgba(107,143,113,0.08), 0 1px 3px rgba(26,28,24,0.04); transition:transform 0.32s var(--ease), box-shadow 0.32s var(--ease), border-color 0.2s; }
+  .animal-card:hover { transform:translateY(-8px); box-shadow:0 24px 56px rgba(107,143,113,0.18), 0 8px 20px rgba(26,28,24,0.1); border-color:#6b8f71; }
   .animal-card-img { overflow:hidden; position:relative; }
   .animal-card-img img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.5s var(--ease); }
   .animal-card:hover .animal-card-img img { transform:scale(1.07); }
 
-  .badge { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:700; padding:4px 10px; border-radius:20px; letter-spacing:0.05em; text-transform:uppercase; font-family:'DM Sans',sans-serif; }
+  .badge { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:700; padding:4px 12px; border-radius:20px; letter-spacing:0.05em; text-transform:uppercase; font-family:'DM Sans',sans-serif; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
   .badge-critical { background:var(--coral-light); color:var(--coral); border:1px solid rgba(200,90,53,0.2); }
   .badge-urgent   { background:var(--amber-light); color:var(--amber); border:1px solid rgba(196,122,30,0.2); }
   .badge-good     { background:#edf7ef; color:#2d7a3a; border:1px solid rgba(45,122,58,0.2); }
@@ -200,39 +200,40 @@ const css = `
   .badge-sage     { background:var(--sage-light); color:var(--sage-dark); border:1px solid var(--sage-mid); }
   .badge-overflow { background:var(--coral-light); color:var(--coral); border:1px solid rgba(200,90,53,0.2); }
 
-  .tab-bar { display:flex; background:var(--sand); border-radius:12px; padding:4px; border:1px solid var(--border); gap:2px; }
+  .tab-bar { display:flex; background:#eef4ef; border-radius:14px; padding:4px; border:1px solid #dce9dd; gap:2px; box-shadow:inset 0 1px 3px rgba(107,143,113,0.1); }
   .tab { flex:1; padding:10px 12px; border:none; border-radius:9px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; cursor:pointer; transition:all 0.22s var(--ease); background:transparent; color:var(--slate-mid); display:flex; align-items:center; justify-content:center; gap:6px; }
-  .tab.active { background:#ffffff; color:#1a1c18; font-weight:700; box-shadow:var(--shadow-sm); border-left:3px solid #6b8f71; }
+  .tab.active { background:#ffffff; color:#2e4a32; font-weight:700; box-shadow:0 1px 4px rgba(107,143,113,0.15); border-left:3px solid #6b8f71; }
 
-  .modal-backdrop { position:fixed; inset:0; background:rgba(26,28,24,0.6); backdrop-filter:blur(10px) saturate(0.9); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; animation:fadeIn 0.2s ease; }
-  .modal { background:var(--warm-white); border-radius:var(--radius-lg); box-shadow:var(--shadow-xl); max-height:95vh; overflow-y:auto; animation:fadeUp 0.3s var(--ease); }
+  .modal-backdrop { position:fixed; inset:0; background:rgba(26,28,24,0.65); backdrop-filter:blur(16px) saturate(0.8); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; animation:fadeIn 0.2s ease; }
+  .modal { background:var(--warm-white); border-radius:28px; box-shadow:0 32px 80px rgba(26,28,24,0.22), 0 8px 24px rgba(26,28,24,0.1); max-height:95vh; overflow-y:auto; animation:fadeUp 0.3s var(--ease); border:1px solid #dce9dd; }
 
   .upload-zone { border:2px dashed var(--border); border-radius:var(--radius); padding:36px 24px; text-align:center; cursor:pointer; transition:all 0.22s; background:var(--cream); }
   .upload-zone:hover { border-color:var(--sage); background:var(--sage-light); }
   .progress-track { height:5px; background:var(--sand); border-radius:4px; overflow:hidden; }
   .progress-fill  { height:100%; border-radius:4px; transition:width 0.6s var(--ease); }
 
-  .filter-chip { padding:9px 18px; border-radius:24px; border:1.5px solid var(--border); background:var(--warm-white); color:var(--slate-mid); font-size:13px; font-weight:500; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s var(--ease); }
-  .filter-chip.active { border-color:#6b8f71; background:#eef4ef; color:#4a6b50; font-weight:700; }
+  .filter-chip { padding:9px 20px; border-radius:24px; border:1.5px solid #dce9dd; background:var(--warm-white); color:var(--slate-mid); font-size:13px; font-weight:500; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s var(--ease); box-shadow:0 1px 3px rgba(26,28,24,0.04); }
+  .filter-chip.active { border-color:#6b8f71; background:#eef4ef; color:#2e4a32; font-weight:700; box-shadow:0 2px 8px rgba(107,143,113,0.2); }
   .filter-chip:hover:not(.active) { border-color:var(--slate-light); color:var(--slate); background:var(--sand); }
 
   .nav-link { padding:9px 14px; border:none; background:transparent; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; color:var(--slate-mid); cursor:pointer; border-radius:9px; transition:all 0.2s var(--ease); display:flex; align-items:center; gap:6px; }
   .nav-link:hover { background:var(--sand); color:var(--slate); }
-  .nav-link.active { background:#6b8f71; color:#fff; font-weight:700; }
+  .nav-link.active { background:#6b8f71; color:#fff; font-weight:700; box-shadow:0 2px 8px rgba(107,143,113,0.3); }
 
   .toast { position:fixed; top:20px; right:20px; z-index:500; background:var(--slate); color:#fff; padding:14px 20px; border-radius:12px; box-shadow:var(--shadow-xl); display:flex; align-items:center; gap:10px; font-size:14px; font-weight:500; max-width:380px; animation:slideDown 0.32s var(--ease); font-family:'DM Sans',sans-serif; border:1px solid rgba(255,255,255,0.07); }
 
   .section-header { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:14px; }
-  .stat-card { background:var(--warm-white); border-radius:var(--radius); border:1px solid var(--border); padding:22px 24px; display:flex; gap:16px; align-items:center; box-shadow:var(--shadow-sm); transition:transform 0.25s var(--ease), box-shadow 0.25s var(--ease); }
-  .stat-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
+  .stat-card { background:var(--warm-white); border-radius:var(--radius); border:1px solid #dce9dd; padding:22px 24px; display:flex; gap:16px; align-items:center; box-shadow:0 1px 3px rgba(26,28,24,0.05), 0 4px 16px rgba(107,143,113,0.06); transition:transform 0.25s var(--ease), box-shadow 0.25s var(--ease); }
+  .stat-card:hover { transform:translateY(-4px); box-shadow:0 12px 32px rgba(107,143,113,0.16), 0 4px 12px rgba(26,28,24,0.08); border-color:#6b8f71; }
   .stat-icon { width:48px; height:48px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
   .animal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
   .shelter-list { display:grid; gap:14px; }
   .trait-pill { font-size:11px; padding:4px 10px; border-radius:6px; font-weight:600; font-family:'DM Sans',sans-serif; }
 
-  ::-webkit-scrollbar { width:5px; }
+  ::-webkit-scrollbar { width:4px; }
   ::-webkit-scrollbar-track { background:transparent; }
-  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+  ::-webkit-scrollbar-thumb { background:#c8ddc9; border-radius:4px; }
+  ::-webkit-scrollbar-thumb:hover { background:#6b8f71; }
 
   .safe-bottom { padding-bottom:env(safe-area-inset-bottom,16px); }
   nav { padding-top:env(safe-area-inset-top,0); }
@@ -2922,11 +2923,11 @@ if (page === "landing") return (
   // ─────────────────────────────────────────────────────────
 
   return (
-    <div style={{ fontFamily:'Inter,sans-serif', color:"#1a1c18", background:"#f8f8f6", minHeight:"100vh" }}>
+    <div style={{ fontFamily:'Inter,sans-serif', color:"#1a1c18", background:"#f0f4f0", minHeight:"100vh" }}>
       {toast && <Toast msg={toast} />}
 
       {/* Header */}
-      <header style={{ background:"#ffffff", borderBottom:"1px solid #e8e8e6", position:"sticky", top:0, zIndex:100, boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
+      <header style={{ background:"#ffffff", borderBottom:"1px solid #dce9dd", position:"sticky", top:0, zIndex:100, boxShadow:"0 2px 12px rgba(107,143,113,0.08)" }}>
         <div style={{ maxWidth:"100%", margin:"0 auto", padding:"0 clamp(16px,3vw,48px)", height:80, display:"flex", alignItems:"center", justifyContent:"space-between", gap:8 }}>
 
           {/* Left — back + wordmark */}
@@ -3032,14 +3033,14 @@ if (page === "landing") return (
         )}
       </header>
 
-      <main style={{ maxWidth:1400, margin:"0 auto", padding:"clamp(20px,3vw,32px) clamp(14px,3vw,32px)" }}>
+      <main style={{ maxWidth:1400, margin:"0 auto", padding:"clamp(24px,3vw,40px) clamp(16px,3vw,36px)" }}>
 
         {/* ══ ADOPTABLE ANIMALS ══════════════════════════════ */}
         {tab === "adopt" && (
           <div className="fade-in">
             <div className="section-header">
               <div>
-                <h1 style={{ fontSize:"clamp(24px,3vw,36px)", marginBottom:5, fontFamily:'Lora,Georgia,serif', fontWeight:700, letterSpacing:"-0.01em", lineHeight:1.1 }}>{fSpecies==="Foster"?"Animals Needing Foster":"Adoptable Animals"}</h1>
+                <h1 style={{ fontSize:"clamp(26px,3vw,38px)", marginBottom:6, fontFamily:'Lora,Georgia,serif', fontWeight:700, letterSpacing:"-0.02em", lineHeight:1.08 }}>{fSpecies==="Foster"?"Animals Needing Foster":"Adoptable Animals"}</h1>
                 <p style={{ color:"#4e5449", fontSize:14 }}>Real listings from verified shelters — sorted by urgency. Apply directly from any listing.</p>
               </div>
               <div style={{ fontSize:13, color:"#4e5449", background:"#ffffff", border:"1px solid var(--border)", borderRadius:10, padding:"8px 14px" }}>
@@ -3076,7 +3077,7 @@ if (page === "landing") return (
             )}
 
             {/* Filter bar */}
-            <div style={{ background:"#fff", border:"1px solid #e8e8e6", borderRadius:16, padding:"20px 24px", marginBottom:26, boxShadow:"0 1px 6px rgba(0,0,0,0.05)" }}>
+            <div style={{ background:"#fff", border:"1px solid #dce9dd", borderRadius:18, padding:"22px 26px", marginBottom:26, boxShadow:"0 2px 12px rgba(107,143,113,0.08)" }}>
               {/* Row 1 — Search + Location */}
               <div style={{ display:"flex", gap:12, flexWrap:"wrap", marginBottom:14 }}>
                 <div style={{ flex:"2 1 220px", minWidth:180, position:"relative" }}>
@@ -3194,7 +3195,7 @@ if (page === "landing") return (
             {/* Header + login nudge */}
             <div className="section-header">
               <div>
-                <h1 style={{ fontSize:26, marginBottom:5, fontFamily:'Inter,sans-serif', fontWeight:800, letterSpacing:"-0.5px" }}>Shelter Network</h1>
+                <h1 style={{ fontSize:"clamp(24px,3vw,32px)", marginBottom:6, fontFamily:'Lora,Georgia,serif', fontWeight:700, letterSpacing:"-0.3px" }}>Shelter Network</h1>
                 <p style={{ color:"#4e5449", fontSize:14 }}>Live capacity across every partner shelter. Connect, coordinate, and save animals together.</p>
               </div>
               {!isLoggedIn && (
@@ -3271,7 +3272,7 @@ if (page === "landing") return (
                 const sAnimals = animals.filter(a => a.shelterId === s.id);
                 const isMe = s.id === user?.id;
                 return (
-                  <div key={s.id} className="card fade-up" style={{ animationDelay:`${i*0.06}s`, padding:"22px 24px", border:isMe?"2px solid #6b8f71":"1px solid #e4e4e2" }}>
+                  <div key={s.id} className="card fade-up" style={{ animationDelay:`${i*0.06}s`, padding:"24px 26px", border:isMe?"2px solid #6b8f71":"1px solid #dce9dd", boxShadow:isMe?"0 4px 20px rgba(107,143,113,0.18)":"0 2px 8px rgba(107,143,113,0.06)" }}>
                     {isMe && <div style={{ fontSize:11, fontWeight:700, color:"#6b8f71", letterSpacing:"0.08em", marginBottom:10 }}>YOUR SHELTER</div>}
                     <div style={{ display:"flex", gap:16, alignItems:"flex-start", flexWrap:"wrap" }}>
 
@@ -3840,7 +3841,7 @@ if (page === "landing") return (
 
             {/* ── Welcome / Onboarding banner for new shelters ── */}
             {(!userShelter?.totalSpace || userShelter.totalSpace === 0) && (
-              <div style={{ background:"#eef4ef", border:"1px solid var(--sage-mid)", borderRadius:18, padding:"28px 32px", marginBottom:28, color:"var(--text)", position:"relative", overflow:"hidden" }}>
+              <div style={{ background:"linear-gradient(135deg,#eef4ef,#e4f0e6)", border:"1px solid #c7dfc9", borderRadius:20, padding:"32px 36px", marginBottom:28, boxShadow:"0 4px 20px rgba(107,143,113,0.12)", color:"var(--text)", position:"relative", overflow:"hidden" }}>
                 <div style={{ position:"absolute", right:-20, top:-20, fontSize:120, opacity:0.06 }}>🐾</div>
                 <div style={{ fontSize:12, fontWeight:700, color:"#4a6b50", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:8 }}>Welcome to RescuPawLink</div>
                 <h2 style={{ fontSize:24, color:"var(--text)", marginBottom:8 }}>You're in! Let's set up your shelter profile.</h2>
