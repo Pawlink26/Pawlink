@@ -25,7 +25,7 @@ async function sbFetch(path, opts = {}) {
 
 async function sbAuth(action, email, password, options = {}) {
   const body = action === "signup"
-    ? { email, password, options: { emailRedirectTo: "https://rescupawlink.com" } }
+    ? { email, password, options: { emailRedirectTo: "https://rescupawlink.com/#confirmed" } }
     : { email, password };
   const res = await fetch(`${SUPABASE_URL}/auth/v1/${action}`, {
     method: "POST",
@@ -949,7 +949,7 @@ export default function RescuPawLink() {
           <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:48, width:"auto", display:"block" }}/>
         </button>
         <div className="hide-mobile" style={{ display:"flex", alignItems:"center", gap:0 }}>
-          {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["About",()=>setPage("about")],["Become a Partner",()=>setPage("partner")]].map(([l,fn],i,arr)=>(
+          {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["About",()=>setPage("about")],["Software",()=>setPage("software")],["Become a Partner",()=>setPage("partner")]].map(([l,fn],i,arr)=>(
             <span key={l} style={{ display:"flex", alignItems:"center" }}>
               <button onClick={fn} style={{ background:"none", border:"none", cursor:"pointer", fontFamily:"inherit", fontSize:13, fontWeight:l==="Become a Partner"?700:500, color:l==="Become a Partner"?"#6b8f71":"#4e5449", padding:"6px 14px", borderRadius:6 }}
                 onMouseEnter={e=>e.currentTarget.style.color="#1a1c18"} onMouseLeave={e=>e.currentTarget.style.color=l==="Become a Partner"?"#6b8f71":"#4e5449"}>{l}</button>
@@ -1103,6 +1103,20 @@ export default function RescuPawLink() {
     checkSession();
   }, []);
 
+
+
+  // ── Detect email confirmation redirect ──────────────────
+  useEffect(() => {
+    if (window.location.hash === "#confirmed" || window.location.hash.includes("access_token")) {
+      // Clear the hash from URL
+      window.history.replaceState(null, "", window.location.pathname);
+      // Show sign in form with success message
+      setPage("login");
+      setAuthMode("login");
+      setAuthErr("");
+      showToast("✅ Email confirmed! Please sign in to your account.");
+    }
+  }, []);
 
   // ── SEO Meta Tags ──────────────────────────────────────
   useEffect(() => {
@@ -1676,7 +1690,189 @@ export default function RescuPawLink() {
     ["About",        ()=>{setPage("about");setMobileOpen(false);}],
   ];
 
-  if (page === "landing") return (
+  if (page === "software") return (
+    <div style={{ fontFamily:"'DM Sans',sans-serif", color:"#1a1c18", background:"#f8f8f6", minHeight:"100vh" }}>
+
+      {/* Nav */}
+      <nav style={{ background:"#fff", borderBottom:"1px solid #e8e8e6", padding:"0 clamp(16px,3vw,48px)", height:80, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100, boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
+        <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", cursor:"pointer" }}>
+          <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:58, width:"auto", maxWidth:200, display:"block" }}/>
+        </button>
+        <div style={{ display:"flex", alignItems:"center", gap:0 }}>
+          {[["Adopt",()=>{setPage("app");setTab("adopt");setFSpecies("All");}],["Foster",()=>{setPage("app");setTab("adopt");setFSpecies("Foster");}],["Shelters",()=>{setPage("app");setTab("network");}],["Lost & Found",()=>{setPage("app");setTab("lostfound");}],["About",()=>setPage("about")],["Software",()=>setPage("software")],["Become a Partner",()=>setPage("partner")]].map(([l,fn])=>(
+            <button key={l} onClick={fn} style={{ background:l==="Software"?"#6b8f71":"none", color:l==="Software"?"#fff":l==="Become a Partner"?"#6b8f71":"#4e5449", border:l==="Become a Partner"?"2px solid #6b8f71":"none", borderRadius:9, padding:"8px 16px", fontFamily:"inherit", fontSize:13, fontWeight:l==="Software"||l==="Become a Partner"?700:500, cursor:"pointer", marginLeft:2 }}>{l}</button>
+          ))}
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <section style={{ background:"linear-gradient(135deg,#f0f7f1 0%,#e8f0e8 100%)", borderBottom:"1px solid #dce9dd", padding:"72px clamp(16px,5vw,80px) 64px" }}>
+        <div style={{ maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"1fr 1fr", gap:64, alignItems:"center" }}>
+          <div>
+            <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"#6b8f71", color:"#fff", borderRadius:20, padding:"5px 14px", fontSize:11, fontWeight:700, letterSpacing:".06em", textTransform:"uppercase", marginBottom:20 }}>
+              🖥 Desktop Software
+            </div>
+            <h1 style={{ fontFamily:"'Lora',Georgia,serif", fontSize:"clamp(32px,4vw,48px)", fontWeight:700, lineHeight:1.15, color:"#1a1c18", marginBottom:18, letterSpacing:"-.5px" }}>
+              Shelter management<br/>built for real shelters
+            </h1>
+            <p style={{ fontSize:16, color:"#4e5449", lineHeight:1.75, marginBottom:32, maxWidth:480 }}>
+              RescuPawLink Shelter Edition is a full desktop app for managing your animals, staff, fosters, medical records, adoptions, and more — all connected to the RescuPawLink network.
+            </p>
+            <div style={{ display:"flex", gap:14, flexWrap:"wrap", alignItems:"center" }}>
+              <a href="https://github.com/Pawlink26/Pawlink/releases/download/v1.0.0/RescuPawLink.Setup.1.0.0.exe"
+                style={{ display:"inline-flex", alignItems:"center", gap:10, background:"#6b8f71", color:"#fff", textDecoration:"none", padding:"14px 28px", borderRadius:12, fontWeight:700, fontSize:15, boxShadow:"0 4px 16px rgba(107,143,113,.35)" }}>
+                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download for Windows
+              </a>
+              <div style={{ fontSize:13, color:"#9a9e95" }}>
+                <div style={{ fontWeight:600, color:"#4e5449", marginBottom:2 }}>Mac coming soon</div>
+                <div>Free 14-day trial · No credit card</div>
+              </div>
+            </div>
+            <div style={{ display:"flex", gap:24, marginTop:28 }}>
+              {[["🆓","Free 14-day trial"],["💳","$29/mo or $249/yr"],["🔒","256-bit encrypted"],["🌐","RPL network included"]].map(([e,t])=>(
+                <div key={t} style={{ fontSize:12, color:"#4e5449", display:"flex", flexDirection:"column", gap:3 }}>
+                  <span style={{ fontSize:18 }}>{e}</span>
+                  <span style={{ fontWeight:600 }}>{t}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={{ background:"#fff", border:"1px solid #dce9dd", borderRadius:20, padding:24, boxShadow:"0 8px 32px rgba(107,143,113,.12)" }}>
+            <div style={{ background:"#6b8f71", borderRadius:"12px 12px 0 0", padding:"10px 16px", display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
+              <img src="https://i.imgur.com/Ek2yDNL.png" alt="" style={{ height:20, filter:"brightness(0) invert(1)", opacity:.9 }}/>
+              <span style={{ color:"#fff", fontSize:12, fontWeight:700 }}>Shelter Edition</span>
+              <span style={{ marginLeft:"auto", fontSize:10, color:"rgba(255,255,255,.6)", background:"rgba(255,255,255,.15)", padding:"2px 8px", borderRadius:10 }}>Dashboard</span>
+            </div>
+            {[["🐾 18","Total animals"],["✅ 11","Available"],["❤️ 47","Adopted this year"],["⚕️ 2","Medical hold"]].map(([v,l])=>(
+              <div key={l} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"9px 0", borderBottom:"1px solid #f0f5f1" }}>
+                <span style={{ fontSize:12, color:"#4e5449" }}>{l}</span>
+                <span style={{ fontSize:14, fontWeight:700, color:"#2e4a32", fontFamily:"Georgia,serif" }}>{v}</span>
+              </div>
+            ))}
+            <div style={{ marginTop:14, padding:"10px 14px", background:"#eef4ef", borderRadius:10, display:"flex", justifyContent:"space-between", fontSize:12 }}>
+              <span style={{ color:"#4a6b50", fontWeight:600 }}>✓ 14-day trial active</span>
+              <span style={{ color:"#9a9e95" }}>8 days remaining</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features grid */}
+      <section style={{ padding:"72px clamp(16px,5vw,80px)", maxWidth:1200, margin:"0 auto" }}>
+        <div style={{ textAlign:"center", marginBottom:52 }}>
+          <h2 style={{ fontFamily:"'Lora',Georgia,serif", fontSize:"clamp(26px,3vw,36px)", fontWeight:700, color:"#1a1c18", marginBottom:12 }}>Everything your shelter needs</h2>
+          <p style={{ fontSize:15, color:"#4e5449", maxWidth:520, margin:"0 auto" }}>17 tabs covering every part of your operation — from intake to adoption, medical to volunteers.</p>
+        </div>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:20 }}>
+          {[
+            ["🐾","Animal Records","Full intake forms with 7 species, 11 statuses, photos, microchip, breed, medical history, behavior notes, and foster placement."],
+            ["🏠","Visual Shelter Map","Color-coded kennel grid — click any kennel to open the animal. See at a glance what's occupied, available, or on hold."],
+            ["❤️","Adoptions & Checkout","Manage applications, approve or deny, and run a paperless mobile checkout with a built-in donation prompt."],
+            ["⚕️","Medical Records","Schedule vet appointments, log vaccinations, track medications, and flag animals on medical hold."],
+            ["👨‍👩‍👧","Foster Program","Manage foster families, place animals, track placements and returns, and coordinate care."],
+            ["👥","Volunteers","Track volunteer skills, hours, and shifts. Schedule and message your team."],
+            ["🗺","Field Services","Case management for animal control, stray holds, and field investigations — with auto-generated case numbers."],
+            ["💬","Coordinator Chat","7 channels including a pinned state-wide channel for connecting with other RPL shelters."],
+            ["📊","Reports & Analytics","Species breakdowns, intake source charts, activity logs, and exportable data."],
+            ["🔒","Staff & Security","9 permission roles, PIN-based lock screen, 30-minute idle lock, and a full audit log."],
+            ["📥","CSV Import & Export","Bulk import animals from a spreadsheet template or export your full record set anytime."],
+            ["🔍","Microchip Lookup","Search your shelter's records by microchip number instantly."],
+          ].map(([e,t,d])=>(
+            <div key={t} style={{ background:"#fff", border:"1px solid #dce9dd", borderRadius:16, padding:"22px 24px" }}>
+              <div style={{ fontSize:28, marginBottom:12 }}>{e}</div>
+              <div style={{ fontFamily:"Georgia,serif", fontSize:16, fontWeight:700, color:"#1a1c18", marginBottom:8 }}>{t}</div>
+              <div style={{ fontSize:13, color:"#4e5449", lineHeight:1.7 }}>{d}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Download CTA — side by side */}
+      <section style={{ background:"linear-gradient(135deg,#f0f7f1 0%,#e8f0e8 100%)", borderTop:"1px solid #dce9dd", padding:"72px clamp(16px,5vw,80px)" }}>
+        <div style={{ maxWidth:800, margin:"0 auto", textAlign:"center", marginBottom:48 }}>
+          <h2 style={{ fontFamily:"'Lora',Georgia,serif", fontSize:"clamp(26px,3vw,36px)", fontWeight:700, color:"#1a1c18", marginBottom:12 }}>Download Shelter Edition</h2>
+          <p style={{ fontSize:15, color:"#4e5449" }}>Start your free 14-day trial. No credit card required.</p>
+        </div>
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:24, maxWidth:700, margin:"0 auto" }}>
+
+          {/* Windows */}
+          <div style={{ background:"#fff", border:"2px solid #6b8f71", borderRadius:20, padding:"32px 28px", textAlign:"center" }}>
+            <div style={{ fontSize:42, marginBottom:12 }}>🪟</div>
+            <div style={{ fontFamily:"Georgia,serif", fontSize:20, fontWeight:700, color:"#1a1c18", marginBottom:6 }}>Windows</div>
+            <div style={{ fontSize:13, color:"#7a9e95", marginBottom:24 }}>Windows 10 or later · 64-bit</div>
+            <a href="https://github.com/Pawlink26/Pawlink/releases/download/v1.0.0/RescuPawLink.Setup.1.0.0.exe"
+              style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:9, background:"#6b8f71", color:"#fff", textDecoration:"none", padding:"13px 24px", borderRadius:12, fontWeight:700, fontSize:14, boxShadow:"0 4px 16px rgba(107,143,113,.3)" }}>
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download .exe
+            </a>
+            <div style={{ fontSize:11, color:"#9a9e95", marginTop:12 }}>v1.0.0 · ~85 MB</div>
+          </div>
+
+          {/* Mac */}
+          <div style={{ background:"#fff", border:"1px solid #dce9dd", borderRadius:20, padding:"32px 28px", textAlign:"center", opacity:.7 }}>
+            <div style={{ fontSize:42, marginBottom:12 }}>🍎</div>
+            <div style={{ fontFamily:"Georgia,serif", fontSize:20, fontWeight:700, color:"#1a1c18", marginBottom:6 }}>Mac</div>
+            <div style={{ fontSize:13, color:"#7a9e95", marginBottom:24 }}>macOS 12 Monterey or later</div>
+            <div style={{ background:"#f4f4f2", color:"#9a9e95", padding:"13px 24px", borderRadius:12, fontWeight:700, fontSize:14 }}>
+              Coming soon
+            </div>
+            <div style={{ fontSize:11, color:"#9a9e95", marginTop:12 }}>Join the waitlist below</div>
+          </div>
+
+        </div>
+
+        {/* Waitlist email */}
+        <div style={{ textAlign:"center", marginTop:36 }}>
+          <div style={{ fontSize:13, color:"#4e5449", marginBottom:12 }}>Want to be notified when Mac is ready?</div>
+          <div style={{ display:"flex", gap:10, justifyContent:"center", flexWrap:"wrap" }}>
+            <input type="email" placeholder="your@email.com" style={{ border:"1px solid #dce9dd", borderRadius:10, padding:"10px 16px", fontSize:13, fontFamily:"inherit", outline:"none", width:240 }}/>
+            <button style={{ background:"#6b8f71", color:"#fff", border:"none", borderRadius:10, padding:"10px 20px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Notify me</button>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section style={{ padding:"72px clamp(16px,5vw,80px)", maxWidth:900, margin:"0 auto", textAlign:"center" }}>
+        <h2 style={{ fontFamily:"'Lora',Georgia,serif", fontSize:"clamp(26px,3vw,36px)", fontWeight:700, color:"#1a1c18", marginBottom:12 }}>Simple pricing</h2>
+        <p style={{ fontSize:15, color:"#4e5449", marginBottom:48 }}>One shelter, one price. No per-user fees.</p>
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:24, maxWidth:600, margin:"0 auto" }}>
+          <div style={{ background:"#fff", border:"1px solid #dce9dd", borderRadius:20, padding:"32px 28px" }}>
+            <div style={{ fontSize:13, fontWeight:700, color:"#6b8f71", textTransform:"uppercase", letterSpacing:".08em", marginBottom:12 }}>Monthly</div>
+            <div style={{ fontFamily:"Georgia,serif", fontSize:40, fontWeight:700, color:"#1a1c18", marginBottom:4 }}>$29</div>
+            <div style={{ fontSize:13, color:"#9a9e95", marginBottom:24 }}>per month · cancel anytime</div>
+            <button onClick={()=>{ window.location.href="mailto:rescupawlink@gmail.com?subject=Shelter Edition Monthly Subscription"; }} style={{ width:"100%", background:"#6b8f71", color:"#fff", border:"none", borderRadius:12, padding:"12px 0", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Get started</button>
+          </div>
+          <div style={{ background:"#6b8f71", border:"2px solid #4a6b50", borderRadius:20, padding:"32px 28px", position:"relative" }}>
+            <div style={{ position:"absolute", top:-12, left:"50%", transform:"translateX(-50%)", background:"#c85a35", color:"#fff", fontSize:11, fontWeight:700, padding:"4px 14px", borderRadius:20 }}>BEST VALUE</div>
+            <div style={{ fontSize:13, fontWeight:700, color:"rgba(255,255,255,.7)", textTransform:"uppercase", letterSpacing:".08em", marginBottom:12 }}>Annual</div>
+            <div style={{ fontFamily:"Georgia,serif", fontSize:40, fontWeight:700, color:"#fff", marginBottom:4 }}>$249</div>
+            <div style={{ fontSize:13, color:"rgba(255,255,255,.65)", marginBottom:24 }}>per year · save $99</div>
+            <button onClick={()=>{ window.location.href="mailto:rescupawlink@gmail.com?subject=Shelter Edition Annual Subscription"; }} style={{ width:"100%", background:"#fff", color:"#6b8f71", border:"none", borderRadius:12, padding:"12px 0", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Get started</button>
+          </div>
+        </div>
+        <div style={{ fontSize:13, color:"#9a9e95", marginTop:24 }}>Free 14-day trial included with both plans. Questions? <a href="mailto:rescupawlink@gmail.com" style={{ color:"#6b8f71", fontWeight:600 }}>Email us</a>.</div>
+      </section>
+
+      {/* Footer */}
+      <footer style={{ background:"#1a1c18", color:"rgba(255,255,255,.55)", padding:"32px clamp(16px,4vw,64px)", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:16 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:14 }}>
+          <div style={{ background:"#fff", borderRadius:10, padding:"4px 10px" }}>
+            <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:28, display:"block" }}/>
+          </div>
+          <span style={{ fontSize:13 }}>© 2026 RescuPawLink</span>
+        </div>
+        <div style={{ display:"flex", gap:20, fontSize:13 }}>
+          <button onClick={()=>setPage("landing")} style={{ background:"none", border:"none", color:"rgba(255,255,255,.55)", cursor:"pointer", fontFamily:"inherit", fontSize:13 }}>Home</button>
+          <button onClick={()=>setPage("about")} style={{ background:"none", border:"none", color:"rgba(255,255,255,.55)", cursor:"pointer", fontFamily:"inherit", fontSize:13 }}>About</button>
+          <a href="mailto:rescupawlink@gmail.com" style={{ color:"rgba(255,255,255,.55)", textDecoration:"none", fontSize:13 }}>Contact</a>
+        </div>
+      </footer>
+
+    </div>
+  );
+
+if (page === "landing") return (
     <div style={{ fontFamily:'DM Sans,sans-serif', color:"#1a1c18", background:"#ffffff", minHeight:"100vh" }}>
       {toast && <Toast msg={toast}/>}
 
@@ -2658,7 +2854,7 @@ export default function RescuPawLink() {
             </button>
             <button type="button" className="btn btn-primary btn-lg" style={{ width:"100%" }}
               onClick={()=>setAuthMode("login")}>
-              Go to Sign In
+              Already confirmed? Sign In
             </button>
           </div>
         )}
