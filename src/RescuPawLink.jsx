@@ -1688,6 +1688,8 @@ export default function RescuPawLink() {
     ["Shelters",     ()=>{setPage("app");setTab("network");setMobileOpen(false);}],
     ["Lost & Found", ()=>{setPage("app");setTab("lostfound");setMobileOpen(false);}],
     ["About",        ()=>{setPage("about");setMobileOpen(false);}],
+    ["Software",     ()=>{setPage("software");setMobileOpen(false);}],
+    ["Become a Partner", ()=>{setPage("partner");setMobileOpen(false);}],
   ];
 
   if (page === "software") return (
@@ -2992,6 +2994,7 @@ if (page === "landing") return (
               { key:"network",   label:"Shelters" },
               { key:"lostfound", label:"Lost & Found" },
               { key:"about",     label:"About", action:()=>{setPage("about");setMobileOpen(false);} },
+              { key:"software",  label:"Software", action:()=>{setPage("software");setMobileOpen(false);} },
               ...(isLoggedIn ? [
                 ...(isAdmin ? [
                   { key:"dashboard", label:"Admin Dashboard" },
