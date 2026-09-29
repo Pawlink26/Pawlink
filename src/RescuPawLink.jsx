@@ -1742,7 +1742,8 @@ export default function RescuPawLink() {
               onMouseEnter={e=>e.currentTarget.style.color="#1a1c18"} onMouseLeave={e=>e.currentTarget.style.color=l==="Become a Partner"?"#6b8f71":"#4e5449"}>{l}</button>
           ))}
           <a href="https://github.com/Pawlink26/Pawlink/releases/download/v1.0.0/RescuPawLink.Setup.1.0.0.exe"
-            style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(107,143,113,0.88)",color:"#fff",textDecoration:"none",padding:"10px 22px",borderRadius:10,fontWeight:700,fontSize:14,marginLeft:6,border:"2px solid rgba(107,143,113,0.6)"}}>
+                download="RescuPawLink.Setup.1.0.0.exe"
+                style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(107,143,113,0.88)",color:"#fff",textDecoration:"none",padding:"10px 22px",borderRadius:10,fontWeight:700,fontSize:14,marginLeft:6,border:"2px solid rgba(107,143,113,0.6)"}}>
             Download free
           </a>
         </div>
@@ -1764,6 +1765,7 @@ export default function RescuPawLink() {
             </p>
             <div style={{display:"flex",gap:12,flexWrap:"wrap",alignItems:"center",marginBottom:36}}>
               <a href="https://github.com/Pawlink26/Pawlink/releases/download/v1.0.0/RescuPawLink.Setup.1.0.0.exe"
+                download="RescuPawLink.Setup.1.0.0.exe"
                 style={{display:"inline-flex",alignItems:"center",gap:10,background:"rgba(107,143,113,0.88)",color:"#fff",textDecoration:"none",padding:"15px 32px",borderRadius:12,fontWeight:700,fontSize:16,boxShadow:"0 4px 20px rgba(107,143,113,.3)",border:"2px solid rgba(107,143,113,0.6)"}}>
                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Download for Windows
@@ -2023,6 +2025,7 @@ export default function RescuPawLink() {
               <div style={{fontFamily:"Georgia,serif",fontSize:17,fontWeight:700,color:"#fff",marginBottom:5}}>Windows</div>
               <div style={{fontSize:12,color:"rgba(255,255,255,.6)",marginBottom:18}}>Windows 10 or later · 64-bit</div>
               <a href="https://github.com/Pawlink26/Pawlink/releases/download/v1.0.0/RescuPawLink.Setup.1.0.0.exe"
+                download="RescuPawLink.Setup.1.0.0.exe"
                 style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,background:"#fff",color:"#4a6b50",textDecoration:"none",padding:"12px 18px",borderRadius:10,fontWeight:700,fontSize:14,boxShadow:"0 4px 16px rgba(0,0,0,.15)"}}>
                 <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Download .exe
@@ -2062,8 +2065,8 @@ export default function RescuPawLink() {
             </div>
             <div>
               <div style={{fontSize:10,fontWeight:700,color:"rgba(255,255,255,.35)",letterSpacing:".12em",textTransform:"uppercase",marginBottom:12}}>Software</div>
-              {[["Download for Windows","https://github.com/Pawlink26/Pawlink/releases/download/v1.0.0/RescuPawLink.Setup.1.0.0.exe"],["Mac — Coming soon","#"]].map(([l,h])=>(
-                <a key={l} href={h} style={{display:"block",color:"rgba(255,255,255,.42)",fontSize:13,padding:"4px 0",textDecoration:"none"}}
+              {[["Download for Windows","https://github.com/Pawlink26/Pawlink/releases/download/v1.0.0/RescuPawLink.Setup.1.0.0.exe","RescuPawLink.Setup.1.0.0.exe"],["Mac — Coming soon","#",""]].map(([l,h,d])=>(
+                <a key={l} href={h} download={d||undefined} style={{display:"block",color:"rgba(255,255,255,.42)",fontSize:13,padding:"4px 0",textDecoration:"none"}}
                   onMouseEnter={e=>e.currentTarget.style.color="#fff"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,.42)"}>{l}</a>
               ))}
             </div>
