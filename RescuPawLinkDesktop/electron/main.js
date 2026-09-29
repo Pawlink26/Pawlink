@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, shell, dialog, ipcMain, session } = require("electron");
+const { app, BrowserWindow, Menu, shell, ipcMain, session } = require("electron");
 const path = require("path");
 const isDev = !app.isPackaged;
 
@@ -11,62 +11,18 @@ function createWindow() {
     minWidth: 1024,
     minHeight: 680,
     backgroundColor: "#f8f8f6",
-    icon: path.join(__dirname, "../public/icon.png"),
     titleBarStyle: process.platform === "darwin" ? "hiddenInset" : "default",
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      sandbox: true,
       webSecurity: true,
       allowRunningInsecureContent: false,
-      experimentalFeatures: false,
       preload: path.join(__dirname, "preload.js"),
     },
-    show: false,
+    show: true,
   });
 
-  // ── Content Security Policy ──────────────────────────
-  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-    callback({
-      responseHeaders: {
-        ...details.responseHeaders,
-        "Content-Security-Policy": [
-          "default-src 'self';" +
-          "script-src 'self' 'unsafe-inline';" +
-          "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;" +
-          "font-src 'self' https://fonts.gstatic.com;" +
-          "img-src 'self' data: https://i.imgur.com https://images.pexels.com;" +
-          "connect-src 'self' https://dmbfawpmgemqpbzpsbdm.supabase.co https://api.emailjs.com https://api.anthropic.com https://api.allorigins.win;" +
-          "frame-src 'none';" +
-          "object-src 'none';"
-        ],
-        "X-Content-Type-Options": ["nosniff"],
-        "X-Frame-Options": ["DENY"],
-        "X-XSS-Protection": ["1; mode=block"],
-        "Referrer-Policy": ["strict-origin-when-cross-origin"],
-      },
-    });
-  });
-
-  // ── Block navigation to external URLs ───────────────
-  mainWindow.webContents.on("will-navigate", (event, url) => {
-    const allowedUrls = ["http://localhost:5173", "file://"];
-    const isAllowed = allowedUrls.some(u => url.startsWith(u));
-    if (!isAllowed) {
-      event.preventDefault();
-      shell.openExternal(url);
-    }
-  });
-
-  // ── Block new window creation ────────────────────────
-  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url);
-    return { action: "deny" };
-  });
-
-  // ── Show when ready to avoid white flash ─────────────
-  mainWindow.once("ready-to-show", () => { mainWindow.show(); });
-
+  // Load the app
   if (isDev) {
     mainWindow.loadURL("http://localhost:5173");
     mainWindow.webContents.openDevTools();
@@ -74,7 +30,27 @@ function createWindow() {
     mainWindow.loadFile(path.join(__dirname, "../dist/index.html"));
   }
 
-  // ── Native menu ──────────────────────────────────────
+  // Handle load failures gracefully
+  mainWindow.webContents.on("did-fail-load", (event, errorCode, errorDescription) => {
+    console.error("Failed to load:", errorCode, errorDescription);
+  });
+
+  // Block navigation to external URLs
+  mainWindow.webContents.on("will-navigate", (event, url) => {
+    const allowed = ["http://localhost:5173", "file://"];
+    if (!allowed.some(u => url.startsWith(u))) {
+      event.preventDefault();
+      shell.openExternal(url);
+    }
+  });
+
+  // Block new windows — open in browser instead
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: "deny" };
+  });
+
+  // Native menu
   const isMac = process.platform === "darwin";
   const template = [
     ...(isMac ? [{ role: "appMenu" }] : []),
@@ -109,27 +85,7 @@ function createWindow() {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
-app.whenReady().then(() => {
-  // ── Disable hardware acceleration for stability ───────
-  app.disableHardwareAcceleration();
-
-  createWindow();
-
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
-});
-
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") app.quit();
-});
-
-// ── Handle lock from menu shortcut ──────────────────────
-ipcMain.on("lock-screen", () => {
-  mainWindow?.webContents.send("lock-screen");
-});
-
-// ── Prevent second instance ──────────────────────────────
+// Prevent second instance
 const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) {
   app.quit();
@@ -140,4 +96,20 @@ if (!gotLock) {
       mainWindow.focus();
     }
   });
+
+  app.whenReady().then(() => {
+    createWindow();
+    app.on("activate", () => {
+      if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
+  });
 }
+
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") app.quit();
+});
+
+// Handle lock from menu shortcut
+ipcMain.on("lock-screen", () => {
+  mainWindow?.webContents.send("lock-screen");
+});
