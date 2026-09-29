@@ -37,7 +37,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
             });
-            const release = releases.data.find(r => r.tag_name === 'v1.0.0');
+            const release = releases.data.find(r => r.tag_name === 'v1.0.1');
             if (release) {
               for (const asset of release.assets) {
                 await github.rest.repos.deleteReleaseAsset({
@@ -51,7 +51,7 @@ jobs:
       - name: Upload to Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v1.0.0
-          name: RescuPawLink Shelter Edition v1.0.0
+          tag_name: v1.0.1
+          name: RescuPawLink Shelter Edition v1.0.1
           files: RescuPawLinkDesktop/release/*.exe
           token: ${{ secrets.GITHUB_TOKEN }}
