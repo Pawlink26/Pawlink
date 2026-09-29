@@ -4,6 +4,18 @@ import { useState, useRef, useEffect } from "react";
 const SUPABASE_URL = "https://dmbfawpmgemqpbzpsbdm.supabase.co";
 const SUPABASE_KEY = "sb_publishable__0eHRyn3NQ_5qG2YeWcdxA_Ijr29Ivq";
 
+// ── Input sanitization ─────────────────────────────────
+function sanitize(str) {
+  if (typeof str !== "string") return str;
+  return str.replace(/[<>]/g,"").replace(/javascript:/gi,"").trim().slice(0,1000);
+}
+function sanitizeObj(obj) {
+  if (!obj||typeof obj!=="object") return obj;
+  const out={};
+  for(const[k,v]of Object.entries(obj)) out[k]=typeof v==="string"?sanitize(v):v;
+  return out;
+}
+
 async function sbFetch(path, opts = {}) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     headers: {
@@ -895,6 +907,8 @@ export default function RescuPawLink() {
   const [partnerF, setPartnerF]     = useState({ orgName:"", partnerType:"Shelter/Rescue", location:"", website:"", contactName:"", email:"", phone:"", message:"" });
   const [partnerSent, setPartnerSent] = useState(false);
   const [authMode, setAuthMode]   = useState("login");
+  const [loginAttempts, setLoginAttempts] = useState(0);
+  const [loginLockedUntil, setLoginLockedUntil] = useState(0);
   const [tab, setTab]             = useState("adopt");
   const [user, setUser]           = useState(null);
   const [shelters, setShelters]   = useState(SEED_SHELTERS);
@@ -1427,15 +1441,30 @@ export default function RescuPawLink() {
   // ── Auth ────────────────────────────────────────
   async function handleLogin(e) {
     e.preventDefault(); setAuthErr(""); setLoading(true);
+    // ── Rate limiting ──────────────────────────────────
+    const now = Date.now();
+    if (loginLockedUntil > now) {
+      const mins = Math.ceil((loginLockedUntil-now)/60000);
+      setAuthErr(`Too many failed attempts. Try again in ${mins} minute${mins>1?"s":""}.`);
+      setLoading(false); return;
+    }
+    // ── Sanitize inputs ────────────────────────────────
+    const email = sanitize(loginF.email).toLowerCase();
+    const password = loginF.password;
     try {
-      const result = await sbAuth("token?grant_type=password", loginF.email, loginF.password);
-      console.log("Login result:", JSON.stringify(result));
+      const result = await sbAuth("token?grant_type=password", email, password);
       if (result.error) {
-        // Supabase error codes
-        if (result.error === "invalid_grant" || result.error_description?.includes("Email not confirmed")) {
-          setAuthErr("Please verify your email address first. Check your inbox for a confirmation link — also check spam.");
+        // Track failed attempts
+        const attempts = loginAttempts + 1;
+        setLoginAttempts(attempts);
+        if (attempts >= 5) {
+          const lockUntil = Date.now() + 15*60*1000;
+          setLoginLockedUntil(lockUntil);
+          setAuthErr("Too many failed attempts. Try again in 15 minutes.");
+        } else if (result.error==="invalid_grant"||result.error_description?.includes("Email not confirmed")) {
+          setAuthErr("Please verify your email address first. Check your inbox — also check spam.");
         } else {
-          setAuthErr(result.error_description || result.error || "Invalid email or password.");
+          setAuthErr(`Invalid email or password. ${5-attempts} attempt${5-attempts!==1?"s":""} remaining.`);
         }
         setLoading(false); return;
       }
@@ -1443,10 +1472,11 @@ export default function RescuPawLink() {
         setAuthErr("Login failed. If you just confirmed your email, wait a moment and try again.");
         setLoading(false); return;
       }
+      // ── Successful login — reset rate limit ───────────
+      setLoginAttempts(0); setLoginLockedUntil(0);
       localStorage.setItem("rpl_token", result.access_token);
       localStorage.setItem("rpl_login_time", Date.now().toString());
-      // Check admin FIRST before any shelter lookup
-      if (loginF.email.toLowerCase() === "rescupawlink@gmail.com") {
+      if (email === "rescupawlink@gmail.com") {
         const adminUser = { id:"admin", name:"RescuPawLink Admin", email:"rescupawlink@gmail.com", verified:true, isAdmin:true };
         localStorage.setItem("rpl_shelter_id", "admin");
         setUser(adminUser);
@@ -1454,8 +1484,7 @@ export default function RescuPawLink() {
         showToast("Welcome, Admin!");
         setLoading(false); return;
       }
-      // Find shelter by email
-      const shelterData = await sbFetch(`shelters?email=eq.${encodeURIComponent(loginF.email)}`);
+      const shelterData = await sbFetch(`shelters?email=eq.${encodeURIComponent(email)}`);
       if (shelterData?.[0]) {
         localStorage.setItem("rpl_shelter_id", shelterData[0].id);
         setUser(shelterData[0]);
@@ -1465,12 +1494,18 @@ export default function RescuPawLink() {
         setAuthErr("No shelter profile found for this email. Please register your shelter.");
       }
     } catch(e) {
-      setAuthErr("Login failed. Please try again.");
+      setAuthErr("Unable to connect. Please check your internet connection.");
+      console.error("Login error:", e);
     }
     setLoading(false);
   }
 
   async function handleRegister(e) {
+    // Sanitize all inputs
+    regF = sanitizeObj(regF);
+    authForm.name    = sanitize(authForm.name);
+    authForm.city    = sanitize(authForm.city);
+    authForm.address = sanitize(authForm.address);
     e.preventDefault(); setAuthErr(""); setLoading(true);
     if (regF.password !== regF.confirm) { setAuthErr("Passwords do not match."); setLoading(false); return; }
     try {
@@ -1804,38 +1839,6 @@ export default function RescuPawLink() {
         </div>
       </section>
 
-      {/* ── PHOTO STRIP ── */}
-      <section style={{padding:"56px clamp(16px,5vw,80px)",background:"#fff"}}>
-        <div style={{maxWidth:1160,margin:"0 auto"}}>
-          <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr",gap:12,height:340,borderRadius:20,overflow:"hidden"}}>
-            <div style={{position:"relative",overflow:"hidden"}}>
-              <img src="https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg?auto=compress&cs=tinysrgb&w=900" alt="Happy dog" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-              <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(26,28,24,.4) 0%,transparent 50%)"}}/>
-              <div style={{position:"absolute",bottom:20,left:20,color:"#fff"}}>
-                <div style={{fontFamily:"'Lora',Georgia,serif",fontSize:22,fontWeight:700,lineHeight:1.1}}>Built for animals.<br/>Designed for their people.</div>
-              </div>
-            </div>
-            <div style={{display:"flex",flexDirection:"column",gap:12}}>
-              <div style={{flex:1,overflow:"hidden",borderRadius:0}}>
-                <img src="https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg?auto=compress&cs=tinysrgb&w=500" alt="Cat" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-              </div>
-              <div style={{flex:1,overflow:"hidden"}}>
-                <img src="https://images.pexels.com/photos/1587300/pexels-photo-1587300.jpeg?auto=compress&cs=tinysrgb&w=500" alt="Puppy" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-              </div>
-            </div>
-            <div style={{display:"flex",flexDirection:"column",gap:12}}>
-              <div style={{flex:1,overflow:"hidden"}}>
-                <img src="https://images.pexels.com/photos/1805164/pexels-photo-1805164.jpeg?auto=compress&cs=tinysrgb&w=500" alt="Person with dog" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-              </div>
-              <div style={{flex:1,overflow:"hidden",position:"relative"}}>
-                <img src="https://images.pexels.com/photos/1254140/pexels-photo-1254140.jpeg?auto=compress&cs=tinysrgb&w=500" alt="Dog portrait" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-              </div>
-            </div>
-          </div>
-          <div style={{textAlign:"center",marginTop:14,fontSize:12,color:"#9a9e95"}}>Photos via <a href="https://www.pexels.com" target="_blank" rel="noopener noreferrer" style={{color:"#6b8f71",textDecoration:"none"}}>Pexels</a> — free to use</div>
-        </div>
-      </section>
-
       {/* ── FEATURE ROWS ── */}
       <section style={{padding:"88px clamp(16px,5vw,80px)",maxWidth:1160,margin:"0 auto"}}>
         <div style={{textAlign:"center",marginBottom:72}}>
@@ -1859,19 +1862,23 @@ export default function RescuPawLink() {
               </div>
             ))}
           </div>
-          <div style={{borderRadius:20,overflow:"hidden",boxShadow:"0 8px 32px rgba(107,143,113,.15)",position:"relative"}}>
-            <img src="https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg?auto=compress&cs=tinysrgb&w=700" alt="Happy dog" style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
-            <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(26,28,24,.7) 0%,transparent 55%)"}}/>
-            <div style={{position:"absolute",bottom:0,left:0,right:0,padding:24}}>
-              <div style={{background:"rgba(255,255,255,.12)",backdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,.2)",borderRadius:14,padding:16}}>
-                <div style={{fontSize:10,fontWeight:700,color:"rgba(255,255,255,.7)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Animal Profile — Luna</div>
-                {[["Species","Dog · Lab Mix · 3yr F"],["Kennel","H-2 · Intake Sep 14"],["Status","Medical Hold"],["Microchip","985141002345678"],["Foster","Williams Family"]].map(([k,v])=>(
-                  <div key={k} style={{display:"flex",justifyContent:"space-between",padding:"5px 0",borderBottom:"1px solid rgba(255,255,255,.1)",fontSize:11}}>
-                    <span style={{color:"rgba(255,255,255,.6)"}}>{k}</span>
-                    <span style={{color:"#fff",fontWeight:600}}>{v}</span>
-                  </div>
-                ))}
+          <div style={{background:"linear-gradient(135deg,#eef4ef,#e4f0e6)",borderRadius:20,padding:24,border:"1px solid #c7dfc9"}}>
+            <div style={{background:"#fff",borderRadius:14,padding:20,boxShadow:"0 4px 20px rgba(107,143,113,.1)"}}>
+              <div style={{fontSize:10,fontWeight:700,color:"#6b8f71",textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Animal Profile</div>
+              <div style={{display:"flex",gap:14,marginBottom:16,paddingBottom:14,borderBottom:"1px solid #f0f4f0"}}>
+                <div style={{width:56,height:56,borderRadius:12,background:"#eef4ef",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,flexShrink:0}}>🐕</div>
+                <div>
+                  <div style={{fontFamily:"Georgia,serif",fontSize:18,fontWeight:700,color:"#1a1c18"}}>Luna</div>
+                  <div style={{fontSize:12,color:"#4e5449"}}>Lab Mix · 3yr Female · Kennel H-2</div>
+                  <span style={{fontSize:10,fontWeight:700,background:"#fff5f2",color:"#c85a35",border:"1px solid #f5c4b0",borderRadius:20,padding:"2px 9px",marginTop:5,display:"inline-block"}}>Medical Hold</span>
+                </div>
               </div>
+              {[["Microchip","985141002345678"],["Vaccinations","Rabies, DHPP, Bordetella"],["Spayed","Yes"],["Good with kids","Yes"],["Foster family","Williams Family"]].map(([k,v])=>(
+                <div key={k} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:"1px solid #f0f4f0",fontSize:12}}>
+                  <span style={{color:"#7a9e7e",fontWeight:500}}>{k}</span>
+                  <span style={{color:"#1a1c18",fontWeight:600}}>{v}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -1928,19 +1935,18 @@ export default function RescuPawLink() {
               </div>
             ))}
           </div>
-          <div style={{borderRadius:20,overflow:"hidden",boxShadow:"0 8px 32px rgba(107,143,113,.15)",position:"relative",minHeight:420}}>
-            <img src="https://images.pexels.com/photos/1805164/pexels-photo-1805164.jpeg?auto=compress&cs=tinysrgb&w=700" alt="Shelter volunteer with dog" style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
-            <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(26,28,24,.75) 0%,rgba(26,28,24,.1) 60%)"}}/>
-            <div style={{position:"absolute",bottom:0,left:0,right:0,padding:24}}>
-              <div style={{background:"rgba(255,255,255,.1)",backdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,.18)",borderRadius:14,padding:14}}>
-                <div style={{fontSize:10,fontWeight:700,color:"rgba(255,255,255,.65)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Role Permissions</div>
-                {[["Admin","Full access","#c85a35"],["Staff","Day-to-day ops","#4a6b50"],["Vet Tech","Medical only","#2563eb"],["Read Only","View only","#9a9e95"]].map(([role,desc,c])=>(
-                  <div key={role} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"5px 0",borderBottom:"1px solid rgba(255,255,255,.08)",fontSize:11}}>
-                    <span style={{color:"rgba(255,255,255,.7)"}}>{role}</span>
-                    <span style={{fontWeight:700,color:c,fontSize:11}}>{desc}</span>
+          <div style={{background:"linear-gradient(135deg,#eef4ef,#e4f0e6)",borderRadius:20,padding:24,border:"1px solid #c7dfc9"}}>
+            <div style={{background:"#fff",borderRadius:14,padding:20,boxShadow:"0 4px 20px rgba(107,143,113,.1)"}}>
+              <div style={{fontSize:10,fontWeight:700,color:"#6b8f71",textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Role Permissions</div>
+              {[["Admin","Full access","#fff5f2","#c85a35"],["Manager","No staff management","#f5f3ff","#7c3aed"],["Staff","Day-to-day ops","#eef4ef","#4a6b50"],["Vet Tech","Medical records only","#eff6ff","#2563eb"],["Counselor","Adoptions only","#ecfeff","#0891b2"],["Read Only","View only","#f4f4f2","#4e5449"]].map(([role,desc,bg,c])=>(
+                <div key={role} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 0",borderBottom:"1px solid #f0f4f0"}}>
+                  <div>
+                    <div style={{fontSize:13,fontWeight:700,color:"#1a1c18"}}>{role}</div>
+                    <div style={{fontSize:11,color:"#7a9e7e"}}>{desc}</div>
                   </div>
-                ))}
-              </div>
+                  <span style={{fontSize:10,fontWeight:700,padding:"3px 10px",borderRadius:20,background:bg,color:c}}>{role}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -2010,10 +2016,7 @@ export default function RescuPawLink() {
       <section style={{background:"#6b8f71",padding:"88px clamp(16px,5vw,80px)"}}>
         <div style={{maxWidth:760,margin:"0 auto",textAlign:"center"}}>
           <h2 style={{fontFamily:"'Lora',Georgia,serif",fontSize:"clamp(28px,4vw,44px)",fontWeight:700,color:"#fff",marginBottom:14,lineHeight:1.1}}>Ready to see it in action?</h2>
-          <p style={{fontSize:17,color:"rgba(255,255,255,.82)",lineHeight:1.75,marginBottom:48,maxWidth:440,margin:"0 auto 28px"}}>Download the free 14-day trial and have your shelter up and running today.</p>
-          <div style={{width:120,height:120,borderRadius:"50%",overflow:"hidden",margin:"0 auto 36px",border:"4px solid rgba(255,255,255,.25)",boxShadow:"0 8px 24px rgba(0,0,0,.2)"}}>
-            <img src="https://images.pexels.com/photos/1254140/pexels-photo-1254140.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Dog" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-          </div>
+          <p style={{fontSize:17,color:"rgba(255,255,255,.75)",lineHeight:1.75,marginBottom:48,maxWidth:440,margin:"0 auto 48px"}}>Download the free 14-day trial and have your shelter up and running today.</p>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,maxWidth:520,margin:"0 auto 32px"}}>
             <div style={{background:"rgba(255,255,255,.15)",border:"2px solid rgba(255,255,255,.4)",borderRadius:20,padding:"28px 22px",textAlign:"center",backdropFilter:"blur(8px)"}}>
               <div style={{fontSize:36,marginBottom:10}}>🪟</div>
