@@ -240,96 +240,87 @@ const EMPTY_ANIMAL = {
 
 // ── CSS ───────────────────────────────────────────────────
 const G = `
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',system-ui,sans-serif;background:#f2f4f1;color:#18211a;-webkit-font-smoothing:antialiased;font-size:13px}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#c8d4c9;border-radius:4px}::-webkit-scrollbar-track{background:transparent}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#f2f5f2;color:#1a1c18;-webkit-font-smoothing:antialiased;font-size:13px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#c8ddc9;border-radius:4px}::-webkit-scrollbar-track{background:transparent}
 
 /* ── Sidebar ─────────────────────────── */
-.sb{width:232px;min-height:100vh;background:#1b2e1e;display:flex;flex-direction:column;flex-shrink:0}
-.sb-logo{padding:18px 18px 14px}
-.sb-id{padding:12px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
-.nl{font-size:9px;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;padding:14px 16px 5px}
-.ni{display:flex;align-items:center;gap:10px;padding:8px 16px;font-size:12px;font-weight:500;color:rgba(255,255,255,.52);cursor:pointer;border-left:3px solid transparent;transition:all .15s;border:none;background:none;width:100%;text-align:left}
-.ni:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.88)}
-.ni.on{background:rgba(107,143,113,.22);color:#a8d4ab;border-left:3px solid #6b8f71;font-weight:700}
-.nb{margin-left:auto;border-radius:20px;padding:1px 7px;font-size:9px;font-weight:700;flex-shrink:0}
+.sb{width:232px;min-height:100vh;background:#fff;border-right:1px solid #dce9dd;display:flex;flex-direction:column;flex-shrink:0}
+.sb-logo{padding:16px 18px 12px;background:#6b8f71}
+.sb-id{padding:12px 16px 13px;background:#f5faf5;border-bottom:1px solid #dce9dd}
+.nl{font-size:9px;font-weight:700;color:#a8c2aa;letter-spacing:.14em;text-transform:uppercase;padding:12px 16px 4px}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 16px;font-size:12px;font-weight:500;color:#4e6b52;border:none;background:none;width:100%;text-align:left;cursor:pointer;border-left:3px solid transparent;transition:all .12s}
+.ni:hover{background:#f0f7f1;color:#2e4a32}
+.ni.on{background:#eaf4eb;color:#2e4a32;border-left-color:#6b8f71;font-weight:700}
+.nb{margin-left:auto;border-radius:12px;padding:1px 7px;font-size:9px;font-weight:700;flex-shrink:0}
 
 /* ── Topbar ───────────────────────────── */
-.tb{height:54px;background:#fff;border-bottom:1px solid #e4ebe5;display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.tb{height:52px;background:#fff;border-bottom:1px solid #dce9dd;display:flex;align-items:center;justify-content:space-between;padding:0 22px;flex-shrink:0;box-shadow:0 1px 4px rgba(107,143,113,.06)}
 
 /* ── Content area ─────────────────────── */
-.pg{flex:1;overflow-y:auto;padding:24px 28px;background:#f2f4f1}
+.pg{flex:1;overflow-y:auto;padding:22px 24px;background:#f2f5f2}
 
 /* ── Cards ────────────────────────────── */
-.card{background:#fff;border:1px solid #e4ebe5;border-radius:16px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
-.card-inset{background:#f7f9f7;border:1px solid #e4ebe5;border-radius:12px;padding:14px 16px}
-.ct{font-size:10px;font-weight:700;color:#7a9e7e;text-transform:uppercase;letter-spacing:.1em;margin-bottom:13px}
-
-/* ── Stat cards ───────────────────────── */
-.st{background:#fff;border:1px solid #e4ebe5;border-radius:14px;padding:14px 16px;cursor:pointer;transition:all .18s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-.st:hover{border-color:#6b8f71;box-shadow:0 4px 12px rgba(107,143,113,.15);transform:translateY(-1px)}
+.card{background:#fff;border:1px solid #dce9dd;border-radius:14px;padding:18px 20px;box-shadow:0 1px 4px rgba(107,143,113,.06)}
+.card-inset{background:#f5faf5;border:1px solid #dce9dd;border-radius:11px;padding:13px 15px}
+.ct{font-size:9px;font-weight:700;color:#6b8f71;text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
 
 /* ── Form elements ────────────────────── */
-.inp{width:100%;border:1.5px solid #dce8dd;border-radius:10px;padding:9px 13px;font-size:12px;font-family:inherit;color:#18211a;background:#fff;outline:none;transition:all .15s}
-.inp:focus{border-color:#6b8f71;box-shadow:0 0 0 3px rgba(107,143,113,.12)}
-.sel{width:100%;border:1.5px solid #dce8dd;border-radius:10px;padding:9px 13px;font-size:12px;font-family:inherit;color:#18211a;background:#fff;outline:none;cursor:pointer;transition:border .15s}
-.sel:focus{border-color:#6b8f71;box-shadow:0 0 0 3px rgba(107,143,113,.12)}
-.lbl{display:block;font-size:10px;font-weight:700;color:#7a9e7e;letter-spacing:.07em;text-transform:uppercase;margin-bottom:5px}
+.inp{width:100%;border:1.5px solid #dce9dd;border-radius:10px;padding:9px 13px;font-size:12px;font-family:inherit;color:#1a1c18;background:#fff;outline:none;transition:all .15s}
+.inp:focus{border-color:#6b8f71;box-shadow:0 0 0 3px rgba(107,143,113,.1)}
+.sel{width:100%;border:1.5px solid #dce9dd;border-radius:10px;padding:9px 13px;font-size:12px;font-family:inherit;color:#1a1c18;background:#fff;outline:none;cursor:pointer;transition:border .15s}
+.sel:focus{border-color:#6b8f71}
+.lbl{display:block;font-size:10px;font-weight:700;color:#6b8f71;letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px}
 
 /* ── Buttons ──────────────────────────── */
-.btn{border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .18s;display:inline-flex;align-items:center;gap:7px;flex-shrink:0;letter-spacing:.01em}
-.bp{background:#4a6b50;color:#fff;box-shadow:0 2px 8px rgba(74,107,80,.35)}.bp:hover{background:#3a5540;box-shadow:0 4px 14px rgba(74,107,80,.4)}.bp:active{transform:scale(.98)}.bp:disabled{opacity:.45;cursor:default;box-shadow:none}
-.bg{background:#fff;color:#2e4a32;border:1.5px solid #dce8dd;box-shadow:0 1px 3px rgba(0,0,0,.06)}.bg:hover{background:#f5f9f5;border-color:#b5cfb7;box-shadow:0 2px 6px rgba(0,0,0,.08)}
-.bd{background:#fff5f2;color:#c85a35;border:1.5px solid #f5c4b0}.bd:hover{background:#fee8df;border-color:#e8a48a}
-.bo{background:#c85a35;color:#fff;box-shadow:0 2px 8px rgba(200,90,53,.35)}.bo:hover{background:#a84526}
-.bsm{padding:5px 12px;font-size:11px;border-radius:8px}
+.btn{border:none;border-radius:9px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;display:inline-flex;align-items:center;gap:6px;flex-shrink:0}
+.bp{background:#6b8f71;color:#fff;border:2px solid #5a7a60;box-shadow:0 2px 8px rgba(107,143,113,.25)}.bp:hover{background:#4a6b50}.bp:disabled{opacity:.45;cursor:default}
+.bg{background:#fff;color:#2e4a32;border:1.5px solid #c8ddc9}.bg:hover{background:#f5faf5;border-color:#6b8f71}
+.bd{background:#fff5f2;color:#c85a35;border:1.5px solid #f5c4b0}.bd:hover{background:#fee8df}
+.bo{background:#c85a35;color:#fff;border:2px solid #a84526}.bo:hover{background:#a84526}
+.bsm{padding:5px 11px;font-size:11px;border-radius:8px}
 
 /* ── Badges & tags ───────────────────── */
-.bdg{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;flex-shrink:0;letter-spacing:.02em}
-.tag{font-size:10px;padding:3px 8px;border-radius:20px;background:#edf3ee;border:1px solid #d0e2d1;color:#3a5a3e;font-weight:500}
+.bdg{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;flex-shrink:0}
+.tag{font-size:10px;padding:2px 8px;border-radius:20px;background:#eaf4eb;border:1px solid #c8ddc9;color:#2e4a32;font-weight:500}
 
 /* ── Table ────────────────────────────── */
 .tbl{width:100%;border-collapse:collapse}
-.tbl th{text-align:left;font-size:10px;font-weight:700;color:#7a9e7e;letter-spacing:.08em;text-transform:uppercase;padding:10px 14px;border-bottom:1.5px solid #e4ebe5;white-space:nowrap;background:#f7f9f7}
-.tbl th:first-child{border-radius:10px 0 0 0}
-.tbl th:last-child{border-radius:0 10px 0 0}
-.tbl td{padding:11px 14px;border-bottom:1px solid #eef3ef;font-size:12px;vertical-align:middle}
+.tbl th{text-align:left;font-size:9px;font-weight:700;color:#6b8f71;letter-spacing:.08em;text-transform:uppercase;padding:10px 14px;border-bottom:1.5px solid #dce9dd;white-space:nowrap;background:#f5faf5}
+.tbl td{padding:11px 14px;border-bottom:1px solid #eef4ef;font-size:12px;vertical-align:middle}
 .tbl tr:last-child td{border-bottom:none}
-.tbl tr:hover td{background:#f5f9f5;cursor:pointer}
+.tbl tr:hover td{background:#f5faf5;cursor:pointer}
 
 /* ── Modal ────────────────────────────── */
-.mb{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)}
-.md{background:#fff;border-radius:20px;width:100%;max-width:740px;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.22)}
+.mb{position:fixed;inset:0;background:rgba(26,28,24,.55);z-index:400;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.md{background:#fff;border-radius:18px;width:100%;max-width:740px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(26,28,24,.18);border:1px solid #dce9dd}
 .mdsm{max-width:480px}
 
 /* ── Tab pills ───────────────────────── */
-.tp{padding:6px 15px;border-radius:20px;border:1.5px solid #dce8dd;background:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;color:#4e6b52;transition:all .15s}
-.tp.on{background:#4a6b50;border-color:#4a6b50;color:#fff;box-shadow:0 2px 8px rgba(74,107,80,.3)}
+.tp{padding:6px 15px;border-radius:20px;border:1.5px solid #dce9dd;background:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;color:#4e6b52;transition:all .15s}
+.tp.on{background:#6b8f71;border-color:#6b8f71;color:#fff;box-shadow:0 2px 8px rgba(107,143,113,.25)}
 
 /* ── Grid helpers ─────────────────────── */
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.g6{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
-.g8{display:grid;grid-template-columns:repeat(8,1fr);gap:8px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
+.g6{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr;gap:10px}
+.g8{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;gap:8px}
 
 /* ── Misc ─────────────────────────────── */
-input[type=checkbox]{width:15px;height:15px;accent-color:#4a6b50;cursor:pointer;flex-shrink:0}
+input[type=checkbox]{width:14px;height:14px;accent-color:#6b8f71;cursor:pointer;flex-shrink:0}
 textarea.inp{resize:vertical;min-height:76px;line-height:1.6}
-.ab{padding:9px 24px;display:flex;align-items:center;justify-content:space-between;font-size:12px;flex-shrink:0;border-bottom:1px solid}
-
-/* ── Lock screen ──────────────────────── */
-.ls{position:fixed;inset:0;background:linear-gradient(145deg,#1b2e1e 0%,#2d4a32 50%,#1a2a1d 100%);z-index:999;display:flex;align-items:center;justify-content:center}
-
-/* ── Chat bubbles ─────────────────────── */
+.ab{padding:9px 22px;display:flex;align-items:center;justify-content:space-between;font-size:12px;flex-shrink:0;border-bottom:1px solid}
+.ls{position:fixed;inset:0;background:linear-gradient(135deg,#f0f7f1 0%,#e8f0e8 100%);z-index:999;display:flex;align-items:center;justify-content:center}
 .cb{border-radius:14px;padding:10px 14px;max-width:72%;font-size:12px;line-height:1.55}
-.cm{background:#4a6b50;color:#fff;align-self:flex-end;border-bottom-right-radius:4px;box-shadow:0 2px 8px rgba(74,107,80,.25)}
-.co{background:#f0f4f0;color:#18211a;align-self:flex-start;border-bottom-left-radius:4px}
-
-/* ── Section header ──────────────────── */
-.page-title{font-family:'Lora',Georgia,serif;font-size:22px;font-weight:700;color:#18211a;letter-spacing:-.3px}
-.page-sub{font-size:12px;color:#7a9e7e;margin-top:3px}
+.cm{background:#6b8f71;color:#fff;align-self:flex-end;border-bottom-right-radius:4px;box-shadow:0 2px 8px rgba(107,143,113,.2)}
+.co{background:#f0f7f1;color:#1a1c18;align-self:flex-start;border-bottom-left-radius:4px;border:1px solid #dce9dd}
+.page-title{font-family:'Lora',Georgia,serif;font-size:20px;font-weight:700;color:#1a1c18;letter-spacing:-.3px;margin-bottom:14px}
+.upload-zone{border:2px dashed #c8ddc9;border-radius:12px;padding:32px 24px;text-align:center;cursor:pointer;transition:all .2s;background:#f5faf5}
+.upload-zone:hover{border-color:#6b8f71;background:#eaf4eb}
+.toast{position:fixed;top:20px;right:20px;z-index:999;background:#1a1c18;color:#fff;padding:13px 20px;border-radius:12px;box-shadow:0 8px 24px rgba(26,28,24,.2);font-size:13px;font-weight:500;border:1px solid rgba(107,143,113,.3);animation:slideDown .25s ease}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 `;
 
 // ── Icons (SVG) ───────────────────────────────────────────
@@ -428,15 +419,16 @@ function LoginScreen({ onLogin }) {
   }
 
   return (
-    <div style={{minHeight:"100vh",background:"linear-gradient(145deg,#1b2e1e 0%,#2d4a32 55%,#1a2a1d 100%)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#f0f7f1 0%,#e8f0e8 100%)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
       <style>{G}</style>
-      <div style={{width:420}}>
+      <div style={{width:440}}>
+        {/* Logo */}
         <div style={{textAlign:"center",marginBottom:28}}>
-          <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{height:46,filter:"brightness(0) invert(1)",display:"block",margin:"0 auto 12px"}}/>
-          <div style={{color:"rgba(255,255,255,.45)",fontSize:11,fontWeight:600,letterSpacing:"0.12em",textTransform:"uppercase"}}>Shelter Edition · Desktop v{VERSION}</div>
+          <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{height:64,display:"block",margin:"0 auto 12px"}}/>
+          <div style={{fontSize:11,color:"#7a9e7e",fontWeight:600,letterSpacing:".08em",textTransform:"uppercase"}}>Shelter Edition · v{VERSION}</div>
         </div>
-        <div style={{background:"#fff",borderRadius:20,boxShadow:"0 40px 80px rgba(0,0,0,.45)",overflow:"hidden"}}>
-        <div style={{background:"linear-gradient(135deg,#3a5540,#2d4a32)",padding:"22px 28px",display:"flex",alignItems:"center",gap:12}}>
+        <div style={{background:"#fff",borderRadius:20,boxShadow:"0 20px 60px rgba(107,143,113,.15)",overflow:"hidden",border:"1px solid #dce9dd"}}>
+        <div style={{background:"#6b8f71",padding:"20px 28px",display:"flex",alignItems:"center",gap:12}}>
           <div style={{width:40,height:40,borderRadius:10,background:"rgba(255,255,255,.12)",display:"flex",alignItems:"center",justifyContent:"center"}}>
             <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,.9)" strokeWidth="1.6" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
           </div>
@@ -824,9 +816,6 @@ export default function App() {
       if (daysLeft===0) setTimeout(()=>setShowSub(true), 1000);
     }
 
-    // Check for app updates
-    checkForUpdates(setUpdateAvailable);
-
     // Listen for lock from native menu
     if (window.electron?.onLockScreen) {
       window.electron.onLockScreen(()=>setLocked(true));
@@ -1029,12 +1018,12 @@ export default function App() {
       <style>{G}</style>
       <div style={{ textAlign:"center", padding:32 }}>
         <div style={{ color:"#fff", marginBottom:16 }}><Ic n="lock" s={36} c="#fff"/></div>
-        <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:38, filter:"brightness(0) invert(1)", marginBottom:14, display:"block", margin:"0 auto 14px" }}/>
-        <div style={{fontFamily:"Lora,Georgia,serif",color:"#fff",fontSize:22,fontWeight:700,marginBottom:4,letterSpacing:"-.3px"}}>Screen locked</div>
+        <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{ height:38, marginBottom:14, display:"block", margin:"0 auto 14px" }}/>
+        <div style={{fontFamily:"Lora,Georgia,serif",color:"#1a1c18",fontSize:22,fontWeight:700,marginBottom:4,letterSpacing:"-.3px"}}>Screen locked</div>
         <div style={{ color:"rgba(255,255,255,.7)", fontSize:12, marginBottom:22 }}>Enter your 4-digit PIN to continue</div>
         <input className="inp" type="password" maxLength={4} placeholder="PIN" value={lockPin}
           onChange={e=>{ const v=e.target.value.replace(/\D/g,""); setLockPin(v); if(v.length===4){ const ok=staff.find(s=>s.pin===v); if(ok){setLocked(false);setLockPin("");setLockErr("");setCurrentUser({name:ok.name,role:ok.role,pin:ok.pin});log(`Unlocked by ${ok.name} (${ok.role})`);}else{setLockErr("Incorrect PIN");setLockPin("");} }}}
-          style={{textAlign:"center",fontSize:24,letterSpacing:"0.4em",width:180,marginBottom:8,border:"2px solid rgba(255,255,255,.25)",background:"rgba(255,255,255,.12)",color:"#fff",borderRadius:12,padding:"12px"}}/>
+          style={{textAlign:"center",fontSize:24,letterSpacing:"0.4em",width:180,marginBottom:8,border:"2px solid #dce9dd",background:"#fff",color:"#1a1c18",borderRadius:12,padding:"12px"}}/>
         {lockErr && <div style={{ color:"#ffccaa", fontSize:12, marginBottom:12 }}>{lockErr}</div>}
         <div style={{ marginTop:8 }}>
           <button className="btn bg bsm" onClick={()=>{setLocked(false);setLockPin("");setLockErr("");}}>Use password →</button>
@@ -1054,8 +1043,8 @@ export default function App() {
 
       {/* ── SIDEBAR ──────────────────────────────────── */}
       <aside className="sb">
-        <div className="sb-logo" style={{padding:"18px 18px 14px",borderBottom:"1px solid rgba(255,255,255,.07)"}}>
-          <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{height:28,filter:"brightness(0) invert(1)",opacity:.88}}/>
+        <div className="sb-logo">
+          <img src="https://i.imgur.com/Ek2yDNL.png" alt="RescuPawLink" style={{height:28,display:"block",filter:"brightness(0) invert(1)",opacity:.92}}/>
         </div>
 
         <div className="sb-id" style={{padding:"14px 16px 14px",borderBottom:"1px solid rgba(255,255,255,.07)",background:"rgba(255,255,255,.04)"}}>
@@ -1083,15 +1072,18 @@ export default function App() {
         </div>
 
         {/* Subscription status */}
-        <div style={{borderTop:"1px solid rgba(255,255,255,.07)",padding:"10px 16px",cursor:"pointer",background:"rgba(0,0,0,.15)"}} onClick={()=>setShowSub(true)}>
-          <div style={{fontSize:9,fontWeight:700,color:"rgba(255,255,255,.28)",textTransform:"uppercase",letterSpacing:".12em",marginBottom:3}}>Subscription</div>
-          <div style={{fontSize:11,fontWeight:700,color:sub?.daysLeft===0?"#f0a080":sub?.plan==="trial"?"#f0c070":"#a8d4ab"}}>
+        <div style={{borderTop:"1px solid #dce9dd",padding:"10px 16px",cursor:"pointer",background:"#f5faf5"}} onClick={()=>setShowSub(true)}>
+          <div style={{fontSize:9,fontWeight:700,color:"#6b8f71",textTransform:"uppercase",letterSpacing:".12em",marginBottom:3}}>Subscription</div>
+          <div style={{fontSize:11,fontWeight:700,color:sub?.daysLeft===0?"#c85a35":sub?.plan==="trial"?"#c47a1e":"#4a6b50"}}>
             {sub?.plan==="trial"?(sub.daysLeft===0?"⚠ Trial expired":`⏱ Trial — ${sub.daysLeft}d left`):"✓ Active plan"}
           </div>
         </div>
-        <div style={{borderTop:"1px solid rgba(255,255,255,.07)",display:"flex"}}>
-          <button className="ni" style={{color:"rgba(255,255,255,.4)",flex:1,justifyContent:"center"}} onClick={()=>setLocked(true)}><span style={{color:"rgba(255,255,255,.35)"}}><Ic n="lock" s={13}/></span>Lock</button>
-          <button className="ni" style={{color:"#f0a080",flex:1,justifyContent:"center"}} onClick={signOut}><span style={{color:"#f0a080"}}><Ic n="out" s={13}/></span>Sign out</button>
+        <a href="mailto:rescupawlink@gmail.com" style={{display:"flex",alignItems:"center",gap:8,padding:"9px 16px",borderTop:"1px solid #dce9dd",fontSize:11,color:"#7a9e7e",textDecoration:"none",background:"#f5faf5",fontFamily:"inherit"}}>
+          <Ic n="mail" s={13}/> Contact Support
+        </a>
+        <div style={{borderTop:"1px solid #dce9dd",display:"flex"}}>
+          <button className="ni" style={{color:"#7a9e7e",flex:1,justifyContent:"center"}} onClick={()=>setLocked(true)}>><span style={{color:"#7a9e7e"}}><Ic n="lock" s={13}/></span>Lock</button>
+          <button className="ni" style={{color:"#c85a35",flex:1,justifyContent:"center"}} onClick={signOut}><span style={{color:"#c85a35"}}><Ic n="out" s={13}/></span>Sign out</button>
         </div>
       </aside>
 
