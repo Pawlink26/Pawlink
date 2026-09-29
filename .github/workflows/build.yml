@@ -1,0 +1,35 @@
+name: Build Desktop App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: RescuPawLinkDesktop
+        run: npm install
+
+      - name: Build Windows app
+        working-directory: RescuPawLinkDesktop
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+        run: npm run build:win
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v1.0.0
+          name: RescuPawLink Shelter Edition v1.0.0
+          files: RescuPawLinkDesktop/release/*.exe
+          token: ${{ secrets.GITHUB_TOKEN }}
