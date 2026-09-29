@@ -1,7 +1,7 @@
 {
   "name": "rescupawlink-desktop",
   "version": "1.0.0",
-  "description": "RescuPawLink Desktop",
+  "description": "RescuPawLink Desktop \u2014 Professional shelter management software",
   "main": "electron/main.js",
   "scripts": {
     "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
@@ -13,21 +13,39 @@
   "build": {
     "appId": "com.rescupawlink.desktop",
     "productName": "RescuPawLink",
-    "copyright": "Copyright © 2026 RescuPawLink",
+    "copyright": "Copyright \u00a9 2026 RescuPawLink",
     "forceCodeSigning": false,
     "win": {
-      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/icon.ico",
       "sign": null
     },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "RescuPawLink"
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "public/**/*"
+    ],
+    "directories": {
+      "output": "release"
     },
-    "files": ["dist/**/*", "electron/**/*"],
-    "directories": { "output": "release" }
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/icon.png"
+    }
   },
   "dependencies": {
     "react": "^18.2.0",
